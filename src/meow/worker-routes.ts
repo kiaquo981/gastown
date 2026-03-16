@@ -16,17 +16,18 @@ import { gupp } from './workers/gupp';
 import { crewManager } from './workers/crew';
 import { overseer } from './workers/overseer';
 import { mailRouter } from './mail';
+import { startAutonomousLoop, stopAutonomousLoop, isAutonomousLoopRunning, getAutonomousLoopStats } from './autonomous-loop';
 
 const router = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Auth middleware — GET is public, mutations require GASTOWN_API_KEY
+// Auth middleware — GET is public, mutations require HIVE_API_KEY
 // ─────────────────────────────────────────────────────────────────────────────
 
 function requireApiKey(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET') return next();
   const key = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
-  if (!key || key !== process.env.GASTOWN_API_KEY) {
+  if (!key || key !== process.env.HIVE_API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
@@ -361,6 +362,27 @@ router.get('/api/meow/gupp/hooks/:id', (req: Request, res: Response) => {
   const hook = gupp.getHook(req.params.id);
   if (!hook) return res.status(404).json({ error: 'Hook not found' });
   res.json(hook);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTONOMOUS LOOP — /api/meow/auto/*
+// ─────────────────────────────────────────────────────────────────────────────
+
+// POST /api/meow/auto/start — Start the autonomous loop
+router.post('/api/meow/auto/start', (_req: Request, res: Response) => {
+  startAutonomousLoop();
+  res.json({ ok: true, running: isAutonomousLoopRunning() });
+});
+
+// POST /api/meow/auto/stop — Stop the autonomous loop
+router.post('/api/meow/auto/stop', (_req: Request, res: Response) => {
+  stopAutonomousLoop();
+  res.json({ ok: true, running: false });
+});
+
+// GET /api/meow/auto/stats — Get autonomous loop stats
+router.get('/api/meow/auto/stats', (_req: Request, res: Response) => {
+  res.json(getAutonomousLoopStats());
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
