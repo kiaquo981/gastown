@@ -35,11 +35,11 @@ export async function initStage06(): Promise<void> {
 
   // ── Wave 2: Multi-Instance (SG-005–008) ───────────────────────────
   try {
-    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const { getGasTownRegional } = await import('./sovereign/gastown-ecom-latam');
     const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const { getGasTownContentFactory } = await import('./sovereign/gastown-content-factory');
     const { getGasTownFederation } = await import('./sovereign/gastown-federation');
-    getGasTownEcomLatam();
+    getGasTownRegional();
     getGasTownEcomGlobal();
     getGasTownContentFactory();
     getGasTownFederation();
