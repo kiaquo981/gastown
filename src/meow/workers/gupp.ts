@@ -426,6 +426,17 @@ export class GUPP {
    */
   private async executeHook(hook: HookEntry): Promise<void> {
     try {
+      // Deduplication: skip if another hook for the same bead is already running
+      const siblingHooks = this.listHooks().filter(
+        h => h.beadId === hook.beadId && h.id !== hook.id &&
+        (h.status === 'running' || h.status === 'claimed'),
+      );
+      if (siblingHooks.length > 0) {
+        hook.status = 'completed';
+        this.persistHook(hook);
+        return;
+      }
+
       // Look up the bead for context
       let bead: { id: string; title: string; description?: string } = {
         id: hook.beadId,
@@ -458,6 +469,11 @@ export class GUPP {
         if (dispatchResult?.accepted) {
           // Maestro accepted — hook stays in 'running' until report comes back.
           // The report endpoint will call completeHook/failHook.
+          // Watchdog: if Maestro never reports, the hook's expiresAt will trigger
+          // expiration in the scan loop, and NDI recover() resets on restart.
+          // Set a tighter timeout for Maestro-dispatched hooks (30 min).
+          hook.expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+          this.persistHook(hook);
           return;
         }
         // Maestro dispatch failed — fall through to local execution

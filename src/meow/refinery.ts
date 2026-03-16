@@ -668,6 +668,11 @@ export class Refinery {
   private async gitMergeBranch(branch: string): Promise<{ success: boolean; error?: string }> {
     const cwd = process.env.MEOW_GATE_WORKDIR || process.cwd();
 
+    // Sanitize branch name: only allow safe characters
+    if (!/^[a-zA-Z0-9_\-./]+$/.test(branch)) {
+      return { success: false, error: `Invalid branch name: ${branch}` };
+    }
+
     // Fetch latest
     const fetchRes = await runGateCmd('git', ['fetch', 'origin'], cwd, 30_000);
     if (fetchRes.exitCode !== 0) {

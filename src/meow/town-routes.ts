@@ -26,6 +26,16 @@ import { maestroBridge } from './bridges/maestro-bridge';
 
 const router = Router();
 
+// ── Auth middleware for mutating Maestro endpoints ───────────────────────────
+function requireMaestroAuth(req: Request, res: Response, next: Function) {
+  if (req.method === 'GET') return next();
+  const key = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+  if (!key || key !== process.env.HIVE_API_KEY) {
+    return res.status(401).json({ error: 'Unauthorized — set x-api-key header' });
+  }
+  next();
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: safe async call — wraps a subsystem call in try/catch, returns
 // the result or a fallback value on failure.
@@ -545,7 +555,7 @@ router.get('/api/meow/town/log', (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** POST /api/meow/town/maestro/register — Register a local Maestro instance */
-router.post('/api/meow/town/maestro/register', (req: Request, res: Response) => {
+router.post('/api/meow/town/maestro/register', requireMaestroAuth, (req: Request, res: Response) => {
   try {
     const { callbackUrl, name, capabilities, maxSessions, hostname, os, version, metadata } = req.body;
     if (!callbackUrl) {
@@ -559,7 +569,7 @@ router.post('/api/meow/town/maestro/register', (req: Request, res: Response) => 
 });
 
 /** POST /api/meow/town/maestro/heartbeat — Update heartbeat */
-router.post('/api/meow/town/maestro/heartbeat', (req: Request, res: Response) => {
+router.post('/api/meow/town/maestro/heartbeat', requireMaestroAuth, (req: Request, res: Response) => {
   const { instanceId, activeSessions, status, metadata } = req.body;
   if (!instanceId) {
     return res.status(400).json({ error: 'instanceId is required' });
@@ -572,7 +582,7 @@ router.post('/api/meow/town/maestro/heartbeat', (req: Request, res: Response) =>
 });
 
 /** POST /api/meow/town/maestro/dispatch — Dispatch work to best available Maestro */
-router.post('/api/meow/town/maestro/dispatch', async (req: Request, res: Response) => {
+router.post('/api/meow/town/maestro/dispatch', requireMaestroAuth, async (req: Request, res: Response) => {
   try {
     const { beadId, skill, title, description, priority, branch, context, payload } = req.body;
     if (!beadId || !skill) {
@@ -589,7 +599,7 @@ router.post('/api/meow/town/maestro/dispatch', async (req: Request, res: Respons
 });
 
 /** POST /api/meow/town/maestro/report — Receive execution report from Maestro */
-router.post('/api/meow/town/maestro/report', (req: Request, res: Response) => {
+router.post('/api/meow/town/maestro/report', requireMaestroAuth, (req: Request, res: Response) => {
   try {
     const { dispatchId, maestroId, success, output, prUrl, branch, artifacts, durationMs, sessionCount, error } = req.body;
     if (!dispatchId || !maestroId) {
@@ -603,7 +613,7 @@ router.post('/api/meow/town/maestro/report', (req: Request, res: Response) => {
 });
 
 /** DELETE /api/meow/town/maestro/:id — Unregister a Maestro instance */
-router.delete('/api/meow/town/maestro/:id', (req: Request, res: Response) => {
+router.delete('/api/meow/town/maestro/:id', requireMaestroAuth, (req: Request, res: Response) => {
   const ok = maestroBridge.unregister(req.params.id);
   if (!ok) return res.status(404).json({ error: 'Instance not found' });
   res.json({ success: true });

@@ -238,6 +238,10 @@ export class MaestroBridge {
    * Dispatch work to the best available Maestro.
    * Picks the Maestro with matching capabilities and most free capacity.
    * Returns null if no Maestro available.
+   *
+   * Note: In single-threaded Node.js, the activeSessions counter is safe
+   * because findBestMaestro + fetch + increment run in one async flow.
+   * Concurrent dispatches could briefly oversubscribe; self-corrects on heartbeat.
    */
   async dispatch(payload: Omit<DispatchPayload, 'dispatchId'>): Promise<DispatchResult | null> {
     const available = this.findBestMaestro(payload.skill);

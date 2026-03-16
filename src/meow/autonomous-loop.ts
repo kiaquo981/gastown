@@ -52,6 +52,7 @@ function loadConfig(): AutoLoopConfig {
 /** Track which beads have hooks placed by the auto-loop to avoid duplicates */
 const beadsInFlight = new Set<string>();
 let scanTimer: NodeJS.Timeout | undefined;
+let scanInProgress = false;  // Mutex: prevent overlapping scan cycles
 let cycleCount = 0;
 let totalPlaced = 0;
 let totalCompleted = 0;
@@ -68,6 +69,10 @@ let totalFailed = 0;
  * 3. Place GUPP hooks for available beads (up to maxInflight)
  */
 async function scanCycle(): Promise<{ placed: number; skipped: number; inflight: number }> {
+  // Mutex: prevent overlapping scans from exceeding maxInflight
+  if (scanInProgress) return { placed: 0, skipped: 0, inflight: beadsInFlight.size };
+  scanInProgress = true;
+
   cycleCount++;
   const config = loadConfig();
   let placed = 0;
@@ -77,14 +82,20 @@ async function scanCycle(): Promise<{ placed: number; skipped: number; inflight:
     const beadsService = getBeadsService();
     const readyBeads = await beadsService.ready({ limit: config.maxInflight * 2 });
 
-    // Clean up beadsInFlight: remove beads whose hooks are done
+    // Rebuild inflight from persisted hooks (survives restarts — fixes NDI gap)
+    const allActiveHooks = gupp.listHooks().filter(
+      h => h.status === 'pending' || h.status === 'claimed' || h.status === 'running',
+    );
+    const activeBeadIds = new Set(allActiveHooks.map(h => h.beadId));
+
+    // Sync beadsInFlight with actual hook state
     for (const beadId of beadsInFlight) {
-      const hooks = gupp.listHooks().filter(
-        h => h.beadId === beadId && (h.status === 'pending' || h.status === 'claimed' || h.status === 'running'),
-      );
-      if (hooks.length === 0) {
+      if (!activeBeadIds.has(beadId)) {
         beadsInFlight.delete(beadId);
       }
+    }
+    for (const beadId of activeBeadIds) {
+      beadsInFlight.add(beadId);
     }
 
     // How many slots are free?
@@ -170,6 +181,8 @@ async function scanCycle(): Promise<{ placed: number; skipped: number; inflight:
 
   } catch (err) {
     console.error(`${PREFIX} Scan cycle error:`, err);
+  } finally {
+    scanInProgress = false;
   }
 
   return { placed, skipped, inflight: beadsInFlight.size };
