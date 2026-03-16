@@ -1,0 +1,307 @@
+# ===============================================================================
+# content-batch — Batch Creative Production Convoy (LP-034)
+#
+# Type: convoy — 5 parallel legs (one per creative format), synthesis at the end.
+# Each leg runs a 5-step pipeline: brief, generate, review, optimize, export.
+# The convoy compiles all assets into a creative library with a manifest.
+#
+# "Five formats. One brief. Parallel production at scale."
+# ===============================================================================
+
+[formula]
+name = "content-batch"
+description = "Batch creative production across 5 formats in parallel: carousel, short video, long video, static banner, and UGC-style. Each leg briefs, generates, reviews, optimizes, and exports assets."
+version = 1
+type = "convoy"
+
+# --- Variables ----------------------------------------------------------------
+
+[vars]
+
+[vars.product_name]
+description = "Product name for creative briefs and asset naming"
+required = true
+
+[vars.brand_tone]
+description = "Brand tone of voice: bold, elegant, playful, urgent, clinical, friendly"
+required = true
+
+[vars.target_audience]
+description = "Target audience description for creative direction (e.g. women 25-45 interested in skincare)"
+required = true
+
+[vars.platform]
+description = "Target platform for format specs and best practices: meta, tiktok, google"
+required = false
+default = "meta"
+
+[vars.color_palette]
+description = "Brand color palette as comma-separated hex codes (e.g. #1a1a2e,#e94560,#0f3460)"
+required = false
+default = "#000000,#ffffff,#e63946"
+
+# --- Leg 1: Carousel ----------------------------------------------------------
+
+[[legs]]
+id = "leg-carousel"
+title = "Carousel Creative Production"
+
+[[legs.steps]]
+id = "carousel-brief"
+title = "Create carousel creative brief for {{product_name}}"
+description = "Generate a carousel-specific brief: 5-8 slides, hook on slide 1, benefit stack slides 2-5, social proof slide 6, CTA slide 7. Apply {{brand_tone}} tone for {{target_audience}} on {{platform}}."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "carousel-generate"
+title = "Generate carousel assets for {{product_name}}"
+description = "Produce carousel slide images (1080x1080 for Meta, 1080x1920 for TikTok). Apply {{color_palette}} brand colors. Generate headline text overlays per slide. Output as individual PNGs + combined preview."
+skill = "content-generate"
+needs = ["carousel-brief"]
+type = "polecat"
+timeout = 600
+
+[[legs.steps]]
+id = "carousel-review"
+title = "Review carousel creatives for quality and compliance"
+description = "Check text-to-image ratio (<20% for Meta), brand color consistency, readability at mobile size, CTA visibility. Flag any slides that violate {{platform}} ad policies."
+skill = "content-generate"
+needs = ["carousel-generate"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "carousel-optimize"
+title = "Optimize carousel slides based on review feedback"
+description = "Apply review corrections: adjust text sizing, fix color contrast issues, optimize image compression. Generate alternate hook slide for A/B testing."
+skill = "content-generate"
+needs = ["carousel-review"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "carousel-export"
+title = "Export carousel assets in platform-ready formats"
+description = "Export final carousel as: individual slide PNGs, combined preview GIF, CSV with per-slide copy, and platform-specific upload package for {{platform}}."
+skill = "content-generate"
+needs = ["carousel-optimize"]
+type = "polecat"
+timeout = 120
+
+# --- Leg 2: Video Short (15s) ------------------------------------------------
+
+[[legs]]
+id = "leg-video-short"
+title = "Short Video (15s) Creative Production"
+
+[[legs.steps]]
+id = "vshort-brief"
+title = "Create 15s video brief for {{product_name}}"
+description = "Generate a 15-second video script: 3s hook, 5s problem-agitate, 4s solution-demo, 3s CTA. Apply {{brand_tone}} tone. Specify transitions, text overlays, and music mood for {{target_audience}}."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "vshort-generate"
+title = "Generate 15s video for {{product_name}}"
+description = "Produce 15-second vertical video (9:16 ratio). Apply {{color_palette}} brand colors to text overlays and lower thirds. Generate voiceover script and background music cues."
+skill = "content-generate"
+needs = ["vshort-brief"]
+type = "polecat"
+timeout = 900
+
+[[legs.steps]]
+id = "vshort-review"
+title = "Review 15s video for pacing and compliance"
+description = "Check hook timing (must grab attention in first 2s), pacing, text readability on mobile, audio levels, and {{platform}} ad policy compliance. Verify CTA is visible in final 3 seconds."
+skill = "content-generate"
+needs = ["vshort-generate"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "vshort-optimize"
+title = "Optimize 15s video based on review feedback"
+description = "Apply review corrections: tighten hook timing, adjust text animation speed, normalize audio levels. Generate 3 alternate hook variations for testing."
+skill = "content-generate"
+needs = ["vshort-review"]
+type = "polecat"
+timeout = 600
+
+[[legs.steps]]
+id = "vshort-export"
+title = "Export 15s video in platform-ready formats"
+description = "Export final video as: MP4 (H.264), WebM fallback, thumbnail PNG at 3 key frames, SRT subtitle file, and platform upload package for {{platform}}."
+skill = "content-generate"
+needs = ["vshort-optimize"]
+type = "polecat"
+timeout = 180
+
+# --- Leg 3: Video Long (60s) -------------------------------------------------
+
+[[legs]]
+id = "leg-video-long"
+title = "Long Video (60s) Creative Production"
+
+[[legs.steps]]
+id = "vlong-brief"
+title = "Create 60s video brief for {{product_name}}"
+description = "Generate a 60-second video script with 4-act structure: hook (5s), problem story (15s), solution demo with proof (25s), CTA with urgency (15s). Apply {{brand_tone}} tone for {{target_audience}}."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 240
+
+[[legs.steps]]
+id = "vlong-generate"
+title = "Generate 60s video for {{product_name}}"
+description = "Produce 60-second video in both 9:16 (Reels/TikTok) and 1:1 (Feed) ratios. Include B-roll cues, text overlay timestamps, transition markers, voiceover script, and music bed suggestions."
+skill = "content-generate"
+needs = ["vlong-brief"]
+type = "polecat"
+timeout = 1200
+
+[[legs.steps]]
+id = "vlong-review"
+title = "Review 60s video for storytelling and compliance"
+description = "Check narrative arc coherence, retention hooks at 15s/30s/45s marks, text readability, audio mixing, and {{platform}} ad policy compliance. Ensure demo section clearly shows product benefit."
+skill = "content-generate"
+needs = ["vlong-generate"]
+type = "polecat"
+timeout = 240
+
+[[legs.steps]]
+id = "vlong-optimize"
+title = "Optimize 60s video based on review feedback"
+description = "Apply review corrections: tighten narrative pacing, add retention hooks at drop-off points, optimize text animations, normalize audio. Generate alternate opening hook."
+skill = "content-generate"
+needs = ["vlong-review"]
+type = "polecat"
+timeout = 900
+
+[[legs.steps]]
+id = "vlong-export"
+title = "Export 60s video in platform-ready formats"
+description = "Export final video as: MP4 9:16 + 1:1 ratios, thumbnail PNGs, SRT subtitle file, chapter markers JSON, and platform upload package for {{platform}}."
+skill = "content-generate"
+needs = ["vlong-optimize"]
+type = "polecat"
+timeout = 240
+
+# --- Leg 4: Static Banner ----------------------------------------------------
+
+[[legs]]
+id = "leg-static-banner"
+title = "Static Banner Creative Production"
+
+[[legs.steps]]
+id = "banner-brief"
+title = "Create static banner brief for {{product_name}}"
+description = "Generate banner creative brief: headline (max 5 words), subheadline, product image placement, CTA button text. Define 3 sizes: 1200x628 (feed), 1080x1080 (square), 1080x1920 (story). Apply {{brand_tone}} for {{target_audience}}."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "banner-generate"
+title = "Generate static banners for {{product_name}}"
+description = "Produce 3 banner sizes with {{color_palette}} brand colors. Include product image, headline text overlay, CTA button, and brand logo placement. Apply visual hierarchy for mobile-first readability."
+skill = "content-generate"
+needs = ["banner-brief"]
+type = "polecat"
+timeout = 600
+
+[[legs.steps]]
+id = "banner-review"
+title = "Review static banners for quality and compliance"
+description = "Check text-to-image ratio (<20% for Meta), contrast ratios for accessibility (WCAG AA), CTA button visibility, and brand color accuracy against {{color_palette}}."
+skill = "content-generate"
+needs = ["banner-generate"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "banner-optimize"
+title = "Optimize static banners based on review feedback"
+description = "Apply review corrections: adjust text sizing for readability, fix contrast issues, optimize file sizes (<150KB for fast loading). Generate 2 alternate headline variations."
+skill = "content-generate"
+needs = ["banner-review"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "banner-export"
+title = "Export static banners in platform-ready formats"
+description = "Export final banners as: PNG (high quality), WebP (optimized), JPG (fallback) for all 3 sizes. Generate responsive HTML5 banner fallback and platform upload package for {{platform}}."
+skill = "content-generate"
+needs = ["banner-optimize"]
+type = "polecat"
+timeout = 120
+
+# --- Leg 5: UGC-Style --------------------------------------------------------
+
+[[legs]]
+id = "leg-ugc-style"
+title = "UGC-Style Creative Production"
+
+[[legs.steps]]
+id = "ugc-brief"
+title = "Create UGC-style brief for {{product_name}}"
+description = "Generate a UGC-style content brief: raw/authentic feel, selfie-camera angle, casual language, unboxing or testimonial format. Define 3 scenarios (unboxing, before-after, day-in-life). Apply {{brand_tone}} adapted for UGC authenticity targeting {{target_audience}}."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "ugc-generate"
+title = "Generate UGC-style assets for {{product_name}}"
+description = "Produce UGC-style video scripts and image storyboards: selfie-cam framing, casual text overlays with handwritten-style fonts, authentic lighting references. Generate avatar persona for each scenario."
+skill = "content-generate"
+needs = ["ugc-brief"]
+type = "polecat"
+timeout = 900
+
+[[legs.steps]]
+id = "ugc-review"
+title = "Review UGC-style content for authenticity and compliance"
+description = "Check that content feels genuinely user-generated (not overly polished), verify testimonial claims comply with {{platform}} ad policies, ensure no FTC/disclosure violations. Rate authenticity score 1-10."
+skill = "content-generate"
+needs = ["ugc-generate"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "ugc-optimize"
+title = "Optimize UGC-style content for engagement"
+description = "Apply review corrections: add more authentic imperfections, adjust text overlay timing, refine hook for scroll-stopping power. Generate alternate persona variation for A/B testing."
+skill = "content-generate"
+needs = ["ugc-review"]
+type = "polecat"
+timeout = 600
+
+[[legs.steps]]
+id = "ugc-export"
+title = "Export UGC-style assets in platform-ready formats"
+description = "Export final UGC assets as: video MP4 with burned-in captions, raw storyboard PNG sequence, script TXT with direction notes, and platform upload package for {{platform}}."
+skill = "content-generate"
+needs = ["ugc-optimize"]
+type = "polecat"
+timeout = 180
+
+# --- Synthesis: Creative Library Upload ---------------------------------------
+
+[synthesis]
+id = "creative-library-upload"
+title = "Compile creative library and upload all assets for {{product_name}}"
+description = "Aggregate all exported assets from 5 format legs (carousel, video-short, video-long, static-banner, UGC-style). Upload to HIVE Drive storage. Generate asset manifest JSON with: file paths, dimensions, formats, file sizes, thumbnail URLs, and per-asset metadata. Create campaign-ready asset bundle grouped by {{platform}} specs."
+skill = "data-analyze"
+needs = []
+type = "crew"
+timeout = 600

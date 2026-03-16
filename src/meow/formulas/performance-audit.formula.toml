@@ -1,0 +1,118 @@
+# ===============================================================================
+# performance-audit — Daily Performance Audit Pipeline (LP-012)
+#
+# Automated daily audit: pull metrics, analyze ROAS, find underperformers,
+# recommend actions, execute optimizations, and generate report.
+# Designed to run as a daily cron via GUPP scheduler.
+#
+# "What you don't measure, you can't improve. What you don't audit, decays."
+# ===============================================================================
+
+[formula]
+name = "performance-audit"
+description = "Daily performance audit: pull metrics, analyze ROAS, identify underperformers, recommend and execute optimizations, generate report"
+version = 1
+type = "workflow"
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+
+[vars]
+
+[vars.audit_period_days]
+description = "Number of days to include in the audit window"
+required = false
+default = "1"
+
+[vars.roas_threshold]
+description = "Minimum ROAS threshold — campaigns below this are flagged as underperformers"
+required = false
+default = "2.0"
+
+[vars.budget_threshold_usd]
+description = "Minimum daily spend in USD for a campaign to be included in the audit"
+required = false
+default = "10"
+
+[vars.target_account]
+description = "Meta Ads account ID to audit (defaults to primary account)"
+required = false
+default = "primary"
+
+[vars.auto_optimize]
+description = "Whether to auto-execute optimization actions or only recommend (true/false)"
+required = false
+default = "false"
+
+[vars.notification_channel]
+description = "Where to send the audit report: whatsapp, email, slack, dashboard"
+required = false
+default = "whatsapp"
+
+# ─── Step 1: Pull Metrics ────────────────────────────────────────────────────
+
+[[steps]]
+id = "pull-metrics"
+title = "Pull last {{audit_period_days}} day(s) of ad performance metrics"
+description = "Fetch campaign, ad set, and ad level metrics from Meta Ads API for account {{target_account}}: spend, impressions, reach, clicks, CTR, CPC, CPM, conversions, CPA, ROAS, frequency. Also pull Shopify order data for the same period to cross-validate revenue attribution."
+skill = "meta-ads-manage"
+needs = []
+type = "polecat"
+timeout = 300
+retries = 2
+
+# ─── Step 2: Analyze ROAS ────────────────────────────────────────────────────
+
+[[steps]]
+id = "analyze-roas"
+title = "Analyze ROAS performance against {{roas_threshold}} threshold"
+description = "Compute ROAS at campaign, ad set, and ad level. Flag items below {{roas_threshold}} threshold. Calculate trend direction (improving/declining/stable) over last 3 days. Identify spend wastage on low-performers. Compute portfolio-level blended ROAS."
+skill = "data-analyze"
+needs = ["pull-metrics"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 3: Identify Underperformers ────────────────────────────────────────
+
+[[steps]]
+id = "identify-underperformers"
+title = "Identify underperforming campaigns, ad sets, and ads"
+description = "Classify each item as: Winner (ROAS >3x threshold), Profitable (above threshold), Marginal (80-100% of threshold), Unprofitable (below threshold), Dead (zero conversions with >{{budget_threshold_usd}} USD spent). Rank by absolute waste (spend minus revenue)."
+skill = "data-analyze"
+needs = ["analyze-roas"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 4: Recommend Actions ───────────────────────────────────────────────
+
+[[steps]]
+id = "recommend-actions"
+title = "Generate optimization recommendations"
+description = "For each underperformer, recommend specific action: pause (Dead), reduce budget 50% (Unprofitable), test new creative (Marginal with high CTR), test new audience (Marginal with low CTR). For Winners, recommend scale-up budget by 20%. Prioritize actions by potential impact."
+skill = "data-analyze"
+needs = ["identify-underperformers"]
+type = "crew"
+timeout = 300
+
+# ─── Step 5: Execute Optimizations ───────────────────────────────────────────
+
+[[steps]]
+id = "execute-optimizations"
+title = "Execute approved optimization actions on Meta Ads"
+description = "If auto_optimize is enabled, execute recommended actions via Meta Ads API: pause dead campaigns, adjust budgets, duplicate winning ad sets with new audiences. Log every change with before/after values. If auto_optimize is false, stage actions for human review."
+skill = "meta-ads-manage"
+needs = ["recommend-actions"]
+type = "crew"
+timeout = 600
+retries = 2
+gate = "human-approval"
+
+# ─── Step 6: Generate Report ─────────────────────────────────────────────────
+
+[[steps]]
+id = "generate-report"
+title = "Generate daily performance audit report"
+description = "Compile audit findings into structured report: executive summary (blended ROAS, total spend, total revenue, P&L), top 5 winners, top 5 losers, actions taken/recommended, budget reallocation summary, 7-day trend chart data, and next-day projections. Send to {{notification_channel}}."
+skill = "content-generate"
+needs = ["execute-optimizations"]
+type = "polecat"
+timeout = 300

@@ -1,0 +1,141 @@
+# ===============================================================================
+# content-pipeline — Content Creation Pipeline (LP-008)
+#
+# Full content production workflow from briefing through publishing.
+# Integrates with ContentFactory: script, voice, avatar, video, thumbnail.
+#
+# "Content is the lifeblood of ads. Every asset is a molecule with purpose."
+# ===============================================================================
+
+[formula]
+name = "content-pipeline"
+description = "End-to-end content creation: briefing, script, voice synthesis, avatar, video assembly, thumbnail, and publish"
+version = 1
+type = "workflow"
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+
+[vars]
+
+[vars.topic]
+description = "Content topic or product angle to create around"
+required = true
+
+[vars.tone]
+description = "Tone of voice: professional, casual, urgent, educational, storytelling"
+required = false
+default = "professional"
+
+[vars.target_platform]
+description = "Target platform: meta, tiktok, youtube, instagram, shopify"
+required = true
+default = "meta"
+
+[vars.duration_seconds]
+description = "Target video duration in seconds"
+required = false
+default = "30"
+
+[vars.language]
+description = "Output language code: pt-BR, es-AR, es-MX, en-US"
+required = true
+default = "pt-BR"
+
+[vars.product_name]
+description = "Product name for contextual references in scripts"
+required = false
+default = ""
+
+# ─── Step 1: Briefing ────────────────────────────────────────────────────────
+
+[[steps]]
+id = "briefing"
+title = "Generate content brief for {{topic}}"
+description = "Analyze the topic, define key messages, identify target audience segment, select content format, and outline the creative direction for {{target_platform}}"
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+# ─── Step 2: Script Writing ──────────────────────────────────────────────────
+
+[[steps]]
+id = "script-writing"
+title = "Write {{duration_seconds}}s script in {{language}}"
+description = "Draft a {{tone}} script optimized for {{target_platform}} with hook in first 3 seconds, problem-agitate-solve structure, and clear CTA. Include visual direction notes per scene."
+skill = "content-generate"
+needs = ["briefing"]
+type = "crew"
+timeout = 600
+retries = 2
+
+# ─── Step 3: Voice Synthesis ─────────────────────────────────────────────────
+
+[[steps]]
+id = "voice-synthesis"
+title = "Synthesize voiceover in {{language}}"
+description = "Generate natural voiceover from script using ElevenLabs API. Match tone to {{tone}} with appropriate pacing for {{duration_seconds}}s target duration."
+skill = "content-generate"
+needs = ["script-writing"]
+type = "polecat"
+timeout = 300
+retries = 2
+
+# ─── Step 4: Avatar Generation ───────────────────────────────────────────────
+
+[[steps]]
+id = "avatar-generation"
+title = "Generate talking-head avatar for video"
+description = "Create lip-synced avatar video using HeyGen or D-ID API. Sync mouth movements to voiceover audio. Select avatar matching target demographic."
+skill = "content-generate"
+needs = ["voice-synthesis"]
+type = "polecat"
+timeout = 600
+retries = 2
+
+# ─── Step 5: Video Assembly ──────────────────────────────────────────────────
+
+[[steps]]
+id = "video-assembly"
+title = "Assemble final {{duration_seconds}}s video for {{target_platform}}"
+description = "Composite avatar footage with product B-roll, text overlays, background music, and transitions. Apply platform-specific aspect ratio (9:16 for TikTok/Reels, 1:1 for feed, 16:9 for YouTube)."
+skill = "content-generate"
+needs = ["avatar-generation"]
+type = "crew"
+timeout = 900
+retries = 1
+
+# ─── Step 6: Thumbnail Generation ────────────────────────────────────────────
+
+[[steps]]
+id = "thumbnail"
+title = "Generate click-optimized thumbnail"
+description = "Create eye-catching thumbnail with high-contrast text, product hero shot, and curiosity-driven composition. Output at 1080x1080 and 1920x1080."
+skill = "content-generate"
+needs = ["briefing"]
+type = "polecat"
+timeout = 300
+retries = 1
+
+# ─── Step 7: Quality Review ──────────────────────────────────────────────────
+
+[[steps]]
+id = "quality-review"
+title = "Review all content assets against brief"
+description = "Verify video duration, audio sync, text readability, brand compliance, platform specs, and CTA placement. Score each asset 1-10."
+skill = "content-generate"
+needs = ["video-assembly", "thumbnail"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 8: Publish ─────────────────────────────────────────────────────────
+
+[[steps]]
+id = "publish"
+title = "Upload content assets to {{target_platform}}"
+description = "Upload final video and thumbnail to HiveDrive. If target is Shopify, push to product media. If Meta/TikTok, stage for campaign creative assignment. Record asset URLs."
+skill = "content-generate"
+needs = ["quality-review"]
+type = "polecat"
+timeout = 300
+retries = 2

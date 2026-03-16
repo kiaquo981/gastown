@@ -1,0 +1,127 @@
+# ===============================================================================
+# customer-recovery — Customer Churn Recovery Pipeline (LP-011)
+#
+# Detects at-risk customers, segments them, personalizes offers,
+# and sends recovery messages via WhatsApp. Tracks and analyzes results.
+#
+# "A lost customer costs 5x more than keeping one. Recover before they forget."
+# ===============================================================================
+
+[formula]
+name = "customer-recovery"
+description = "Customer churn recovery: detect churn signals, segment, personalize offers, send WhatsApp messages, track responses, and analyze ROI"
+version = 1
+type = "workflow"
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+
+[vars]
+
+[vars.churn_threshold_days]
+description = "Number of days since last purchase to consider a customer at risk of churning"
+required = false
+default = "30"
+
+[vars.offer_discount_pct]
+description = "Base discount percentage for recovery offers"
+required = false
+default = "15"
+
+[vars.message_template]
+description = "WhatsApp message template name registered with Meta (e.g., recovery_offer_v2)"
+required = false
+default = "recovery_offer_v1"
+
+[vars.target_country]
+description = "ISO country code to filter customers by region"
+required = false
+default = "AR"
+
+[vars.min_ltv_usd]
+description = "Minimum customer lifetime value in USD to qualify for recovery effort"
+required = false
+default = "20"
+
+[vars.max_batch_size]
+description = "Maximum number of customers to process per run"
+required = false
+default = "500"
+
+# ─── Step 1: Detect Churn ────────────────────────────────────────────────────
+
+[[steps]]
+id = "detect-churn"
+title = "Identify customers at risk of churning (>{{churn_threshold_days}} days inactive)"
+description = "Query order history for customers in {{target_country}} with no purchase in the last {{churn_threshold_days}} days. Filter by min LTV of {{min_ltv_usd}} USD. Pull last order date, total orders, total spend, product categories, and communication history."
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+# ─── Step 2: Segment Customers ───────────────────────────────────────────────
+
+[[steps]]
+id = "segment-customers"
+title = "Segment churning customers by value and behavior"
+description = "Classify detected customers into segments: VIP (>5 orders, high LTV), Regular (2-5 orders), One-Timer (1 order). Further segment by last product category, average order value, and recency. Assign recovery priority score 1-100."
+skill = "data-analyze"
+needs = ["detect-churn"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 3: Personalize Offers ──────────────────────────────────────────────
+
+[[steps]]
+id = "personalize-offer"
+title = "Generate personalized recovery offers per segment"
+description = "Create tailored offers: VIP gets {{offer_discount_pct}}%+5% + free shipping + exclusive preview, Regular gets {{offer_discount_pct}}% + free shipping, One-Timer gets {{offer_discount_pct}}% on related products. Include personalized product recommendations based on purchase history."
+skill = "content-generate"
+needs = ["segment-customers"]
+type = "crew"
+timeout = 600
+retries = 1
+
+# ─── Step 4: Compose Messages ────────────────────────────────────────────────
+
+[[steps]]
+id = "compose-message"
+title = "Compose personalized WhatsApp recovery messages"
+description = "Generate WhatsApp message for each customer using template {{message_template}} with personalized name, offer details, product recommendation, and unique tracking link. Respect character limits and WhatsApp template variable slots."
+skill = "content-generate"
+needs = ["personalize-offer"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 5: Send WhatsApp Messages ──────────────────────────────────────────
+
+[[steps]]
+id = "send-whatsapp"
+title = "Send recovery messages via WhatsApp (batch of {{max_batch_size}})"
+description = "Dispatch personalized WhatsApp messages through Evolution API. Throttle to 1 msg/second to avoid rate limits. Log delivery status per customer. Skip numbers that opted out or bounced previously."
+skill = "whatsapp-send"
+needs = ["compose-message"]
+type = "crew"
+timeout = 1800
+retries = 2
+
+# ─── Step 6: Track Responses ─────────────────────────────────────────────────
+
+[[steps]]
+id = "track-response"
+title = "Monitor customer responses and conversions for 72h"
+description = "Track message delivery, read receipts, link clicks, and purchases over 72 hours. Record which customers replied, which used their discount code, and which made a purchase. Update CRM with interaction log."
+skill = "data-analyze"
+needs = ["send-whatsapp"]
+type = "crew"
+timeout = 259200
+
+# ─── Step 7: Analyze Results ─────────────────────────────────────────────────
+
+[[steps]]
+id = "analyze-results"
+title = "Analyze recovery campaign results and ROI"
+description = "Calculate recovery rate by segment, revenue recovered, discount cost, net ROI, and cost per recovered customer. Identify which segments and offer types performed best. Generate actionable report with recommendations for next run."
+skill = "data-analyze"
+needs = ["track-response"]
+type = "polecat"
+timeout = 300

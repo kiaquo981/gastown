@@ -1,0 +1,353 @@
+# ===============================================================================
+# multi-country-launch — Simultaneous Multi-Country Product Launch Convoy (LP-033)
+#
+# Type: convoy — 7 parallel legs (one per LATAM country), synthesis at the end.
+# Each leg runs a 4-step launch pipeline: localize, price, ads, activate.
+# The convoy aggregates all results into a consolidated launch report with
+# total budget allocation and projected ROAS per country.
+#
+# "Seven markets. One product. One coordinated strike."
+# ===============================================================================
+
+[formula]
+name = "multi-country-launch"
+description = "Simultaneous product launch across 7 LATAM countries: localize listings, configure pricing, create ads, and activate campaigns in parallel"
+version = 1
+type = "convoy"
+
+# --- Variables ----------------------------------------------------------------
+
+[vars]
+
+[vars.product_id]
+description = "Shopify product ID to launch across all countries"
+required = true
+
+[vars.product_name]
+description = "Human-readable product name for ad copy and listings"
+required = true
+
+[vars.base_price_usd]
+description = "Base product price in USD before country-specific adjustments"
+required = true
+
+[vars.base_copy]
+description = "Base marketing copy in English to localize per country"
+required = true
+
+[vars.daily_budget_per_country]
+description = "Daily Meta Ads budget per country in USD"
+required = false
+default = "25"
+
+# --- Leg 1: Argentina ---------------------------------------------------------
+
+[[legs]]
+id = "leg-ar"
+title = "Argentina Launch"
+
+[[legs.steps]]
+id = "ar-localize-listing"
+title = "Localize listing for Argentina — {{product_name}}"
+description = "Translate {{base_copy}} to Argentine Spanish (voseo). Adapt product title, description, and bullet points for Mercado Libre and Shopify AR storefront. Include ARS pricing display."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ar-configure-pricing"
+title = "Configure ARS pricing with cuotas for {{product_name}}"
+description = "Convert {{base_price_usd}} to ARS with 30% PAIS tax buffer. Set up Mercado Pago gateway with 3/6/12 cuotas. Configure Rapipago cash payment fallback."
+skill = "shopify-manage"
+needs = ["ar-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "ar-create-ads"
+title = "Create Meta Ads for Argentina — {{product_name}}"
+description = "Generate ad creatives and copy using AR-localized listing. Target 25-54 Buenos Aires + Cordoba + Rosario. Set {{daily_budget_per_country}} USD daily budget. Optimize for purchase conversions."
+skill = "meta-ads-manage"
+needs = ["ar-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ar-activate-campaign"
+title = "Activate Argentina campaign and verify tracking"
+description = "Publish Shopify AR listing, activate Meta Ads campaign, verify Pixel events firing, confirm payment gateway live. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["ar-configure-pricing", "ar-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Leg 2: Brazil ------------------------------------------------------------
+
+[[legs]]
+id = "leg-br"
+title = "Brazil Launch"
+
+[[legs.steps]]
+id = "br-localize-listing"
+title = "Localize listing for Brazil — {{product_name}}"
+description = "Translate {{base_copy}} to Brazilian Portuguese (pt-BR). Adapt for Shopify BR storefront and marketplace listings. Include BRL pricing with PIX discount callout."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "br-configure-pricing"
+title = "Configure BRL pricing with PIX discount for {{product_name}}"
+description = "Convert {{base_price_usd}} to BRL with 60% ICMS import duty buffer. Configure PIX 10% instant discount, boleto option, and credit card 12x installments."
+skill = "shopify-manage"
+needs = ["br-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "br-create-ads"
+title = "Create Meta Ads for Brazil — {{product_name}}"
+description = "Generate ad creatives using pt-BR copy. Target Sao Paulo + Rio + BH + Curitiba metros. Set {{daily_budget_per_country}} USD daily budget. A/B test Reels vs Feed placement."
+skill = "meta-ads-manage"
+needs = ["br-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "br-activate-campaign"
+title = "Activate Brazil campaign and verify tracking"
+description = "Publish Shopify BR listing, activate Meta Ads campaign, verify Pixel + Conversions API, confirm PIX gateway operational. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["br-configure-pricing", "br-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Leg 3: Mexico ------------------------------------------------------------
+
+[[legs]]
+id = "leg-mx"
+title = "Mexico Launch"
+
+[[legs.steps]]
+id = "mx-localize-listing"
+title = "Localize listing for Mexico — {{product_name}}"
+description = "Translate {{base_copy}} to Mexican Spanish. Adapt product copy for Shopify MX and Amazon MX listing. Include MXN pricing with MSI callout."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "mx-configure-pricing"
+title = "Configure MXN pricing with OXXO and MSI for {{product_name}}"
+description = "Convert {{base_price_usd}} to MXN with 16% IVA buffer. Set up OXXO cash payment, SPEI bank transfer, and MSI (meses sin intereses) 3/6 months on credit cards."
+skill = "shopify-manage"
+needs = ["mx-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "mx-create-ads"
+title = "Create Meta Ads for Mexico — {{product_name}}"
+description = "Generate MX-localized ad creatives. Target CDMX + Guadalajara + Monterrey metros. Set {{daily_budget_per_country}} USD daily budget. Optimize for WhatsApp click-to-message."
+skill = "meta-ads-manage"
+needs = ["mx-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "mx-activate-campaign"
+title = "Activate Mexico campaign and verify tracking"
+description = "Publish Shopify MX listing, activate Meta Ads campaign, verify Pixel events, confirm OXXO + card gateways live. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["mx-configure-pricing", "mx-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Leg 4: Colombia ----------------------------------------------------------
+
+[[legs]]
+id = "leg-co"
+title = "Colombia Launch"
+
+[[legs.steps]]
+id = "co-localize-listing"
+title = "Localize listing for Colombia — {{product_name}}"
+description = "Translate {{base_copy}} to Colombian Spanish. Adapt for Shopify CO and Falabella/Linio marketplace. Include COP pricing with Efecty cash option callout."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "co-configure-pricing"
+title = "Configure COP pricing with PSE and Efecty for {{product_name}}"
+description = "Convert {{base_price_usd}} to COP with 19% IVA buffer. Set up PSE bank transfer as primary, Efecty/Baloto cash payment, and credit card installment options."
+skill = "shopify-manage"
+needs = ["co-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "co-create-ads"
+title = "Create Meta Ads for Colombia — {{product_name}}"
+description = "Generate CO-localized ad creatives. Target Bogota + Medellin + Cali + Barranquilla metros. Set {{daily_budget_per_country}} USD daily budget."
+skill = "meta-ads-manage"
+needs = ["co-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "co-activate-campaign"
+title = "Activate Colombia campaign and verify tracking"
+description = "Publish Shopify CO listing, activate Meta Ads campaign, verify Pixel events firing, confirm PSE + Efecty gateways live. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["co-configure-pricing", "co-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Leg 5: Chile -------------------------------------------------------------
+
+[[legs]]
+id = "leg-cl"
+title = "Chile Launch"
+
+[[legs.steps]]
+id = "cl-localize-listing"
+title = "Localize listing for Chile — {{product_name}}"
+description = "Translate {{base_copy}} to Chilean Spanish. Adapt for Shopify CL and Falabella/Ripley marketplaces. Include CLP pricing with Webpay callout."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "cl-configure-pricing"
+title = "Configure CLP pricing with Webpay for {{product_name}}"
+description = "Convert {{base_price_usd}} to CLP with 19% IVA buffer. Set up Transbank Webpay as primary gateway, Servipag cash option, and credit card cuotas."
+skill = "shopify-manage"
+needs = ["cl-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "cl-create-ads"
+title = "Create Meta Ads for Chile — {{product_name}}"
+description = "Generate CL-localized ad creatives. Target Santiago + Valparaiso + Concepcion metros. Set {{daily_budget_per_country}} USD daily budget."
+skill = "meta-ads-manage"
+needs = ["cl-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "cl-activate-campaign"
+title = "Activate Chile campaign and verify tracking"
+description = "Publish Shopify CL listing, activate Meta Ads campaign, verify Pixel events, confirm Webpay gateway operational. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["cl-configure-pricing", "cl-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Leg 6: Peru --------------------------------------------------------------
+
+[[legs]]
+id = "leg-pe"
+title = "Peru Launch"
+
+[[legs.steps]]
+id = "pe-localize-listing"
+title = "Localize listing for Peru — {{product_name}}"
+description = "Translate {{base_copy}} to Peruvian Spanish. Adapt for Shopify PE storefront. Include PEN pricing with Yape mobile payment callout."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "pe-configure-pricing"
+title = "Configure PEN pricing with Yape for {{product_name}}"
+description = "Convert {{base_price_usd}} to PEN with 18% IGV buffer. Set up Yape mobile as primary, PagoEfectivo cash, and Visa/MC installments."
+skill = "shopify-manage"
+needs = ["pe-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "pe-create-ads"
+title = "Create Meta Ads for Peru — {{product_name}}"
+description = "Generate PE-localized ad creatives. Target Lima + Arequipa metros. Set {{daily_budget_per_country}} USD daily budget. Optimize for mobile-first audience."
+skill = "meta-ads-manage"
+needs = ["pe-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "pe-activate-campaign"
+title = "Activate Peru campaign and verify tracking"
+description = "Publish Shopify PE listing, activate Meta Ads campaign, verify Pixel events, confirm Yape + PagoEfectivo gateways live. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["pe-configure-pricing", "pe-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Leg 7: Ecuador -----------------------------------------------------------
+
+[[legs]]
+id = "leg-ec"
+title = "Ecuador Launch"
+
+[[legs.steps]]
+id = "ec-localize-listing"
+title = "Localize listing for Ecuador — {{product_name}}"
+description = "Translate {{base_copy}} to Ecuadorian Spanish. Adapt for Shopify EC storefront. Note: Ecuador uses USD (dollarized economy) so price display is simplified."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ec-configure-pricing"
+title = "Configure USD pricing with De Una for {{product_name}}"
+description = "Set price in USD (no conversion — dollarized economy). Apply 15% IVA buffer. Configure De Una mobile payment and bank transfer options."
+skill = "shopify-manage"
+needs = ["ec-localize-listing"]
+type = "polecat"
+timeout = 180
+
+[[legs.steps]]
+id = "ec-create-ads"
+title = "Create Meta Ads for Ecuador — {{product_name}}"
+description = "Generate EC-localized ad creatives. Target Quito + Guayaquil metros. Set {{daily_budget_per_country}} USD daily budget. Test WhatsApp CTA vs website CTA."
+skill = "meta-ads-manage"
+needs = ["ec-localize-listing"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ec-activate-campaign"
+title = "Activate Ecuador campaign and verify tracking"
+description = "Publish Shopify EC listing, activate Meta Ads campaign, verify Pixel events, confirm De Una gateway live. Send launch confirmation."
+skill = "meta-ads-manage"
+needs = ["ec-configure-pricing", "ec-create-ads"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# --- Synthesis: Consolidated Launch Report ------------------------------------
+
+[synthesis]
+id = "consolidated-launch-report"
+title = "Consolidate multi-country launch results for {{product_name}}"
+description = "Aggregate results from all 7 country legs: campaigns activated, budgets allocated (7 x {{daily_budget_per_country}} USD/day), pricing configured per currency, listings published. Generate unified launch report with per-country status, total daily spend, projected ROAS by market, and next-steps recommendations for scaling winners."
+skill = "data-analyze"
+needs = []
+type = "crew"
+timeout = 600

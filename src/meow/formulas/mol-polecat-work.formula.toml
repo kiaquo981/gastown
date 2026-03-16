@@ -1,0 +1,132 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# mol-polecat-work — Polecat Work Formula (EP-038)
+#
+# The canonical 10-step workflow for any polecat doing code work.
+# Each polecat instance runs one copy of this molecule.
+#
+# Gas Town: "Polecats are disposable. They spawn, work, PR, and die."
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[formula]
+name = "mol-polecat-work"
+description = "Standard polecat workflow: load context → implement → review → PR → cleanup"
+version = 1
+type = "workflow"
+
+[vars]
+[vars.bead_id]
+description = "The bead being worked on"
+required = true
+
+[vars.skill]
+description = "The skill to execute for implementation"
+required = true
+
+[vars.branch]
+description = "Git branch name for the worktree"
+required = false
+default = "feature/{{bead_id}}-{{skill}}"
+
+[vars.rig]
+description = "Target rig/project"
+required = false
+default = "orchestrator"
+
+[vars.tier]
+description = "Required agent tier (S/A/B)"
+required = false
+default = "B"
+
+# ─── Step 1: Load Context ─────────────────────────────────────────────────────
+[[steps]]
+id = "load-context"
+title = "Load bead context and requirements for {{bead_id}}"
+skill = "builtin:read-bead"
+needs = []
+type = "polecat"
+timeout = 60
+
+# ─── Step 2: Branch Setup ─────────────────────────────────────────────────────
+[[steps]]
+id = "branch-setup"
+title = "Create worktree and branch {{branch}}"
+skill = "builtin:git-worktree"
+needs = ["load-context"]
+type = "polecat"
+timeout = 120
+
+# ─── Step 3: Implement ────────────────────────────────────────────────────────
+[[steps]]
+id = "implement"
+title = "Execute skill {{skill}} for bead {{bead_id}}"
+skill = "{{skill}}"
+needs = ["branch-setup"]
+type = "polecat"
+timeout = 1800
+retries = 2
+
+# ─── Step 4: Self-Review ──────────────────────────────────────────────────────
+[[steps]]
+id = "self-review"
+title = "Self-review implementation against bead criteria"
+skill = "builtin:self-review"
+needs = ["implement"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 5: Quality Gates ────────────────────────────────────────────────────
+[[steps]]
+id = "quality-gates"
+title = "Run lint, typecheck, and tests"
+skill = "builtin:quality-gates"
+needs = ["self-review"]
+type = "polecat"
+timeout = 600
+retries = 1
+
+# ─── Step 6: Commit Changes ───────────────────────────────────────────────────
+[[steps]]
+id = "commit-changes"
+title = "Stage and commit changes for bead {{bead_id}}"
+skill = "builtin:git-commit"
+needs = ["quality-gates"]
+type = "polecat"
+timeout = 60
+
+# ─── Step 7: Pre-Verify ───────────────────────────────────────────────────────
+[[steps]]
+id = "pre-verify"
+title = "Final verification before PR submission"
+skill = "builtin:pre-verify"
+needs = ["commit-changes"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 8: Submit MR ────────────────────────────────────────────────────────
+[[steps]]
+id = "submit-mr"
+title = "Create pull request for bead {{bead_id}}"
+skill = "builtin:create-pr"
+needs = ["pre-verify"]
+type = "polecat"
+timeout = 120
+gate = "test-pass"
+
+# ─── Step 9: Await Verdict ────────────────────────────────────────────────────
+[[steps]]
+id = "await-verdict"
+title = "Wait for PR review and CI verdict"
+skill = "builtin:await-review"
+needs = ["submit-mr"]
+type = "polecat"
+timeout = 7200
+gate = "human-approval"
+
+# ─── Step 10: Cleanup ─────────────────────────────────────────────────────────
+[[steps]]
+id = "cleanup"
+title = "Remove worktree, update bead status, release polecat"
+skill = "builtin:cleanup-worktree"
+needs = ["await-verdict"]
+type = "polecat"
+timeout = 60

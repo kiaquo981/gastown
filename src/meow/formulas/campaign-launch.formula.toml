@@ -1,0 +1,190 @@
+# ===============================================================================
+# campaign-launch — Full Campaign Launch Pipeline (LP-007)
+#
+# Maps to DropOps 13 stages: from product research through launch and monitoring.
+# The core revenue-generating workflow for DropGlobal operations.
+#
+# "Every campaign is a molecule. Every step earns its place or gets cut."
+# ===============================================================================
+
+[formula]
+name = "campaign-launch"
+description = "End-to-end campaign launch: product research, copy, creatives, LP, audience, budget, launch, and monitoring"
+version = 1
+type = "workflow"
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+
+[vars]
+
+[vars.product_url]
+description = "Source URL for the product (AliExpress, supplier page, etc.)"
+required = true
+
+[vars.target_country]
+description = "ISO 2-letter country code for the target market"
+required = true
+
+[vars.daily_budget]
+description = "Daily ad budget in USD"
+required = true
+default = "50"
+
+[vars.product_name]
+description = "Human-readable product name for copy and creatives"
+required = true
+
+[vars.niche]
+description = "Product niche/vertical for audience targeting"
+required = false
+default = "general"
+
+# ─── Step 1: Product Research ─────────────────────────────────────────────────
+
+[[steps]]
+id = "product-research"
+title = "Scrape and analyze product data for {{product_name}}"
+description = "Extract pricing, images, specs, reviews, and competitor listings from {{product_url}}"
+skill = "web-scrape"
+needs = []
+type = "polecat"
+timeout = 300
+retries = 2
+
+# ─── Step 2: Market Analysis ─────────────────────────────────────────────────
+
+[[steps]]
+id = "market-analysis"
+title = "Analyze market demand and competition in {{target_country}}"
+description = "Evaluate search volume, competitor ad density, CPA benchmarks, and saturation for {{niche}} in {{target_country}}"
+skill = "data-analyze"
+needs = ["product-research"]
+type = "polecat"
+timeout = 300
+retries = 1
+
+# ─── Step 3: Copy Generation ─────────────────────────────────────────────────
+
+[[steps]]
+id = "copy-generation"
+title = "Generate ad copy and sales angles for {{product_name}}"
+description = "Produce 5 hook variations, primary text, headlines, and descriptions using Schwartz awareness levels and Halbert framework"
+skill = "content-generate"
+needs = ["market-analysis"]
+type = "crew"
+timeout = 600
+retries = 2
+
+# ─── Step 4: Creative Brief ──────────────────────────────────────────────────
+
+[[steps]]
+id = "creative-brief"
+title = "Assemble creative brief for {{product_name}} campaign"
+description = "Compile product images, copy angles, brand guidelines, and format specs into a unified creative brief"
+skill = "content-generate"
+needs = ["copy-generation", "product-research"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 5: Creative Generation ─────────────────────────────────────────────
+
+[[steps]]
+id = "creative-generation"
+title = "Generate ad creatives (static + video) from brief"
+description = "Produce 3 static images and 2 short-form video ads using FLUX/Fal.ai pipeline based on creative brief"
+skill = "content-generate"
+needs = ["creative-brief"]
+type = "crew"
+timeout = 900
+retries = 2
+
+# ─── Step 6: Landing Page ────────────────────────────────────────────────────
+
+[[steps]]
+id = "landing-page"
+title = "Build and deploy landing page for {{product_name}}"
+description = "Assemble single-file HTML landing page with countdown timer, payment by country, and hero imagery. Deploy to Shopify or HiveDrive."
+skill = "deploy-lp"
+needs = ["creative-brief", "copy-generation"]
+type = "polecat"
+timeout = 600
+retries = 1
+
+# ─── Step 7: Campaign Structure ──────────────────────────────────────────────
+
+[[steps]]
+id = "campaign-structure"
+title = "Define Meta Ads campaign structure for {{target_country}}"
+description = "Build CBO/ABO structure with ad sets, placement configuration, and creative assignment per format"
+skill = "meta-ads-manage"
+needs = ["creative-generation", "landing-page"]
+type = "crew"
+timeout = 300
+
+# ─── Step 8: Audience Targeting ───────────────────────────────────────────────
+
+[[steps]]
+id = "audience-targeting"
+title = "Configure audience targeting for {{niche}} in {{target_country}}"
+description = "Build interest stacks, lookalike seeds, exclusion lists, and broad targeting sets based on market analysis"
+skill = "data-analyze"
+needs = ["market-analysis", "campaign-structure"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 9: Budget Allocation ───────────────────────────────────────────────
+
+[[steps]]
+id = "budget-allocation"
+title = "Allocate {{daily_budget}} USD across ad sets"
+description = "Distribute daily budget proportionally across ad sets using CPA projections and historical ROAS data"
+skill = "data-analyze"
+needs = ["audience-targeting"]
+type = "polecat"
+timeout = 120
+
+# ─── Step 10: Launch Checklist ────────────────────────────────────────────────
+
+[[steps]]
+id = "launch-checklist"
+title = "Run pre-launch checklist for {{product_name}} campaign"
+description = "Verify pixel installation, LP load time, payment flow, ad policy compliance, UTM parameters, and tracking setup"
+skill = "data-analyze"
+needs = ["budget-allocation", "landing-page"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 11: Review Gate ────────────────────────────────────────────────────
+
+[[steps]]
+id = "review-gate"
+title = "Human review of complete campaign package"
+description = "Present campaign summary (copy, creatives, LP, structure, budget) for operator approval before launch"
+skill = "content-generate"
+needs = ["launch-checklist"]
+type = "polecat"
+timeout = 86400
+gate = "human-approval"
+
+# ─── Step 12: Launch ─────────────────────────────────────────────────────────
+
+[[steps]]
+id = "launch"
+title = "Push campaign live on Meta Ads for {{target_country}}"
+description = "Submit campaign to Meta Ads API, activate ad sets, and confirm delivery start. Record campaign ID for monitoring."
+skill = "meta-ads-manage"
+needs = ["review-gate"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Step 13: Monitor ────────────────────────────────────────────────────────
+
+[[steps]]
+id = "monitor"
+title = "Monitor first 24h performance for {{product_name}}"
+description = "Track spend, impressions, CTR, CPA, ROAS every 15 minutes. Pause underperformers, scale winners. Send WhatsApp alert on anomalies."
+skill = "data-analyze"
+needs = ["launch"]
+type = "crew"
+timeout = 86400

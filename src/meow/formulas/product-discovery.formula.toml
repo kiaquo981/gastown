@@ -1,0 +1,124 @@
+# ===============================================================================
+# product-discovery — Product Discovery & Validation Pipeline (LP-009)
+#
+# Automated product hunting: from trend detection to Shopify-ready listing.
+# The Garimpeiro agent's primary molecule.
+#
+# "Find the gold before the crowd. Validate before you spend."
+# ===============================================================================
+
+[formula]
+name = "product-discovery"
+description = "Product discovery pipeline: trend scraping, demand validation, pricing, supplier match, margin calc, Shopify draft, and quality check"
+version = 1
+type = "workflow"
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+
+[vars]
+
+[vars.niche]
+description = "Product niche to prospect: beauty, tech, home, fitness, pet, fashion, outdoor"
+required = true
+
+[vars.target_countries]
+description = "Comma-separated ISO country codes for demand validation"
+required = true
+default = "AR,BR,MX"
+
+[vars.min_margin_pct]
+description = "Minimum profit margin percentage after all costs"
+required = false
+default = "40"
+
+[vars.source_platform]
+description = "Source platform for product sourcing: aliexpress, cjdropshipping, 1688, dropi"
+required = false
+default = "aliexpress"
+
+[vars.max_price_usd]
+description = "Maximum product cost in USD from supplier"
+required = false
+default = "30"
+
+# ─── Step 1: Trend Scraping ──────────────────────────────────────────────────
+
+[[steps]]
+id = "trend-scraping"
+title = "Scrape trending products in {{niche}} from multiple sources"
+description = "Crawl TikTok trending products, AliExpress top sellers, Meta Ad Library for high-impression creatives, and Google Trends for {{niche}} keywords. Return top 20 candidate products with engagement metrics."
+skill = "web-scrape"
+needs = []
+type = "polecat"
+timeout = 600
+retries = 2
+
+# ─── Step 2: Demand Validation ───────────────────────────────────────────────
+
+[[steps]]
+id = "demand-validation"
+title = "Validate demand for top candidates in {{target_countries}}"
+description = "Cross-reference candidates with Google Trends, Mercado Libre search volume, and existing competitor ad spend in {{target_countries}}. Score each product 1-100 on demand viability."
+skill = "data-analyze"
+needs = ["trend-scraping"]
+type = "polecat"
+timeout = 600
+retries = 1
+
+# ─── Step 3: Price Analysis ──────────────────────────────────────────────────
+
+[[steps]]
+id = "price-analysis"
+title = "Analyze pricing landscape for validated products"
+description = "Compare supplier prices across {{source_platform}}, local competitor pricing in {{target_countries}}, and perceived value ranges. Identify optimal price point per country."
+skill = "data-analyze"
+needs = ["demand-validation"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 4: Supplier Match ──────────────────────────────────────────────────
+
+[[steps]]
+id = "supplier-match"
+title = "Find best suppliers on {{source_platform}}"
+description = "Match top products to suppliers with rating >4.5, processing time <3 days, ePacket/YANWEN shipping available, and cost under {{max_price_usd}} USD. Rank by reliability score."
+skill = "web-scrape"
+needs = ["price-analysis"]
+type = "polecat"
+timeout = 600
+retries = 2
+
+# ─── Step 5: Margin Calculator ───────────────────────────────────────────────
+
+[[steps]]
+id = "margin-calculator"
+title = "Calculate margins with {{min_margin_pct}}% minimum threshold"
+description = "Compute landed cost (product + shipping + customs + payment gateway fee), target sale price, CPA estimate, and projected ROAS for each country. Filter out products below {{min_margin_pct}}% net margin."
+skill = "data-analyze"
+needs = ["supplier-match", "price-analysis"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 6: Shopify Draft ───────────────────────────────────────────────────
+
+[[steps]]
+id = "shopify-draft"
+title = "Create Shopify draft listings for winning products"
+description = "Generate SEO-optimized title, description, variant pricing per country, product images (background removed), and tags. Push as draft product to Shopify store."
+skill = "shopify-manage"
+needs = ["margin-calculator"]
+type = "crew"
+timeout = 600
+retries = 1
+
+# ─── Step 7: Quality Check ───────────────────────────────────────────────────
+
+[[steps]]
+id = "quality-check"
+title = "Final quality check on discovered products"
+description = "Review all products against criteria: margin >{{min_margin_pct}}%, demand score >60, supplier reliability >4.5, no trademark issues, not saturated. Generate discovery report with GO/NO-GO per product."
+skill = "data-analyze"
+needs = ["shopify-draft"]
+type = "polecat"
+timeout = 300
+gate = "human-approval"

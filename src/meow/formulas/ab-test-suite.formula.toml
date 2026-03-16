@@ -1,0 +1,228 @@
+# ===============================================================================
+# ab-test-suite — A/B Test Suite with Statistical Winner Selection (LP-035)
+#
+# Type: convoy — 4 parallel legs (one per variant), synthesis selects winner.
+# Each leg runs a 4-step pipeline: create variant, launch test, monitor, collect.
+# The synthesis performs statistical analysis and scales the winner.
+#
+# Gate: human-approval required before scaling the winning variant.
+#
+# "Four variants enter. One variant scales. Statistics decide."
+# ===============================================================================
+
+[formula]
+name = "ab-test-suite"
+description = "A/B testing convoy with 4 parallel variants (control + 3 alternatives). Each variant is created, launched, monitored for 72h, and metrics collected. Synthesis performs statistical winner selection with confidence intervals, then scales the winner and pauses losers."
+version = 1
+type = "convoy"
+
+# --- Variables ----------------------------------------------------------------
+
+[vars]
+
+[vars.product_id]
+description = "Shopify product ID being tested"
+required = true
+
+[vars.test_budget_usd]
+description = "Total test budget in USD split across all 4 variants"
+required = true
+
+[vars.test_duration_hours]
+description = "Test duration in hours before collecting final metrics"
+required = false
+default = "72"
+
+[vars.min_confidence_pct]
+description = "Minimum statistical confidence percentage to declare a winner (e.g. 95)"
+required = false
+default = "95"
+
+[vars.metric_to_optimize]
+description = "Primary metric for winner selection: cpa, roas, ctr, or conversion_rate"
+required = false
+default = "cpa"
+
+# --- Leg A: Control (Original) ------------------------------------------------
+
+[[legs]]
+id = "leg-variant-a"
+title = "Variant A — Control (Original)"
+
+[[legs.steps]]
+id = "va-create-variant"
+title = "Create control variant A for product {{product_id}}"
+description = "Set up the control variant using the existing live ad creative and copy. Duplicate current campaign structure as baseline. Tag all assets with variant_id=A for tracking."
+skill = "meta-ads-manage"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "va-launch-test"
+title = "Launch control variant A into test"
+description = "Activate variant A campaign with budget = {{test_budget_usd}} / 4 USD. Set audience split to 25% of target. Configure conversion tracking with variant_id=A UTM parameter. Verify Pixel fires correctly."
+skill = "meta-ads-manage"
+needs = ["va-create-variant"]
+type = "crew"
+timeout = 300
+retries = 2
+
+[[legs.steps]]
+id = "va-monitor"
+title = "Monitor variant A for {{test_duration_hours}} hours"
+description = "Track variant A performance every 4 hours: impressions, clicks, CTR, conversions, CPA, ROAS. Flag anomalies (CTR <0.5% or CPA >3x average). Pause if daily spend exceeds 150% of budget allocation."
+skill = "data-analyze"
+needs = ["va-launch-test"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "va-collect-metrics"
+title = "Collect final metrics for variant A"
+description = "Pull final performance data after {{test_duration_hours}} hours: total spend, impressions, clicks, CTR, conversions, CPA, ROAS, conversion rate, frequency, CPM. Compute per-metric confidence intervals. Export as structured JSON."
+skill = "data-analyze"
+needs = ["va-monitor"]
+type = "polecat"
+timeout = 180
+
+# --- Leg B: Alternative Copy --------------------------------------------------
+
+[[legs]]
+id = "leg-variant-b"
+title = "Variant B — Alternative Copy"
+
+[[legs.steps]]
+id = "vb-create-variant"
+title = "Create alternative copy variant B for product {{product_id}}"
+description = "Generate an alternative ad copy variant: different headline angle, rewritten body text, alternate CTA phrasing. Keep the same creative/image as control to isolate copy impact. Tag assets with variant_id=B."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "vb-launch-test"
+title = "Launch copy variant B into test"
+description = "Activate variant B campaign with budget = {{test_budget_usd}} / 4 USD. Set audience split to 25% of target (non-overlapping with A). Configure conversion tracking with variant_id=B UTM parameter."
+skill = "meta-ads-manage"
+needs = ["vb-create-variant"]
+type = "crew"
+timeout = 300
+retries = 2
+
+[[legs.steps]]
+id = "vb-monitor"
+title = "Monitor variant B for {{test_duration_hours}} hours"
+description = "Track variant B performance every 4 hours: impressions, clicks, CTR, conversions, CPA, ROAS. Flag anomalies (CTR <0.5% or CPA >3x average). Pause if daily spend exceeds 150% of budget allocation."
+skill = "data-analyze"
+needs = ["vb-launch-test"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "vb-collect-metrics"
+title = "Collect final metrics for variant B"
+description = "Pull final performance data after {{test_duration_hours}} hours: total spend, impressions, clicks, CTR, conversions, CPA, ROAS, conversion rate, frequency, CPM. Compute per-metric confidence intervals. Export as structured JSON."
+skill = "data-analyze"
+needs = ["vb-monitor"]
+type = "polecat"
+timeout = 180
+
+# --- Leg C: Alternative Creative ----------------------------------------------
+
+[[legs]]
+id = "leg-variant-c"
+title = "Variant C — Alternative Creative"
+
+[[legs.steps]]
+id = "vc-create-variant"
+title = "Create alternative creative variant C for product {{product_id}}"
+description = "Generate an alternative visual creative variant: different image/video, new layout, alternate color treatment. Keep the same copy as control to isolate creative impact. Tag assets with variant_id=C."
+skill = "content-generate"
+needs = []
+type = "polecat"
+timeout = 600
+
+[[legs.steps]]
+id = "vc-launch-test"
+title = "Launch creative variant C into test"
+description = "Activate variant C campaign with budget = {{test_budget_usd}} / 4 USD. Set audience split to 25% of target (non-overlapping with A/B). Configure conversion tracking with variant_id=C UTM parameter."
+skill = "meta-ads-manage"
+needs = ["vc-create-variant"]
+type = "crew"
+timeout = 300
+retries = 2
+
+[[legs.steps]]
+id = "vc-monitor"
+title = "Monitor variant C for {{test_duration_hours}} hours"
+description = "Track variant C performance every 4 hours: impressions, clicks, CTR, conversions, CPA, ROAS. Flag anomalies (CTR <0.5% or CPA >3x average). Pause if daily spend exceeds 150% of budget allocation."
+skill = "data-analyze"
+needs = ["vc-launch-test"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "vc-collect-metrics"
+title = "Collect final metrics for variant C"
+description = "Pull final performance data after {{test_duration_hours}} hours: total spend, impressions, clicks, CTR, conversions, CPA, ROAS, conversion rate, frequency, CPM. Compute per-metric confidence intervals. Export as structured JSON."
+skill = "data-analyze"
+needs = ["vc-monitor"]
+type = "polecat"
+timeout = 180
+
+# --- Leg D: Alternative Audience ----------------------------------------------
+
+[[legs]]
+id = "leg-variant-d"
+title = "Variant D — Alternative Audience"
+
+[[legs.steps]]
+id = "vd-create-variant"
+title = "Create alternative audience variant D for product {{product_id}}"
+description = "Define an alternative audience targeting variant: different age range, interests, lookalike seed, or geographic focus. Keep the same copy and creative as control to isolate audience impact. Tag assets with variant_id=D."
+skill = "meta-ads-manage"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "vd-launch-test"
+title = "Launch audience variant D into test"
+description = "Activate variant D campaign with budget = {{test_budget_usd}} / 4 USD. Target the alternative audience segment (non-overlapping with A/B/C). Configure conversion tracking with variant_id=D UTM parameter."
+skill = "meta-ads-manage"
+needs = ["vd-create-variant"]
+type = "crew"
+timeout = 300
+retries = 2
+
+[[legs.steps]]
+id = "vd-monitor"
+title = "Monitor variant D for {{test_duration_hours}} hours"
+description = "Track variant D performance every 4 hours: impressions, clicks, CTR, conversions, CPA, ROAS. Flag anomalies (CTR <0.5% or CPA >3x average). Pause if daily spend exceeds 150% of budget allocation."
+skill = "data-analyze"
+needs = ["vd-launch-test"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "vd-collect-metrics"
+title = "Collect final metrics for variant D"
+description = "Pull final performance data after {{test_duration_hours}} hours: total spend, impressions, clicks, CTR, conversions, CPA, ROAS, conversion rate, frequency, CPM. Compute per-metric confidence intervals. Export as structured JSON."
+skill = "data-analyze"
+needs = ["vd-monitor"]
+type = "polecat"
+timeout = 180
+
+# --- Synthesis: Winner Selection & Scaling ------------------------------------
+
+[synthesis]
+id = "winner-selection"
+title = "Statistical winner analysis and scaling decision for {{product_id}}"
+description = "Aggregate metrics from all 4 variants (A/B/C/D). Perform statistical analysis: (1) Compare {{metric_to_optimize}} across variants using two-proportion z-test. (2) Calculate {{min_confidence_pct}}% confidence intervals for each variant. (3) Determine if a statistically significant winner exists. (4) If winner found: prepare scaling plan (3x budget, broader audience). (5) If inconclusive: recommend extending test duration or increasing sample size. Generate winner report with: per-variant metrics table, p-values, confidence intervals, winner recommendation, and scaling action plan."
+skill = "data-analyze"
+needs = []
+type = "crew"
+gate = "human-approval"
+timeout = 600

@@ -1,0 +1,416 @@
+# ===============================================================================
+# country-expansion — Multi-Country Expansion Convoy (LP-010)
+#
+# Type: convoy — parallel legs per country, synthesis at the end.
+# Each leg runs the same 5-step localization pipeline independently.
+# The convoy aggregates results into a consolidated expansion report.
+#
+# "One product, seven countries, one molecule. The convoy delivers."
+# ===============================================================================
+
+[formula]
+name = "country-expansion"
+description = "Multi-country expansion convoy: parallel market research, copy localization, pricing, shipping, and ad launch per country"
+version = 1
+type = "convoy"
+
+# ─── Variables ────────────────────────────────────────────────────────────────
+
+[vars]
+
+[vars.product_id]
+description = "Shopify product ID to expand across countries"
+required = true
+
+[vars.base_copy]
+description = "Base ad copy in source language to localize"
+required = true
+
+[vars.base_price_usd]
+description = "Base product price in USD before country adjustments"
+required = true
+
+[vars.shipping_strategy]
+description = "Shipping strategy: standard, express, local-warehouse, dropi-fulfillment"
+required = false
+default = "standard"
+
+[vars.daily_budget_per_country]
+description = "Daily ad budget per country in USD"
+required = false
+default = "30"
+
+# ─── Leg 1: Argentina ────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-ar"
+title = "Argentina Expansion"
+
+[[legs.steps]]
+id = "ar-market-research"
+title = "Research Argentine market for product {{product_id}}"
+description = "Analyze Argentine demand, competitor landscape, Mercado Libre pricing, customs duties, and payment preferences (3/6 cuotas, Rapipago)"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ar-localize-copy"
+title = "Localize copy for Argentine Spanish (voseo)"
+description = "Translate and culturally adapt base copy to Argentine Spanish. Use voseo, local slang, and ARS pricing. Adjust hooks for local pain points."
+skill = "content-generate"
+needs = ["ar-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ar-adjust-pricing"
+title = "Set Argentine pricing with cuotas and ARS conversion"
+description = "Calculate ARS price with 30% PAIS tax buffer, configure 3/6 cuotas pricing, set Mercado Pago as primary gateway"
+skill = "data-analyze"
+needs = ["ar-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "ar-configure-shipping"
+title = "Configure shipping zones and rates for Argentina"
+description = "Set up Correo Argentino / OCA rates, configure CABA same-day option, set interior zone surcharges using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["ar-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "ar-launch-ads"
+title = "Launch Meta Ads campaign targeting Argentina"
+description = "Create campaign with AR-localized copy, {{daily_budget_per_country}} USD daily budget, interest targeting for Argentine audience"
+skill = "meta-ads-manage"
+needs = ["ar-localize-copy", "ar-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Leg 2: Brazil ───────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-br"
+title = "Brazil Expansion"
+
+[[legs.steps]]
+id = "br-market-research"
+title = "Research Brazilian market for product {{product_id}}"
+description = "Analyze Brazilian demand via Google Trends, Shopee/Mercado Livre competition, import taxes (60% ICMS), PIX adoption rates"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "br-localize-copy"
+title = "Localize copy for Brazilian Portuguese"
+description = "Translate and culturally adapt copy to pt-BR. Adjust idioms, use Brazilian humor style, reference local holidays and pain points."
+skill = "content-generate"
+needs = ["br-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "br-adjust-pricing"
+title = "Set Brazilian pricing with PIX discount and BRL conversion"
+description = "Calculate BRL price with import duty buffer, configure PIX 10% discount, set boleto and credit card installment options"
+skill = "data-analyze"
+needs = ["br-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "br-configure-shipping"
+title = "Configure shipping for Brazil (Correios + transportadoras)"
+description = "Set up Correios PAC/SEDEX rates, configure Jadlog/Total Express for interior, handle free-shipping-over threshold using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["br-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "br-launch-ads"
+title = "Launch Meta Ads campaign targeting Brazil"
+description = "Create campaign with pt-BR copy, {{daily_budget_per_country}} USD daily budget, Brazilian audience targeting and placement optimization"
+skill = "meta-ads-manage"
+needs = ["br-localize-copy", "br-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Leg 3: Mexico ───────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-mx"
+title = "Mexico Expansion"
+
+[[legs.steps]]
+id = "mx-market-research"
+title = "Research Mexican market for product {{product_id}}"
+description = "Analyze Mexican demand, Amazon MX competition, customs (16% IVA), OXXO/SPEI payment preferences"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "mx-localize-copy"
+title = "Localize copy for Mexican Spanish"
+description = "Adapt copy to Mexican Spanish dialect, local expressions, MXN pricing, and culturally relevant references"
+skill = "content-generate"
+needs = ["mx-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "mx-adjust-pricing"
+title = "Set Mexican pricing with OXXO and MXN conversion"
+description = "Calculate MXN price with IVA buffer, configure OXXO cash payment, MSI (meses sin intereses) credit options"
+skill = "data-analyze"
+needs = ["mx-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "mx-configure-shipping"
+title = "Configure shipping for Mexico (Estafeta + DHL)"
+description = "Set up Estafeta ground and DHL Express rates, configure CDMX same-day option, handle interior zone pricing using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["mx-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "mx-launch-ads"
+title = "Launch Meta Ads campaign targeting Mexico"
+description = "Create campaign with MX-localized copy, {{daily_budget_per_country}} USD daily budget, Mexican audience targeting"
+skill = "meta-ads-manage"
+needs = ["mx-localize-copy", "mx-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Leg 4: Colombia ─────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-co"
+title = "Colombia Expansion"
+
+[[legs.steps]]
+id = "co-market-research"
+title = "Research Colombian market for product {{product_id}}"
+description = "Analyze Colombian e-commerce landscape, Falabella/Linio competition, IVA (19%), Efecty/PSE payment methods"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "co-localize-copy"
+title = "Localize copy for Colombian Spanish"
+description = "Adapt copy to Colombian Spanish with local idioms, COP pricing, and references to local consumer behavior"
+skill = "content-generate"
+needs = ["co-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "co-adjust-pricing"
+title = "Set Colombian pricing with COP conversion"
+description = "Calculate COP price with 19% IVA, configure PSE bank transfer and Efecty cash payment options"
+skill = "data-analyze"
+needs = ["co-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "co-configure-shipping"
+title = "Configure shipping for Colombia (Servientrega + Coordinadora)"
+description = "Set up Servientrega and Coordinadora rates, configure Bogota metro area fast delivery using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["co-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "co-launch-ads"
+title = "Launch Meta Ads campaign targeting Colombia"
+description = "Create campaign with CO-localized copy, {{daily_budget_per_country}} USD daily budget, Colombian audience targeting"
+skill = "meta-ads-manage"
+needs = ["co-localize-copy", "co-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Leg 5: Chile ────────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-cl"
+title = "Chile Expansion"
+
+[[legs.steps]]
+id = "cl-market-research"
+title = "Research Chilean market for product {{product_id}}"
+description = "Analyze Chilean demand, Falabella/Ripley competition, IVA (19%), Webpay/Transbank payment ecosystem"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "cl-localize-copy"
+title = "Localize copy for Chilean Spanish"
+description = "Adapt copy to Chilean Spanish with local expressions, CLP pricing, and references to Chilean consumer preferences"
+skill = "content-generate"
+needs = ["cl-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "cl-adjust-pricing"
+title = "Set Chilean pricing with CLP conversion"
+description = "Calculate CLP price with 19% IVA, configure Webpay credit card and Servipag cash payment options"
+skill = "data-analyze"
+needs = ["cl-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "cl-configure-shipping"
+title = "Configure shipping for Chile (Chilexpress + Starken)"
+description = "Set up Chilexpress and Starken rates, configure Santiago metro express option using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["cl-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "cl-launch-ads"
+title = "Launch Meta Ads campaign targeting Chile"
+description = "Create campaign with CL-localized copy, {{daily_budget_per_country}} USD daily budget, Chilean audience targeting"
+skill = "meta-ads-manage"
+needs = ["cl-localize-copy", "cl-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Leg 6: Peru ─────────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-pe"
+title = "Peru Expansion"
+
+[[legs.steps]]
+id = "pe-market-research"
+title = "Research Peruvian market for product {{product_id}}"
+description = "Analyze Peruvian demand, Saga Falabella competition, IGV (18%), Yape/PagoEfectivo payment adoption"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "pe-localize-copy"
+title = "Localize copy for Peruvian Spanish"
+description = "Adapt copy to Peruvian Spanish with local idioms, PEN pricing, and Lima-centric consumer references"
+skill = "content-generate"
+needs = ["pe-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "pe-adjust-pricing"
+title = "Set Peruvian pricing with PEN conversion"
+description = "Calculate PEN price with 18% IGV, configure Yape mobile payment and PagoEfectivo cash options"
+skill = "data-analyze"
+needs = ["pe-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "pe-configure-shipping"
+title = "Configure shipping for Peru (Olva Courier + Shalom)"
+description = "Set up Olva Courier and Shalom rates, configure Lima metro delivery zone using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["pe-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "pe-launch-ads"
+title = "Launch Meta Ads campaign targeting Peru"
+description = "Create campaign with PE-localized copy, {{daily_budget_per_country}} USD daily budget, Peruvian audience targeting"
+skill = "meta-ads-manage"
+needs = ["pe-localize-copy", "pe-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Leg 7: Ecuador ──────────────────────────────────────────────────────────
+
+[[legs]]
+id = "leg-ec"
+title = "Ecuador Expansion"
+
+[[legs.steps]]
+id = "ec-market-research"
+title = "Research Ecuadorian market for product {{product_id}}"
+description = "Analyze Ecuadorian demand, dollarized economy advantages, IVA (15%), De Una/Payphone payment methods"
+skill = "data-analyze"
+needs = []
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ec-localize-copy"
+title = "Localize copy for Ecuadorian Spanish"
+description = "Adapt copy to Ecuadorian Spanish, USD pricing (dollarized economy), and local consumer references"
+skill = "content-generate"
+needs = ["ec-market-research"]
+type = "polecat"
+timeout = 300
+
+[[legs.steps]]
+id = "ec-adjust-pricing"
+title = "Set Ecuadorian pricing in USD"
+description = "Set price in USD (no conversion needed — dollarized), apply 15% IVA buffer, configure De Una and bank transfer options"
+skill = "data-analyze"
+needs = ["ec-market-research"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "ec-configure-shipping"
+title = "Configure shipping for Ecuador (Servientrega EC + Tramaco)"
+description = "Set up Servientrega Ecuador and Tramaco Express rates, configure Quito/Guayaquil metro zones using {{shipping_strategy}}"
+skill = "shopify-manage"
+needs = ["ec-adjust-pricing"]
+type = "polecat"
+timeout = 120
+
+[[legs.steps]]
+id = "ec-launch-ads"
+title = "Launch Meta Ads campaign targeting Ecuador"
+description = "Create campaign with EC-localized copy, {{daily_budget_per_country}} USD daily budget, Ecuadorian audience targeting"
+skill = "meta-ads-manage"
+needs = ["ec-localize-copy", "ec-configure-shipping"]
+type = "crew"
+timeout = 300
+retries = 2
+
+# ─── Synthesis: Consolidated Report ──────────────────────────────────────────
+
+[synthesis]
+id = "consolidated-report"
+title = "Consolidate multi-country expansion results"
+description = "Aggregate results from all 7 country legs: campaigns launched, budgets allocated, pricing set, shipping configured. Generate unified expansion report with per-country KPIs and recommendations."
+skill = "data-analyze"
+needs = []
+type = "crew"
+timeout = 600
