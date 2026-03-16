@@ -493,8 +493,8 @@ export class AtlasCountryInjector {
     // Check BU
     if (bead.bu) {
       const buCountryMap: Record<string, CountryCode> = {
-        droplatam: 'MX',
-        dropglobal: 'BR',
+        regional: 'MX',
+        'ecom-global': 'BR',
         'drop-ar': 'AR',
         'drop-mx': 'MX',
         'drop-co': 'CO',

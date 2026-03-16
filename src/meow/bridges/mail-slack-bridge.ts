@@ -257,7 +257,7 @@ export class SlackDiscordBridge {
             ...(mail.beadId ? [{ name: 'Bead', value: mail.beadId, inline: true }] : []),
           ],
           timestamp: new Date().toISOString(),
-          footer: { text: 'HIVE Ecosystem - MEOW Mail Bridge' },
+          footer: { text: 'Gas Town - MEOW Mail Bridge' },
         },
       ],
     };

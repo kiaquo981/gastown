@@ -89,10 +89,10 @@ export interface Bead {
   status: BeadStatus;
   priority: BeadPriority;
 
-  // HIVE-specific labels
+  // Gas Town labels
   executorType: ExecutorType;
-  bu?: string;                      // Business unit: dropglobal, droplatam, case
-  rig?: string;                     // App/project: orchestrator, hive-os
+  bu?: string;                      // Business unit: ecommerce, content, platform
+  rig?: string;                     // App/project: gastown-app, gastown-platform
   skill?: string;                   // Skill to execute (skill.toml name)
   formula?: string;                 // Parent molecule/formula
   tier?: 'S' | 'A' | 'B';         // Required agent tier
@@ -182,7 +182,7 @@ export interface WorkerIdentity {
   tier: 'S' | 'A' | 'B';
   model: 'opus' | 'sonnet' | 'haiku';
   capabilities: Capability[];
-  agentDefId?: string;              // Links to DropGlobalAgentDef or similar
+  agentDefId?: string;              // Links to agent definition
 
   // Polecat-specific
   worktree?: string;
@@ -203,7 +203,7 @@ export interface WorkerIdentity {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface BUContext {
-  bu: string;                       // e.g. "dropglobal"
+  bu: string;                       // e.g. "ecommerce"
   country?: string;                 // e.g. "BR"
   vertical?: string;                // e.g. "ecommerce"
   configPath: string;               // Path to context.md

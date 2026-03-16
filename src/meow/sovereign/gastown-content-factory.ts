@@ -2,7 +2,7 @@
  * GAS TOWN CONTENT FACTORY INSTANCE -- SG-007 (Stage 06 Wave 2)
  *
  * Dedicated Gas Town instance for content production.
- * Shared service across DropLatam + DropGlobal — serves both.
+ * Shared service across regional + global instances — serves both.
  *
  * Features:
  *   - Content types: video (short/long), carousel, static images, UGC, copy
@@ -70,7 +70,7 @@ export interface ContentWorker {
 export interface ContentRequest {
   id: string;
   requesterId: string;           // instance id requesting content
-  requesterType: 'droplatam' | 'dropglobal' | 'internal';
+  requesterType: 'regional' | 'ecom-global' | 'internal';
   contentType: ContentType;
   priority: ContentPriority;
   status: ContentStatus;

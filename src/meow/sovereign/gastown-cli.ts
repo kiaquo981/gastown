@@ -142,7 +142,7 @@ const COMMAND_HELP: Record<CliCommandName, CommandHelp> = {
     examples: [
       'workers list',
       'workers list --tier S',
-      'workers detail ag-dropglobal-01',
+      'workers detail ag-ecom-01',
       'workers --status active',
     ],
     flags: [
@@ -223,7 +223,7 @@ const COMMAND_HELP: Record<CliCommandName, CommandHelp> = {
     command: 'seance',
     description: 'Recover context from a dead/terminated session',
     usage: 'seance <session-id> [--requested-by NAME]',
-    examples: ['seance gt-hive-os-nux', 'seance sess-abc123 --requested-by mayor'],
+    examples: ['seance gt-gastown-app-nux', 'seance sess-abc123 --requested-by mayor'],
     flags: [{ flag: '--requested-by', description: 'Who requested the seance', default: 'system' }],
   },
   handoff: {

@@ -418,7 +418,7 @@ export class CrisisMode {
     callerToken?: string,
   ): Promise<CrisisEvent> {
     // CRIT-02: Validate caller authorization before allowing crisis trigger
-    const requiredToken = process.env.MEOW_CRISIS_TOKEN || process.env.HIVE_API_KEY;
+    const requiredToken = process.env.MEOW_CRISIS_TOKEN || process.env.GASTOWN_API_KEY;
     if (requiredToken && callerToken !== requiredToken) {
       log.error({ type, hasToken: !!callerToken }, 'Unauthorized crisis trigger attempt — missing or invalid callerToken');
       throw new Error('Unauthorized: valid callerToken required to trigger crisis mode');

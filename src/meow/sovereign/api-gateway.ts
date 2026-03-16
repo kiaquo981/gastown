@@ -7,7 +7,7 @@
  *
  * Features:
  *   - Endpoints: create beads, trigger formulas, query status, list workers, get metrics
- *   - Authentication: API key based (X-HIVE-API-KEY header), rate limited per key
+ *   - Authentication: API key based (X-GASTOWN-API-KEY header), rate limited per key
  *   - Rate limiting: configurable per endpoint (default: 100 req/min)
  *   - Request validation: JSON schema validation for all inputs
  *   - Response format: consistent envelope { ok, data?, error? }

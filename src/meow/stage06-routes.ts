@@ -3,14 +3,14 @@
  *
  * Full REST API for all 29 sovereign modules across 7 groups:
  * - GROUP 1: Entity Integration (SG-001–004) — Moros, Atlas, Nous, Council
- * - GROUP 2: Multi-Instance (SG-005–008) — DropLatam, DropGlobal, ContentFactory, Federation
+ * - GROUP 2: Multi-Instance (SG-005–008) — Ecom Latam, Ecom Global, ContentFactory, Federation
  * - GROUP 3: 24/7 Autonomy (SG-009–012) — Circadian, Scheduler, Crisis, Maintenance
  * - GROUP 4: Evolution (SG-013–016) — Marketplace, SkillEvolution, Specialization, Genesis
  * - GROUP 5: Persistent Identity (SG-017–020) — Memory, Chronicle, Journal, Reputation
  * - GROUP 6: External Interface (SG-021–024) — ApiGateway, CLI, Webhooks, AutoReports
  * - GROUP 7: Resilience (SG-025–028) — Snapshots, Degradation, Failover, Chaos
  *
- * Auth: GET is public, mutations require HIVE_API_KEY
+ * Auth: GET is public, mutations require GASTOWN_API_KEY
  * Imports: Lazy (await import()) for all sovereign modules
  */
 
@@ -19,13 +19,13 @@ import { Router, Request, Response, NextFunction } from 'express';
 const router = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Auth middleware — GET is public, mutations require HIVE_API_KEY
+// Auth middleware — GET is public, mutations require GASTOWN_API_KEY
 // ─────────────────────────────────────────────────────────────────────────────
 
 function requireApiKey(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET') return next();
   const key = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
-  if (!key || key !== process.env.HIVE_API_KEY) {
+  if (!key || key !== process.env.GASTOWN_API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
@@ -593,8 +593,8 @@ router.post('/api/meow/sovereign/entities/council/config', async (req: Request, 
 //
 //  GROUP 2: MULTI-INSTANCE — /api/meow/sovereign/instances/*
 //
-//  SG-005: GasTown DropLatam (country metrics, workers, budget)
-//  SG-006: GasTown DropGlobal (campaigns, market metrics, workers)
+//  SG-005: GasTown Ecom Latam (country metrics, workers, budget)
+//  SG-006: GasTown Ecom Global (campaigns, market metrics, workers)
 //  SG-007: GasTown Content Factory (content generation, quality, capacity)
 //  SG-008: GasTown Federation (instances, mail, resources, knowledge, conflicts)
 //
@@ -603,13 +603,13 @@ router.post('/api/meow/sovereign/entities/council/config', async (req: Request, 
 // ── Status overview ──────────────────────────────────────────────────────────
 router.get('/api/meow/sovereign/instances/status', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const { getGasTownContentFactory } = await import('./sovereign/gastown-content-factory');
     const { getGasTownFederation } = await import('./sovereign/gastown-federation');
     res.json({
-      droplatam: getGasTownDropLatam().getStatus(),
-      dropglobal: getGasTownDropGlobal().getStatus(),
+      ecomLatam: getGasTownEcomLatam().getStatus(),
+      ecomGlobal: getGasTownEcomGlobal().getStatus(),
       contentFactory: getGasTownContentFactory().getStatus(),
       federation: { instances: getGasTownFederation().getInstances() },
     });
@@ -619,55 +619,55 @@ router.get('/api/meow/sovereign/instances/status', async (_req: Request, res: Re
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GASTOWN DROPLATAM — /api/meow/sovereign/instances/droplatam/*
+// GASTOWN ECOM-LATAM — /api/meow/sovereign/instances/ecom-latam/*
 // ─────────────────────────────────────────────────────────────────────────────
 
-// GET /api/meow/sovereign/instances/droplatam/status — Instance status
-router.get('/api/meow/sovereign/instances/droplatam/status', async (_req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-latam/status — Instance status
+router.get('/api/meow/sovereign/instances/ecom-latam/status', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    res.json(getGasTownDropLatam().getStatus());
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    res.json(getGasTownEcomLatam().getStatus());
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/droplatam/workers — Available workers
-router.get('/api/meow/sovereign/instances/droplatam/workers', async (req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-latam/workers — Available workers
+router.get('/api/meow/sovereign/instances/ecom-latam/workers', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
     const spec = req.query.specialization as any;
-    res.json({ workers: getGasTownDropLatam().getAvailableWorkers(spec) });
+    res.json({ workers: getGasTownEcomLatam().getAvailableWorkers(spec) });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/droplatam/budget — Budget status
-router.get('/api/meow/sovereign/instances/droplatam/budget', async (_req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-latam/budget — Budget status
+router.get('/api/meow/sovereign/instances/ecom-latam/budget', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    res.json(getGasTownDropLatam().getBudget());
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    res.json(getGasTownEcomLatam().getBudget());
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/droplatam/countries — All country metrics
-router.get('/api/meow/sovereign/instances/droplatam/countries', async (_req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-latam/countries — All country metrics
+router.get('/api/meow/sovereign/instances/ecom-latam/countries', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    res.json({ countries: getGasTownDropLatam().getAllCountryMetrics() });
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    res.json({ countries: getGasTownEcomLatam().getAllCountryMetrics() });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/droplatam/countries/:country — Country metrics
-router.get('/api/meow/sovereign/instances/droplatam/countries/:country', async (req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-latam/countries/:country — Country metrics
+router.get('/api/meow/sovereign/instances/ecom-latam/countries/:country', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const metrics = getGasTownDropLatam().getCountryMetrics(req.params.country as any);
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const metrics = getGasTownEcomLatam().getCountryMetrics(req.params.country as any);
     if (!metrics) return res.status(404).json({ error: 'Country metrics not found' });
     res.json(metrics);
   } catch (err) {
@@ -675,163 +675,163 @@ router.get('/api/meow/sovereign/instances/droplatam/countries/:country', async (
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/start — Start instance
-router.post('/api/meow/sovereign/instances/droplatam/start', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/start — Start instance
+router.post('/api/meow/sovereign/instances/ecom-latam/start', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    await getGasTownDropLatam().start();
-    res.json({ ok: true, message: 'DropLatam instance started' });
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    await getGasTownEcomLatam().start();
+    res.json({ ok: true, message: 'Ecom Latam instance started' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/stop — Stop instance
-router.post('/api/meow/sovereign/instances/droplatam/stop', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/stop — Stop instance
+router.post('/api/meow/sovereign/instances/ecom-latam/stop', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    await getGasTownDropLatam().stop();
-    res.json({ ok: true, message: 'DropLatam instance stopped' });
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    await getGasTownEcomLatam().stop();
+    res.json({ ok: true, message: 'Ecom Latam instance stopped' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/pause — Pause instance
-router.post('/api/meow/sovereign/instances/droplatam/pause', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/pause — Pause instance
+router.post('/api/meow/sovereign/instances/ecom-latam/pause', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    getGasTownDropLatam().pause();
-    res.json({ ok: true, message: 'DropLatam instance paused' });
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    getGasTownEcomLatam().pause();
+    res.json({ ok: true, message: 'Ecom Latam instance paused' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/resume — Resume instance
-router.post('/api/meow/sovereign/instances/droplatam/resume', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/resume — Resume instance
+router.post('/api/meow/sovereign/instances/ecom-latam/resume', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    getGasTownDropLatam().resume();
-    res.json({ ok: true, message: 'DropLatam instance resumed' });
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    getGasTownEcomLatam().resume();
+    res.json({ ok: true, message: 'Ecom Latam instance resumed' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/provision — Provision workers
-router.post('/api/meow/sovereign/instances/droplatam/provision', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/provision — Provision workers
+router.post('/api/meow/sovereign/instances/ecom-latam/provision', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const result = getGasTownDropLatam().provisionWorkers();
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const result = getGasTownEcomLatam().provisionWorkers();
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/workers — Add worker
-router.post('/api/meow/sovereign/instances/droplatam/workers', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/workers — Add worker
+router.post('/api/meow/sovereign/instances/ecom-latam/workers', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const result = getGasTownDropLatam().addWorker(req.body);
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const result = getGasTownEcomLatam().addWorker(req.body);
     res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// DELETE /api/meow/sovereign/instances/droplatam/workers/:id — Remove worker
-router.delete('/api/meow/sovereign/instances/droplatam/workers/:id', async (req: Request, res: Response) => {
+// DELETE /api/meow/sovereign/instances/ecom-latam/workers/:id — Remove worker
+router.delete('/api/meow/sovereign/instances/ecom-latam/workers/:id', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const result = getGasTownDropLatam().removeWorker(req.params.id);
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const result = getGasTownEcomLatam().removeWorker(req.params.id);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/workers/:id/borrow — Borrow worker
-router.post('/api/meow/sovereign/instances/droplatam/workers/:id/borrow', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/workers/:id/borrow — Borrow worker
+router.post('/api/meow/sovereign/instances/ecom-latam/workers/:id/borrow', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
     const { sourceInstance } = req.body;
     if (!sourceInstance) return res.status(400).json({ error: 'sourceInstance required' });
-    const result = getGasTownDropLatam().borrowWorker(req.params.id, sourceInstance);
+    const result = getGasTownEcomLatam().borrowWorker(req.params.id, sourceInstance);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/workers/:id/return — Return borrowed worker
-router.post('/api/meow/sovereign/instances/droplatam/workers/:id/return', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/workers/:id/return — Return borrowed worker
+router.post('/api/meow/sovereign/instances/ecom-latam/workers/:id/return', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const result = getGasTownDropLatam().returnBorrowedWorker(req.params.id);
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const result = getGasTownEcomLatam().returnBorrowedWorker(req.params.id);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/molecules/:id/register — Register molecule
-router.post('/api/meow/sovereign/instances/droplatam/molecules/:id/register', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/molecules/:id/register — Register molecule
+router.post('/api/meow/sovereign/instances/ecom-latam/molecules/:id/register', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
     const { formulaName } = req.body;
     if (!formulaName) return res.status(400).json({ error: 'formulaName required' });
-    const result = getGasTownDropLatam().registerMolecule(req.params.id, formulaName);
+    const result = getGasTownEcomLatam().registerMolecule(req.params.id, formulaName);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/molecules/:id/complete — Complete molecule
-router.post('/api/meow/sovereign/instances/droplatam/molecules/:id/complete', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/molecules/:id/complete — Complete molecule
+router.post('/api/meow/sovereign/instances/ecom-latam/molecules/:id/complete', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
     const { success } = req.body;
-    const result = getGasTownDropLatam().completeMolecule(req.params.id, success !== false);
+    const result = getGasTownEcomLatam().completeMolecule(req.params.id, success !== false);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/countries/:country/metrics — Update country metrics
-router.post('/api/meow/sovereign/instances/droplatam/countries/:country/metrics', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/countries/:country/metrics — Update country metrics
+router.post('/api/meow/sovereign/instances/ecom-latam/countries/:country/metrics', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const result = getGasTownDropLatam().updateCountryMetrics(req.params.country as any, req.body);
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const result = getGasTownEcomLatam().updateCountryMetrics(req.params.country as any, req.body);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/spend — Record spend
-router.post('/api/meow/sovereign/instances/droplatam/spend', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/spend — Record spend
+router.post('/api/meow/sovereign/instances/ecom-latam/spend', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
     const { amount, country, category } = req.body;
     if (amount === undefined) return res.status(400).json({ error: 'amount required' });
-    const result = getGasTownDropLatam().recordSpend(amount, country, category);
+    const result = getGasTownEcomLatam().recordSpend(amount, country, category);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/droplatam/budget/check — Check budget
-router.post('/api/meow/sovereign/instances/droplatam/budget/check', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-latam/budget/check — Check budget
+router.post('/api/meow/sovereign/instances/ecom-latam/budget/check', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
     const { estimatedCostUsd } = req.body;
     if (estimatedCostUsd === undefined) return res.status(400).json({ error: 'estimatedCostUsd required' });
-    const result = getGasTownDropLatam().checkBudget(estimatedCostUsd);
+    const result = getGasTownEcomLatam().checkBudget(estimatedCostUsd);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -839,213 +839,213 @@ router.post('/api/meow/sovereign/instances/droplatam/budget/check', async (req: 
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GASTOWN DROPGLOBAL — /api/meow/sovereign/instances/dropglobal/*
+// GASTOWN ECOM-GLOBAL — /api/meow/sovereign/instances/ecom-global/*
 // ─────────────────────────────────────────────────────────────────────────────
 
-// GET /api/meow/sovereign/instances/dropglobal/status — Instance status
-router.get('/api/meow/sovereign/instances/dropglobal/status', async (_req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-global/status — Instance status
+router.get('/api/meow/sovereign/instances/ecom-global/status', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    res.json(getGasTownDropGlobal().getStatus());
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    res.json(getGasTownEcomGlobal().getStatus());
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/dropglobal/workers — Available workers
-router.get('/api/meow/sovereign/instances/dropglobal/workers', async (req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-global/workers — Available workers
+router.get('/api/meow/sovereign/instances/ecom-global/workers', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const spec = req.query.specialization as any;
-    res.json({ workers: getGasTownDropGlobal().getAvailableWorkers(spec) });
+    res.json({ workers: getGasTownEcomGlobal().getAvailableWorkers(spec) });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/dropglobal/campaigns/active — Active campaigns
-router.get('/api/meow/sovereign/instances/dropglobal/campaigns/active', async (_req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-global/campaigns/active — Active campaigns
+router.get('/api/meow/sovereign/instances/ecom-global/campaigns/active', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    res.json({ campaigns: getGasTownDropGlobal().getActiveCampaigns() });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    res.json({ campaigns: getGasTownEcomGlobal().getActiveCampaigns() });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/dropglobal/campaigns/by-platform/:platform — By platform
-router.get('/api/meow/sovereign/instances/dropglobal/campaigns/by-platform/:platform', async (req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-global/campaigns/by-platform/:platform — By platform
+router.get('/api/meow/sovereign/instances/ecom-global/campaigns/by-platform/:platform', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    res.json({ campaigns: getGasTownDropGlobal().getCampaignsByPlatform(req.params.platform as any) });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    res.json({ campaigns: getGasTownEcomGlobal().getCampaignsByPlatform(req.params.platform as any) });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// GET /api/meow/sovereign/instances/dropglobal/campaigns/by-market/:market — By market
-router.get('/api/meow/sovereign/instances/dropglobal/campaigns/by-market/:market', async (req: Request, res: Response) => {
+// GET /api/meow/sovereign/instances/ecom-global/campaigns/by-market/:market — By market
+router.get('/api/meow/sovereign/instances/ecom-global/campaigns/by-market/:market', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    res.json({ campaigns: getGasTownDropGlobal().getCampaignsByMarket(req.params.market as any) });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    res.json({ campaigns: getGasTownEcomGlobal().getCampaignsByMarket(req.params.market as any) });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/start — Start instance
-router.post('/api/meow/sovereign/instances/dropglobal/start', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/start — Start instance
+router.post('/api/meow/sovereign/instances/ecom-global/start', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    await getGasTownDropGlobal().start();
-    res.json({ ok: true, message: 'DropGlobal instance started' });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    await getGasTownEcomGlobal().start();
+    res.json({ ok: true, message: 'Ecom Global instance started' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/stop — Stop instance
-router.post('/api/meow/sovereign/instances/dropglobal/stop', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/stop — Stop instance
+router.post('/api/meow/sovereign/instances/ecom-global/stop', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    await getGasTownDropGlobal().stop();
-    res.json({ ok: true, message: 'DropGlobal instance stopped' });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    await getGasTownEcomGlobal().stop();
+    res.json({ ok: true, message: 'Ecom Global instance stopped' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/pause — Pause instance
-router.post('/api/meow/sovereign/instances/dropglobal/pause', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/pause — Pause instance
+router.post('/api/meow/sovereign/instances/ecom-global/pause', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    getGasTownDropGlobal().pause();
-    res.json({ ok: true, message: 'DropGlobal instance paused' });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    getGasTownEcomGlobal().pause();
+    res.json({ ok: true, message: 'Ecom Global instance paused' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/resume — Resume instance
-router.post('/api/meow/sovereign/instances/dropglobal/resume', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/resume — Resume instance
+router.post('/api/meow/sovereign/instances/ecom-global/resume', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    getGasTownDropGlobal().resume();
-    res.json({ ok: true, message: 'DropGlobal instance resumed' });
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    getGasTownEcomGlobal().resume();
+    res.json({ ok: true, message: 'Ecom Global instance resumed' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/provision — Provision workers
-router.post('/api/meow/sovereign/instances/dropglobal/provision', async (_req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/provision — Provision workers
+router.post('/api/meow/sovereign/instances/ecom-global/provision', async (_req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().provisionWorkers();
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().provisionWorkers();
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/workers — Add worker
-router.post('/api/meow/sovereign/instances/dropglobal/workers', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/workers — Add worker
+router.post('/api/meow/sovereign/instances/ecom-global/workers', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().addWorker(req.body);
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().addWorker(req.body);
     res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// DELETE /api/meow/sovereign/instances/dropglobal/workers/:id — Remove worker
-router.delete('/api/meow/sovereign/instances/dropglobal/workers/:id', async (req: Request, res: Response) => {
+// DELETE /api/meow/sovereign/instances/ecom-global/workers/:id — Remove worker
+router.delete('/api/meow/sovereign/instances/ecom-global/workers/:id', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().removeWorker(req.params.id);
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().removeWorker(req.params.id);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/workers/:id/borrow — Borrow worker
-router.post('/api/meow/sovereign/instances/dropglobal/workers/:id/borrow', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/workers/:id/borrow — Borrow worker
+router.post('/api/meow/sovereign/instances/ecom-global/workers/:id/borrow', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const { sourceInstance } = req.body;
     if (!sourceInstance) return res.status(400).json({ error: 'sourceInstance required' });
-    const result = getGasTownDropGlobal().borrowWorker(req.params.id, sourceInstance);
+    const result = getGasTownEcomGlobal().borrowWorker(req.params.id, sourceInstance);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/workers/:id/return — Return borrowed worker
-router.post('/api/meow/sovereign/instances/dropglobal/workers/:id/return', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/workers/:id/return — Return borrowed worker
+router.post('/api/meow/sovereign/instances/ecom-global/workers/:id/return', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().returnBorrowedWorker(req.params.id);
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().returnBorrowedWorker(req.params.id);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/campaigns — Register campaign
-router.post('/api/meow/sovereign/instances/dropglobal/campaigns', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/campaigns — Register campaign
+router.post('/api/meow/sovereign/instances/ecom-global/campaigns', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().registerCampaign(req.body);
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().registerCampaign(req.body);
     res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/campaigns/:id/performance — Update campaign performance
-router.post('/api/meow/sovereign/instances/dropglobal/campaigns/:id/performance', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/campaigns/:id/performance — Update campaign performance
+router.post('/api/meow/sovereign/instances/ecom-global/campaigns/:id/performance', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().updateCampaignPerformance(req.params.id, req.body);
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().updateCampaignPerformance(req.params.id, req.body);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/molecules/:id/register — Register molecule
-router.post('/api/meow/sovereign/instances/dropglobal/molecules/:id/register', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/molecules/:id/register — Register molecule
+router.post('/api/meow/sovereign/instances/ecom-global/molecules/:id/register', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const { formulaName } = req.body;
     if (!formulaName) return res.status(400).json({ error: 'formulaName required' });
-    const result = getGasTownDropGlobal().registerMolecule(req.params.id, formulaName);
+    const result = getGasTownEcomGlobal().registerMolecule(req.params.id, formulaName);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/molecules/:id/complete — Complete molecule
-router.post('/api/meow/sovereign/instances/dropglobal/molecules/:id/complete', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/molecules/:id/complete — Complete molecule
+router.post('/api/meow/sovereign/instances/ecom-global/molecules/:id/complete', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const { success } = req.body;
-    const result = getGasTownDropGlobal().completeMolecule(req.params.id, success !== false);
+    const result = getGasTownEcomGlobal().completeMolecule(req.params.id, success !== false);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// POST /api/meow/sovereign/instances/dropglobal/markets/:market/metrics — Update market metrics
-router.post('/api/meow/sovereign/instances/dropglobal/markets/:market/metrics', async (req: Request, res: Response) => {
+// POST /api/meow/sovereign/instances/ecom-global/markets/:market/metrics — Update market metrics
+router.post('/api/meow/sovereign/instances/ecom-global/markets/:market/metrics', async (req: Request, res: Response) => {
   try {
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
-    const result = getGasTownDropGlobal().updateMarketMetrics(req.params.market as any, req.body);
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
+    const result = getGasTownEcomGlobal().updateMarketMetrics(req.params.market as any, req.body);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
@@ -4321,7 +4321,7 @@ router.get('/api/meow/stage06/status', (_req: Request, res: Response) => {
     },
     instances: {
       prefix: '/api/meow/sovereign/instances',
-      modules: ['droplatam', 'dropglobal', 'content-factory', 'federation'],
+      modules: ['ecom-latam', 'ecom-global', 'content-factory', 'federation'],
       endpoints: 'status, start/stop/pause/resume, workers, budget, campaigns, molecules, countries/markets, mail, resources, knowledge, conflicts',
     },
     autonomy: {

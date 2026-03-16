@@ -1,8 +1,8 @@
 /**
  * LP-003 — Crew-Agent Bridge (Real Execution Engine)
  *
- * Bridge between MEOW Crew members and existing HIVE agents.
- * Maps crew member IDs to HIVE agent definitions from the agents store.
+ * Bridge between MEOW Crew members and existing Gas Town agents.
+ * Maps crew member IDs to Gas Town agent definitions from the agents store.
  * Maintains session context per crew member (persisted to Supabase).
  */
 
@@ -27,7 +27,7 @@ export interface CrewAgentContext {
   knowledge: string[];
   tier: 'S' | 'A' | 'B';
   model: string;
-  /** Additional metadata from the HIVE agent definition */
+  /** Additional metadata from the Gas Town agent definition */
   metadata: Record<string, unknown>;
 }
 
@@ -69,7 +69,7 @@ const crewSessions = new Map<string, CrewSession>();
 
 /**
  * Extract tier from an agent definition.
- * HIVE agents have a `tier` field or we infer from model name.
+ * Gas Town agents have a `tier` field or we infer from model name.
  */
 function resolveAgentTier(agentDef: Record<string, unknown>): 'S' | 'A' | 'B' {
   const tier = agentDef.tier as string | undefined;
@@ -83,7 +83,7 @@ function resolveAgentTier(agentDef: Record<string, unknown>): 'S' | 'A' | 'B' {
 
 /**
  * Extract system prompt from an agent definition.
- * HIVE agents can have `systemPrompt`, `prompt`, `instructions`, etc.
+ * Gas Town agents can have `systemPrompt`, `prompt`, `instructions`, etc.
  */
 function resolveSystemPrompt(agentDef: Record<string, unknown>): string {
   return (
@@ -124,7 +124,7 @@ function resolveKnowledge(agentDef: Record<string, unknown>): string[] {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Get the HIVE agent context for a crew member.
+ * Get the Gas Town agent context for a crew member.
  * Looks up the crew member's linked agentDefId and loads the full agent definition.
  */
 export function getCrewAgentContext(crewId: string): CrewAgentContext | null {
@@ -161,7 +161,7 @@ export function getCrewAgentContext(crewId: string): CrewAgentContext | null {
   }
 
   if (!agentDef || !agentId) {
-    log.warn({ crewId }, 'No matching HIVE agent found for crew member');
+    log.warn({ crewId }, 'No matching Gas Town agent found for crew member');
     return null;
   }
 
@@ -195,14 +195,14 @@ export function getCrewAgentContext(crewId: string): CrewAgentContext | null {
 }
 
 /**
- * Sync all crew members with their HIVE agent counterparts.
+ * Sync all crew members with their Gas Town agent counterparts.
  * Returns a report of all mappings found.
  */
 export function syncCrewWithAgents(): Array<CrewMapping> {
   const mappings: CrewMapping[] = [];
   const agentEntries = Array.from(agents.entries());
 
-  log.info({ agentCount: agentEntries.length }, 'Syncing crew with HIVE agents');
+  log.info({ agentCount: agentEntries.length }, 'Syncing crew with Gas Town agents');
 
   for (const [agentId, def] of agentEntries) {
     const agentDef = def as unknown as Record<string, unknown>;
@@ -228,7 +228,7 @@ export function syncCrewWithAgents(): Array<CrewMapping> {
   broadcast('meow:feed', {
     type: 'system_health',
     source: 'crew-agent-bridge',
-    message: `Synced ${mappings.length} crew members with HIVE agents (from ${agentEntries.length} agents)`,
+    message: `Synced ${mappings.length} crew members with Gas Town agents (from ${agentEntries.length} agents)`,
     severity: 'info',
     timestamp: new Date(),
   });

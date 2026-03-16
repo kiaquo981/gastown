@@ -49,7 +49,7 @@ const DEFAULT_CONFIG: CrewManagerConfig = {
   maxCrewSize: 10,
 };
 
-// Pre-registered crew mapped to existing HIVE entities
+// Pre-registered crew mapped to existing Gas Town entities
 const DEFAULT_CREW: Array<{ id: string; name: string; tier: WorkerIdentity['tier']; model: WorkerIdentity['model']; agentDefId: string }> = [
   { id: 'crew-moros',       name: 'MOROS',       tier: 'S', model: 'opus',   agentDefId: 'mayor-moros' },
   { id: 'crew-nous',        name: 'NOUS',        tier: 'S', model: 'opus',   agentDefId: 'nous-entity' },

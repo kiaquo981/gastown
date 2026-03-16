@@ -1,7 +1,7 @@
 /**
- * GAS TOWN DROPGLOBAL INSTANCE -- SG-006 (Stage 06 Wave 2)
+ * GAS TOWN ECOMMERCE ADAPTER -- SG-006 (Stage 06 Wave 2)
  *
- * Dedicated Gas Town instance for DropGlobal operations.
+ * Dedicated Gas Town instance for global ecommerce operations.
  * Manages brand-focused ecommerce across EU + US markets.
  *
  * Features:
@@ -10,7 +10,7 @@
  *   - Multi-platform ads: Meta, Google, TikTok
  *   - Own worker pool: specialized in brand ops, creative, ads management
  *   - Own formula set: brand-launch, multi-platform-campaign, content-batch, performance-audit
- *   - Budget isolation: separate from DropLatam
+ *   - Budget isolation: separate from regional instance
  *   - Metrics: ROAS, CPA, brand awareness, customer LTV, per-platform breakdown
  *   - Instance config: platforms, budgets, worker specializations
  *
@@ -23,7 +23,7 @@ import { getPool } from '../../db/client';
 import { broadcast } from '../../sse';
 import { createLogger } from '../../lib/logger';
 
-const log = createLogger('gastown-dropglobal');
+const log = createLogger('gastown-ecommerce-adapter');
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,7 +33,7 @@ export type GlobalMarket = 'ES' | 'PT' | 'US' | 'UK' | 'DE' | 'FR';
 
 export type AdsPlatform = 'meta' | 'google' | 'tiktok';
 
-export type DropGlobalFormulaName =
+export type EcomGlobalFormulaName =
   | 'brand-launch'
   | 'multi-platform-campaign'
   | 'content-batch'
@@ -99,7 +99,7 @@ export interface MarketMetrics {
   updatedAt: Date;
 }
 
-export interface DropGlobalBudget {
+export interface EcomGlobalBudget {
   id: string;
   monthlyLimitUsd: number;
   spentUsd: number;
@@ -114,8 +114,8 @@ export interface DropGlobalBudget {
   updatedAt: Date;
 }
 
-export interface DropGlobalInstanceConfig {
-  defaultFormulas: DropGlobalFormulaName[];
+export interface EcomGlobalInstanceConfig {
+  defaultFormulas: EcomGlobalFormulaName[];
   workerAllocation: Partial<Record<GlobalWorkerSpec, number>>;
   budgetLimitUsd: number;
   marketPriorities: GlobalMarket[];
@@ -151,7 +151,7 @@ export interface InstanceEvent {
   createdAt: Date;
 }
 
-export interface DropGlobalStats {
+export interface EcomGlobalStats {
   status: InstanceStatus;
   totalWorkers: number;
   borrowedWorkers: number;
@@ -176,7 +176,7 @@ export interface DropGlobalStats {
 const GLOBAL_MARKETS: GlobalMarket[] = ['ES', 'PT', 'US', 'UK', 'DE', 'FR'];
 const ADS_PLATFORMS: AdsPlatform[] = ['meta', 'google', 'tiktok'];
 
-const DEFAULT_CONFIG: DropGlobalInstanceConfig = {
+const DEFAULT_CONFIG: EcomGlobalInstanceConfig = {
   defaultFormulas: ['brand-launch', 'multi-platform-campaign', 'content-batch', 'performance-audit'],
   workerAllocation: {
     'brand-strategist': 1,
@@ -197,7 +197,7 @@ const DEFAULT_CONFIG: DropGlobalInstanceConfig = {
   borrowSourceInstances: ['content-factory'],
 };
 
-const DEFAULT_FORMULAS: Record<DropGlobalFormulaName, {
+const DEFAULT_FORMULAS: Record<EcomGlobalFormulaName, {
   description: string;
   requiredSpecializations: GlobalWorkerSpec[];
   avgDurationMs: number;
@@ -280,30 +280,30 @@ async function callGemini(prompt: string): Promise<string | null> {
     const data = (await resp.json()) as { choices: Array<{ message: { content: string } }> };
     return data.choices?.[0]?.message?.content ?? null;
   } catch (err) {
-    log.warn({ err }, 'Gemini call failed in gastown-dropglobal');
+    log.warn({ err }, 'Gemini call failed in gastown-ecommerce-adapter');
     return null;
   }
 }
 
 // ---------------------------------------------------------------------------
-// GasTownDropGlobal
+// GasTownEcomGlobal
 // ---------------------------------------------------------------------------
 
-export class GasTownDropGlobal {
+export class GasTownEcomGlobal {
   readonly instanceId: string;
   private status: InstanceStatus = 'idle';
-  private config: DropGlobalInstanceConfig;
+  private config: EcomGlobalInstanceConfig;
   private workers = new Map<string, GlobalWorker>();
   private marketMetrics = new Map<GlobalMarket, MarketMetrics>();
   private campaigns = new Map<string, CampaignPerformance>();
-  private budget: DropGlobalBudget;
+  private budget: EcomGlobalBudget;
   private events: InstanceEvent[] = [];
   private activeMoleculeIds = new Set<string>();
   private formulaExecutions = new Map<string, number>();
   private upSince: Date;
 
-  constructor(config?: Partial<DropGlobalInstanceConfig>) {
-    this.instanceId = `dropglobal-${process.env.MEOW_INSTANCE_ID || os.hostname().slice(0, 8) || 'default'}`;
+  constructor(config?: Partial<EcomGlobalInstanceConfig>) {
+    this.instanceId = `ecom-global-${process.env.MEOW_INSTANCE_ID || os.hostname().slice(0, 8) || 'default'}`;
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.upSince = new Date();
 
@@ -344,7 +344,7 @@ export class GasTownDropGlobal {
       });
     }
 
-    log.info({ instanceId: this.instanceId, config: this.config }, 'DropGlobal instance created');
+    log.info({ instanceId: this.instanceId, config: this.config }, 'EcomGlobal instance created');
   }
 
   // --- Lifecycle -------------------------------------------------------------
@@ -361,14 +361,14 @@ export class GasTownDropGlobal {
     this.emitEvent('instance_started', { config: this.config });
 
     broadcast('meow:sovereign', {
-      type: 'dropglobal_started',
+      type: 'ecom_global_started',
       instanceId: this.instanceId,
       markets: GLOBAL_MARKETS,
       platforms: ADS_PLATFORMS,
       workerCount: this.workers.size,
     });
 
-    log.info({ instanceId: this.instanceId }, 'DropGlobal instance started');
+    log.info({ instanceId: this.instanceId }, 'EcomGlobal instance started');
   }
 
   async stop(): Promise<void> {
@@ -387,20 +387,20 @@ export class GasTownDropGlobal {
       drained: this.activeMoleculeIds.size === 0,
     });
 
-    broadcast('meow:sovereign', { type: 'dropglobal_stopped', instanceId: this.instanceId });
-    log.info({ instanceId: this.instanceId }, 'DropGlobal instance stopped');
+    broadcast('meow:sovereign', { type: 'ecom_global_stopped', instanceId: this.instanceId });
+    log.info({ instanceId: this.instanceId }, 'EcomGlobal instance stopped');
   }
 
   pause(): void {
     this.status = 'paused';
     this.emitEvent('instance_paused', {});
-    broadcast('meow:sovereign', { type: 'dropglobal_paused', instanceId: this.instanceId });
+    broadcast('meow:sovereign', { type: 'ecom_global_paused', instanceId: this.instanceId });
   }
 
   resume(): void {
     this.status = 'running';
     this.emitEvent('instance_resumed', {});
-    broadcast('meow:sovereign', { type: 'dropglobal_resumed', instanceId: this.instanceId });
+    broadcast('meow:sovereign', { type: 'ecom_global_resumed', instanceId: this.instanceId });
   }
 
   getStatus(): InstanceStatus {
@@ -432,7 +432,7 @@ export class GasTownDropGlobal {
       }
     }
 
-    log.info({ workerCount: this.workers.size }, 'Workers provisioned for DropGlobal');
+    log.info({ workerCount: this.workers.size }, 'Workers provisioned for EcomGlobal');
   }
 
   addWorker(worker: GlobalWorker): void {
@@ -470,7 +470,7 @@ export class GasTownDropGlobal {
     this.emitEvent('worker_borrowed', { workerId, sourceInstance });
 
     broadcast('meow:sovereign', {
-      type: 'dropglobal_worker_borrowed',
+      type: 'ecom_global_worker_borrowed',
       instanceId: this.instanceId,
       workerId,
       sourceInstance,
@@ -510,7 +510,7 @@ export class GasTownDropGlobal {
     this.emitEvent('campaign_registered', { campaignId: full.id, platform: full.platform, market: full.market });
 
     broadcast('meow:sovereign', {
-      type: 'dropglobal_campaign_registered',
+      type: 'ecom_global_campaign_registered',
       instanceId: this.instanceId,
       campaignId: full.id,
       platform: full.platform,
@@ -537,7 +537,7 @@ export class GasTownDropGlobal {
     // Check performance thresholds
     if (campaign.roas < this.config.targetRoas * 0.5 && campaign.spend > 50) {
       broadcast('meow:sovereign', {
-        type: 'dropglobal_campaign_underperforming',
+        type: 'ecom_global_campaign_underperforming',
         instanceId: this.instanceId,
         campaignId,
         roas: campaign.roas,
@@ -547,7 +547,7 @@ export class GasTownDropGlobal {
 
     if (campaign.cpa > this.config.maxCpa && campaign.conversions >= 3) {
       broadcast('meow:sovereign', {
-        type: 'dropglobal_campaign_high_cpa',
+        type: 'ecom_global_campaign_high_cpa',
         instanceId: this.instanceId,
         campaignId,
         cpa: campaign.cpa,
@@ -570,7 +570,7 @@ export class GasTownDropGlobal {
 
   // --- Molecule lifecycle ----------------------------------------------------
 
-  registerMolecule(moleculeId: string, formulaName: DropGlobalFormulaName): void {
+  registerMolecule(moleculeId: string, formulaName: EcomGlobalFormulaName): void {
     if (this.status !== 'running') return;
     if (this.activeMoleculeIds.size >= this.config.maxConcurrentMolecules) return;
 
@@ -580,7 +580,7 @@ export class GasTownDropGlobal {
     this.emitEvent('molecule_registered', { moleculeId, formulaName });
 
     broadcast('meow:sovereign', {
-      type: 'dropglobal_molecule_registered',
+      type: 'ecom_global_molecule_registered',
       instanceId: this.instanceId,
       moleculeId,
       formulaName,
@@ -609,7 +609,7 @@ export class GasTownDropGlobal {
     this.emitEvent('market_metrics_updated', { market, ...update });
 
     broadcast('meow:sovereign', {
-      type: 'dropglobal_market_updated',
+      type: 'ecom_global_market_updated',
       instanceId: this.instanceId,
       market,
       revenue: existing.totalRevenueUsd,
@@ -649,7 +649,7 @@ export class GasTownDropGlobal {
 
     if (this.budget.utilizationPct >= 90) {
       broadcast('meow:sovereign', {
-        type: 'dropglobal_budget_critical',
+        type: 'ecom_global_budget_critical',
         instanceId: this.instanceId,
         utilizationPct: Math.round(this.budget.utilizationPct * 10) / 10,
         spentUsd: Math.round(this.budget.spentUsd * 100) / 100,
@@ -672,7 +672,7 @@ export class GasTownDropGlobal {
     return { allowed: true };
   }
 
-  getBudget(): DropGlobalBudget {
+  getBudget(): EcomGlobalBudget {
     return { ...this.budget };
   }
 
@@ -758,25 +758,25 @@ Respond JSON: {"summary":"string","topPerformers":["string"],"underperformers":[
     return { ...DEFAULT_FORMULAS };
   }
 
-  getFormulaInfo(name: DropGlobalFormulaName): typeof DEFAULT_FORMULAS[DropGlobalFormulaName] | null {
+  getFormulaInfo(name: EcomGlobalFormulaName): typeof DEFAULT_FORMULAS[EcomGlobalFormulaName] | null {
     return DEFAULT_FORMULAS[name] ?? null;
   }
 
   // --- Config ----------------------------------------------------------------
 
-  getConfig(): DropGlobalInstanceConfig {
+  getConfig(): EcomGlobalInstanceConfig {
     return { ...this.config };
   }
 
-  updateConfig(updates: Partial<DropGlobalInstanceConfig>): void {
+  updateConfig(updates: Partial<EcomGlobalInstanceConfig>): void {
     this.config = { ...this.config, ...updates };
     this.emitEvent('config_updated', { updates });
-    log.info({ updates }, 'DropGlobal config updated');
+    log.info({ updates }, 'EcomGlobal config updated');
   }
 
   // --- Stats -----------------------------------------------------------------
 
-  getStats(): DropGlobalStats {
+  getStats(): EcomGlobalStats {
     const allMetrics = this.getAllMarketMetrics();
     const totalRevenue = allMetrics.reduce((s, m) => s + m.totalRevenueUsd, 0);
     const totalSpend = allMetrics.reduce((s, m) => s + m.totalSpendUsd, 0);
@@ -839,7 +839,7 @@ Respond JSON: {"summary":"string","topPerformers":["string"],"underperformers":[
                 avg_cpa, customer_ltv, brand_awareness_score, store_conversion_rate,
                 avg_order_value, repeat_customer_rate, active_campaigns, active_products,
                 updated_at
-         FROM meow_instance_dropglobal
+         FROM meow_instance_ecom_global
          WHERE instance_id = $1
          ORDER BY updated_at DESC
          LIMIT 20`,
@@ -868,9 +868,9 @@ Respond JSON: {"summary":"string","topPerformers":["string"],"underperformers":[
         }
       }
 
-      log.info({ instanceId: this.instanceId, loaded: rows.length }, 'DropGlobal state loaded from DB');
+      log.info({ instanceId: this.instanceId, loaded: rows.length }, 'EcomGlobal state loaded from DB');
     } catch (err) {
-      log.warn({ err }, 'Failed to load DropGlobal state from DB');
+      log.warn({ err }, 'Failed to load EcomGlobal state from DB');
     }
   }
 
@@ -881,7 +881,7 @@ Respond JSON: {"summary":"string","topPerformers":["string"],"underperformers":[
     for (const [market, metrics] of this.marketMetrics) {
       try {
         await pool.query(
-          `INSERT INTO meow_instance_dropglobal
+          `INSERT INTO meow_instance_ecom_global
             (id, instance_id, market, total_revenue_usd, total_spend_usd, blended_roas,
              avg_cpa, customer_ltv, brand_awareness_score, store_conversion_rate,
              avg_order_value, repeat_customer_rate, active_campaigns, active_products,
@@ -910,7 +910,7 @@ Respond JSON: {"summary":"string","topPerformers":["string"],"underperformers":[
           ],
         );
       } catch (err) {
-        log.warn({ err, market }, 'Failed to persist DropGlobal market metrics');
+        log.warn({ err, market }, 'Failed to persist EcomGlobal market metrics');
       }
     }
   }
@@ -937,14 +937,14 @@ Respond JSON: {"summary":"string","topPerformers":["string"],"underperformers":[
 // Singleton
 // ---------------------------------------------------------------------------
 
-let instance: GasTownDropGlobal | null = null;
+let instance: GasTownEcomGlobal | null = null;
 
-export function getGasTownDropGlobal(
-  config?: Partial<DropGlobalInstanceConfig>,
-): GasTownDropGlobal {
+export function getGasTownEcomGlobal(
+  config?: Partial<EcomGlobalInstanceConfig>,
+): GasTownEcomGlobal {
   if (!instance) {
-    instance = new GasTownDropGlobal(config);
-    log.info('GasTownDropGlobal singleton created');
+    instance = new GasTownEcomGlobal(config);
+    log.info('GasTownEcomGlobal singleton created');
   }
   return instance;
 }

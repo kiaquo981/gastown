@@ -1,7 +1,7 @@
 /**
- * GAS TOWN DROPLATAM INSTANCE -- SG-005 (Stage 06 Wave 2)
+ * GAS TOWN REGIONAL ADAPTER -- SG-005 (Stage 06 Wave 2)
  *
- * Dedicated Gas Town instance for DropLatam operations.
+ * Dedicated Gas Town instance for regional ecommerce operations.
  * Manages COD-focused ecommerce across 7 LATAM countries.
  *
  * Features:
@@ -23,7 +23,7 @@ import { getPool } from '../../db/client';
 import { broadcast } from '../../sse';
 import { createLogger } from '../../lib/logger';
 
-const log = createLogger('gastown-droplatam');
+const log = createLogger('gastown-regional-adapter');
 
 // ---------------------------------------------------------------------------
 // Types
@@ -31,7 +31,7 @@ const log = createLogger('gastown-droplatam');
 
 export type LatamCountry = 'AR' | 'BR' | 'MX' | 'CO' | 'CL' | 'PE' | 'EC';
 
-export type DropLatamFormulaName =
+export type RegionalFormulaName =
   | 'country-expansion'
   | 'fulfillment'
   | 'wa-funnel'
@@ -77,7 +77,7 @@ export interface CountryMetrics {
   updatedAt: Date;
 }
 
-export interface DropLatamBudget {
+export interface RegionalBudget {
   id: string;
   monthlyLimitUsd: number;
   spentUsd: number;
@@ -91,8 +91,8 @@ export interface DropLatamBudget {
   updatedAt: Date;
 }
 
-export interface DropLatamInstanceConfig {
-  defaultFormulas: DropLatamFormulaName[];
+export interface RegionalInstanceConfig {
+  defaultFormulas: RegionalFormulaName[];
   workerAllocation: Partial<Record<WorkerSpecialization, number>>;
   budgetLimitUsd: number;
   countryPriorities: LatamCountry[];
@@ -111,7 +111,7 @@ export interface InstanceEvent {
   createdAt: Date;
 }
 
-export interface DropLatamStats {
+export interface RegionalStats {
   status: InstanceStatus;
   totalWorkers: number;
   borrowedWorkers: number;
@@ -133,7 +133,7 @@ export interface DropLatamStats {
 
 const LATAM_COUNTRIES: LatamCountry[] = ['AR', 'BR', 'MX', 'CO', 'CL', 'PE', 'EC'];
 
-const DEFAULT_CONFIG: DropLatamInstanceConfig = {
+const DEFAULT_CONFIG: RegionalInstanceConfig = {
   defaultFormulas: ['country-expansion', 'fulfillment', 'wa-funnel', 'product-mining'],
   workerAllocation: {
     'product-research': 2,
@@ -153,7 +153,7 @@ const DEFAULT_CONFIG: DropLatamInstanceConfig = {
   borrowSourceInstances: ['content-factory'],
 };
 
-const DEFAULT_FORMULAS: Record<DropLatamFormulaName, {
+const DEFAULT_FORMULAS: Record<RegionalFormulaName, {
   description: string;
   requiredSpecializations: WorkerSpecialization[];
   avgDurationMs: number;
@@ -235,29 +235,29 @@ async function callGemini(prompt: string): Promise<string | null> {
     const data = (await resp.json()) as { choices: Array<{ message: { content: string } }> };
     return data.choices?.[0]?.message?.content ?? null;
   } catch (err) {
-    log.warn({ err }, 'Gemini call failed in gastown-droplatam');
+    log.warn({ err }, 'Gemini call failed in gastown-regional-adapter');
     return null;
   }
 }
 
 // ---------------------------------------------------------------------------
-// GasTownDropLatam
+// GasTownRegional
 // ---------------------------------------------------------------------------
 
-export class GasTownDropLatam {
+export class GasTownRegional {
   readonly instanceId: string;
   private status: InstanceStatus = 'idle';
-  private config: DropLatamInstanceConfig;
+  private config: RegionalInstanceConfig;
   private workers = new Map<string, LatamWorker>();
   private countryMetrics = new Map<LatamCountry, CountryMetrics>();
-  private budget: DropLatamBudget;
+  private budget: RegionalBudget;
   private events: InstanceEvent[] = [];
   private activeMoleculeIds = new Set<string>();
   private formulaExecutions = new Map<string, number>();
   private upSince: Date;
 
-  constructor(config?: Partial<DropLatamInstanceConfig>) {
-    this.instanceId = `droplatam-${process.env.MEOW_INSTANCE_ID || os.hostname().slice(0, 8) || 'default'}`;
+  constructor(config?: Partial<RegionalInstanceConfig>) {
+    this.instanceId = `regional-${process.env.MEOW_INSTANCE_ID || os.hostname().slice(0, 8) || 'default'}`;
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.upSince = new Date();
 
@@ -294,7 +294,7 @@ export class GasTownDropLatam {
       });
     }
 
-    log.info({ instanceId: this.instanceId, config: this.config }, 'DropLatam instance created');
+    log.info({ instanceId: this.instanceId, config: this.config }, 'Regional instance created');
   }
 
   // --- Lifecycle -------------------------------------------------------------
@@ -314,13 +314,13 @@ export class GasTownDropLatam {
     this.emitEvent('instance_started', { config: this.config });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_started',
+      type: 'regional_started',
       instanceId: this.instanceId,
       countries: LATAM_COUNTRIES,
       workerCount: this.workers.size,
     });
 
-    log.info({ instanceId: this.instanceId }, 'DropLatam instance started');
+    log.info({ instanceId: this.instanceId }, 'Regional instance started');
   }
 
   async stop(): Promise<void> {
@@ -341,25 +341,25 @@ export class GasTownDropLatam {
     });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_stopped',
+      type: 'regional_stopped',
       instanceId: this.instanceId,
     });
 
-    log.info({ instanceId: this.instanceId }, 'DropLatam instance stopped');
+    log.info({ instanceId: this.instanceId }, 'Regional instance stopped');
   }
 
   pause(): void {
     this.status = 'paused';
     this.emitEvent('instance_paused', {});
-    broadcast('meow:sovereign', { type: 'droplatam_paused', instanceId: this.instanceId });
-    log.info({ instanceId: this.instanceId }, 'DropLatam instance paused');
+    broadcast('meow:sovereign', { type: 'regional_paused', instanceId: this.instanceId });
+    log.info({ instanceId: this.instanceId }, 'Regional instance paused');
   }
 
   resume(): void {
     this.status = 'running';
     this.emitEvent('instance_resumed', {});
-    broadcast('meow:sovereign', { type: 'droplatam_resumed', instanceId: this.instanceId });
-    log.info({ instanceId: this.instanceId }, 'DropLatam instance resumed');
+    broadcast('meow:sovereign', { type: 'regional_resumed', instanceId: this.instanceId });
+    log.info({ instanceId: this.instanceId }, 'Regional instance resumed');
   }
 
   getStatus(): InstanceStatus {
@@ -390,7 +390,7 @@ export class GasTownDropLatam {
       }
     }
 
-    log.info({ workerCount: this.workers.size }, 'Workers provisioned for DropLatam');
+    log.info({ workerCount: this.workers.size }, 'Workers provisioned for Regional');
   }
 
   addWorker(worker: LatamWorker): void {
@@ -436,7 +436,7 @@ export class GasTownDropLatam {
     this.emitEvent('worker_borrowed', { workerId, sourceInstance });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_worker_borrowed',
+      type: 'regional_worker_borrowed',
       instanceId: this.instanceId,
       workerId,
       sourceInstance,
@@ -454,7 +454,7 @@ export class GasTownDropLatam {
     this.emitEvent('worker_returned', { workerId, toInstance: worker.borrowedFrom });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_worker_returned',
+      type: 'regional_worker_returned',
       instanceId: this.instanceId,
       workerId,
       toInstance: worker.borrowedFrom,
@@ -471,7 +471,7 @@ export class GasTownDropLatam {
 
   // --- Molecule lifecycle ----------------------------------------------------
 
-  registerMolecule(moleculeId: string, formulaName: DropLatamFormulaName): void {
+  registerMolecule(moleculeId: string, formulaName: RegionalFormulaName): void {
     if (this.status !== 'running') {
       log.warn({ moleculeId }, 'Cannot register molecule, instance not running');
       return;
@@ -490,7 +490,7 @@ export class GasTownDropLatam {
     this.emitEvent('molecule_registered', { moleculeId, formulaName });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_molecule_registered',
+      type: 'regional_molecule_registered',
       instanceId: this.instanceId,
       moleculeId,
       formulaName,
@@ -503,7 +503,7 @@ export class GasTownDropLatam {
     this.emitEvent('molecule_completed', { moleculeId, success });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_molecule_completed',
+      type: 'regional_molecule_completed',
       instanceId: this.instanceId,
       moleculeId,
       success,
@@ -523,7 +523,7 @@ export class GasTownDropLatam {
     this.emitEvent('country_metrics_updated', { country, ...update });
 
     broadcast('meow:sovereign', {
-      type: 'droplatam_country_updated',
+      type: 'regional_country_updated',
       instanceId: this.instanceId,
       country,
       gmvUsd: existing.gmvUsd,
@@ -562,16 +562,16 @@ export class GasTownDropLatam {
     // Emit warning at thresholds
     if (this.budget.utilizationPct >= 90) {
       broadcast('meow:sovereign', {
-        type: 'droplatam_budget_critical',
+        type: 'regional_budget_critical',
         instanceId: this.instanceId,
         utilizationPct: Math.round(this.budget.utilizationPct * 10) / 10,
         spentUsd: Math.round(this.budget.spentUsd * 100) / 100,
         limitUsd: this.budget.monthlyLimitUsd,
       });
-      log.warn({ utilizationPct: this.budget.utilizationPct }, 'DropLatam budget critical');
+      log.warn({ utilizationPct: this.budget.utilizationPct }, 'Regional budget critical');
     } else if (this.budget.utilizationPct >= 75) {
       broadcast('meow:sovereign', {
-        type: 'droplatam_budget_warning',
+        type: 'regional_budget_warning',
         instanceId: this.instanceId,
         utilizationPct: Math.round(this.budget.utilizationPct * 10) / 10,
       });
@@ -594,7 +594,7 @@ export class GasTownDropLatam {
     return { allowed: true };
   }
 
-  getBudget(): DropLatamBudget {
+  getBudget(): RegionalBudget {
     return { ...this.budget };
   }
 
@@ -674,25 +674,25 @@ Respond JSON: {"recommendation": "string", "score": 0-100, "factors": ["string"]
     return { ...DEFAULT_FORMULAS };
   }
 
-  getFormulaInfo(name: DropLatamFormulaName): typeof DEFAULT_FORMULAS[DropLatamFormulaName] | null {
+  getFormulaInfo(name: RegionalFormulaName): typeof DEFAULT_FORMULAS[RegionalFormulaName] | null {
     return DEFAULT_FORMULAS[name] ?? null;
   }
 
   // --- Config ----------------------------------------------------------------
 
-  getConfig(): DropLatamInstanceConfig {
+  getConfig(): RegionalInstanceConfig {
     return { ...this.config };
   }
 
-  updateConfig(updates: Partial<DropLatamInstanceConfig>): void {
+  updateConfig(updates: Partial<RegionalInstanceConfig>): void {
     this.config = { ...this.config, ...updates };
     this.emitEvent('config_updated', { updates });
-    log.info({ updates }, 'DropLatam config updated');
+    log.info({ updates }, 'Regional config updated');
   }
 
   // --- Stats -----------------------------------------------------------------
 
-  getStats(): DropLatamStats {
+  getStats(): RegionalStats {
     const allMetrics = this.getAllCountryMetrics();
     const totalGmv = allMetrics.reduce((s, m) => s + m.gmvUsd, 0);
     const totalOrders = allMetrics.reduce((s, m) => s + m.orders, 0);
@@ -740,7 +740,7 @@ Respond JSON: {"recommendation": "string", "score": 0-100, "factors": ["string"]
         `SELECT country, gmv_usd, orders, avg_order_value_usd,
                 fulfillment_rate, wa_conversion_rate, active_products,
                 active_suppliers, return_rate, cod_collection_rate, updated_at
-         FROM meow_instance_droplatam
+         FROM meow_instance_regional
          WHERE instance_id = $1
          ORDER BY updated_at DESC
          LIMIT 20`,
@@ -766,9 +766,9 @@ Respond JSON: {"recommendation": "string", "score": 0-100, "factors": ["string"]
         }
       }
 
-      log.info({ instanceId: this.instanceId, loaded: rows.length }, 'DropLatam state loaded from DB');
+      log.info({ instanceId: this.instanceId, loaded: rows.length }, 'Regional state loaded from DB');
     } catch (err) {
-      log.warn({ err }, 'Failed to load DropLatam state from DB');
+      log.warn({ err }, 'Failed to load Regional state from DB');
     }
   }
 
@@ -779,7 +779,7 @@ Respond JSON: {"recommendation": "string", "score": 0-100, "factors": ["string"]
     for (const [country, metrics] of this.countryMetrics) {
       try {
         await pool.query(
-          `INSERT INTO meow_instance_droplatam
+          `INSERT INTO meow_instance_regional
             (id, instance_id, country, gmv_usd, orders, avg_order_value_usd,
              fulfillment_rate, wa_conversion_rate, active_products, active_suppliers,
              return_rate, cod_collection_rate, updated_at)
@@ -812,7 +812,7 @@ Respond JSON: {"recommendation": "string", "score": 0-100, "factors": ["string"]
           ],
         );
       } catch (err) {
-        log.warn({ err, country }, 'Failed to persist DropLatam country metrics');
+        log.warn({ err, country }, 'Failed to persist Regional country metrics');
       }
     }
   }
@@ -839,14 +839,14 @@ Respond JSON: {"recommendation": "string", "score": 0-100, "factors": ["string"]
 // Singleton
 // ---------------------------------------------------------------------------
 
-let instance: GasTownDropLatam | null = null;
+let instance: GasTownRegional | null = null;
 
-export function getGasTownDropLatam(
-  config?: Partial<DropLatamInstanceConfig>,
-): GasTownDropLatam {
+export function getGasTownRegional(
+  config?: Partial<RegionalInstanceConfig>,
+): GasTownRegional {
   if (!instance) {
-    instance = new GasTownDropLatam(config);
-    log.info('GasTownDropLatam singleton created');
+    instance = new GasTownRegional(config);
+    log.info('GasTownRegional singleton created');
   }
   return instance;
 }

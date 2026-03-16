@@ -170,7 +170,7 @@ export class WorkspaceGovernor {
       passed: context.hasBU !== false,
       score: context.hasBU !== false ? 15 : 0,
       details: context.hasBU !== false ? 'BU context configured' : 'No BU context',
-      fix: 'Add BU field to project config (dropglobal, droplatam, case)',
+      fix: 'Add BU field to project config (ecommerce, content, platform)',
     });
 
     // Check 3: Boot files (_index.yaml in dirs)

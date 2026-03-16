@@ -6,7 +6,7 @@
  * Embeds MEOW infrastructure data (beads, molecules, convoys, workers, health)
  * into any existing view. Pass `domain` to filter/contextualize data.
  *
- * Used in: MorosView, DropOpsView, AtlasView, DropLatamView, DropGlobalView
+ * Used in: MorosView, DropOpsView, AtlasView, EcommerceView, MarketView
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -83,7 +83,7 @@ interface GasTownData {
 
 interface Props {
   /** Domain context — filters data and labels */
-  domain: 'moros' | 'dropops' | 'atlas' | 'droplatam' | 'dropglobal';
+  domain: 'moros' | 'dropops' | 'atlas' | 'ecommerce' | 'market';
   /** Optional: compact mode for sidebar embedding */
   compact?: boolean;
 }
@@ -92,8 +92,8 @@ const DOMAIN_LABELS: Record<string, { title: string; color: string; desc: string
   moros:      { title: 'MOROS × Gas Town',      color: 'text-red-400',    desc: 'Mayor orchestration, convoys, system health' },
   dropops:    { title: 'DropOps × Gas Town',    color: 'text-cyan-400',   desc: 'Molecule pipeline, bead tracking per stage' },
   atlas:      { title: 'Atlas × Gas Town',      color: 'text-amber-400',  desc: 'Country beads, convoy dispatch, intelligence molecules' },
-  droplatam:  { title: 'DropLatam × Gas Town',  color: 'text-emerald-400', desc: 'Product beads, supplier convoys, COD pipeline molecules' },
-  dropglobal: { title: 'DropGlobal × Gas Town', color: 'text-violet-400', desc: 'Multi-country convoys, market beads, Euro molecules' },
+  ecommerce:  { title: 'Ecommerce × Gas Town',  color: 'text-emerald-400', desc: 'Product beads, supplier convoys, COD pipeline molecules' },
+  market:     { title: 'Market × Gas Town',     color: 'text-violet-400', desc: 'Multi-country convoys, market beads, regional molecules' },
 };
 
 const API = typeof ORCHESTRATOR_URL === 'string' ? ORCHESTRATOR_URL : '';

@@ -275,8 +275,8 @@ graph TB
       end
 
       subgraph SOV_DOMAIN["Domain Adapters"]
-        DG_ADAPT["🌎 DropGlobal"]
-        DL_ADAPT["🌎 DropLatam"]
+        DG_ADAPT["🌎 Ecommerce"]
+        DL_ADAPT["🌎 Market"]
       end
     end
 
@@ -820,7 +820,7 @@ npm run dev
 
 Architecture inspired by [Steve Yegge's "Gas Town"](https://steve-yegge.medium.com/) article on AI agent orchestration.
 
-Built with the HIVE Ecosystem platform.
+Built with Gas Town.
 
 ## License
 

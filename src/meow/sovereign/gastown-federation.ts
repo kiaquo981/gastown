@@ -9,7 +9,7 @@
  *   - Federation Mail: inter-instance messaging system
  *   - Knowledge sharing: discoveries in one instance available to others
  *   - Resource brokering: one instance can request workers/budget from another
- *   - Campaign coordination: ensure DropLatam and DropGlobal don't compete
+ *   - Campaign coordination: ensure regional and global instances don't compete
  *   - Federation status: health of all instances, resource utilization
  *   - Federation events: instance_started, instance_stopped, resource_transferred, etc.
  *   - Conflict resolution: when two instances want same resource, federation arbitrates
@@ -30,7 +30,7 @@ const log = createLogger('gastown-federation');
 // Types
 // ---------------------------------------------------------------------------
 
-export type FederationInstanceType = 'droplatam' | 'dropglobal' | 'content-factory';
+export type FederationInstanceType = 'regional' | 'ecom-global' | 'content-factory';
 
 export type FederationEventType =
   | 'instance_started'
@@ -192,8 +192,8 @@ const DEFAULT_CONFIG: FederationConfig = {
   maxEvents: 5000,
   conflictResolutionDefault: 'priority_wins',
   instancePriorities: {
-    'droplatam': 2,
-    'dropglobal': 3,
+    'regional': 2,
+    'ecom-global': 3,
     'content-factory': 1,
   },
   autoResourceBrokering: true,
@@ -484,7 +484,7 @@ export class GasTownFederation {
     const request: ResourceRequest = {
       id: uuidv4(),
       requesterId,
-      requesterType: requesterInst?.type ?? 'droplatam',
+      requesterType: requesterInst?.type ?? 'regional',
       targetId,
       resourceType,
       amount,
@@ -644,7 +644,7 @@ export class GasTownFederation {
     const entry: KnowledgeShare = {
       id: uuidv4(),
       sourceInstanceId,
-      sourceType: sourceInst?.type ?? 'droplatam',
+      sourceType: sourceInst?.type ?? 'regional',
       topic,
       title,
       content,
@@ -838,16 +838,16 @@ export class GasTownFederation {
   // --- AI-powered campaign coordination --------------------------------------
 
   async coordinateCampaigns(
-    dropLatamAudiences: string[],
-    dropGlobalAudiences: string[],
+    regionalAudiences: string[],
+    globalAudiences: string[],
   ): Promise<{
     hasOverlap: boolean;
     overlappingAudiences: string[];
     recommendation: string;
   }> {
     // Simple overlap detection
-    const overlap = dropLatamAudiences.filter(a =>
-      dropGlobalAudiences.some(b =>
+    const overlap = regionalAudiences.filter(a =>
+      globalAudiences.some(b =>
         a.toLowerCase() === b.toLowerCase() ||
         a.toLowerCase().includes(b.toLowerCase()) ||
         b.toLowerCase().includes(a.toLowerCase()),
@@ -867,8 +867,8 @@ export class GasTownFederation {
     // Try AI for detailed recommendation
     const prompt = `Analyze audience overlap between two ecommerce operations:
 
-DropLatam (COD, LATAM markets) audiences: ${dropLatamAudiences.join(', ')}
-DropGlobal (Brand, EU+US markets) audiences: ${dropGlobalAudiences.join(', ')}
+Regional (COD, LATAM markets) audiences: ${regionalAudiences.join(', ')}
+Global (Brand, EU+US markets) audiences: ${globalAudiences.join(', ')}
 
 Overlapping: ${overlap.join(', ')}
 
@@ -891,11 +891,11 @@ Respond JSON: {"recommendation": "string", "suggestedSplit": "string"}`;
     }
 
     // Detect conflict
-    if (overlap.length >= dropLatamAudiences.length * this.config.audienceOverlapThreshold) {
+    if (overlap.length >= regionalAudiences.length * this.config.audienceOverlapThreshold) {
       this.detectConflict(
         'audience_overlap',
-        'droplatam',
-        'dropglobal',
+        'regional',
+        'ecom-global',
         `${overlap.length} overlapping audiences: ${overlap.slice(0, 5).join(', ')}`,
       );
     }

@@ -3,7 +3,7 @@
  *
  * Gas Town: "Mayor never writes code. Mayor orchestrates."
  * Creates convoys, dispatches work, handles handoffs and escalations.
- * Maps to the existing MOROS entity in HIVE.
+ * Maps to the existing MOROS entity in Gas Town.
  */
 
 import { v4 as uuidv4 } from 'uuid';

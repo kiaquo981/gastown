@@ -3,7 +3,7 @@
  *
  * Boots all Stage 06 sovereign services:
  * - Entity Integration: MOROS supreme mayor, ATLAS world advisor, NOUS oracle, Entity Council (SG-001–004)
- * - Multi-Instance: DropLatam, DropGlobal, Content Factory, Federation (SG-005–008)
+ * - Multi-Instance: Ecom Latam, Ecom Global, Content Factory, Federation (SG-005–008)
  * - 24/7 Autonomy: circadian rhythm, self-scheduling, crisis mode, maintenance mode (SG-009–012)
  * - Evolution: formula marketplace, skill evolution, worker specialization, formula genesis (SG-013–016)
  * - Persistent Identity: worker memory, chronicle, decision journal, reputation (SG-017–020)
@@ -35,12 +35,12 @@ export async function initStage06(): Promise<void> {
 
   // ── Wave 2: Multi-Instance (SG-005–008) ───────────────────────────
   try {
-    const { getGasTownDropLatam } = await import('./sovereign/gastown-droplatam');
-    const { getGasTownDropGlobal } = await import('./sovereign/gastown-dropglobal');
+    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
+    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
     const { getGasTownContentFactory } = await import('./sovereign/gastown-content-factory');
     const { getGasTownFederation } = await import('./sovereign/gastown-federation');
-    getGasTownDropLatam();
-    getGasTownDropGlobal();
+    getGasTownEcomLatam();
+    getGasTownEcomGlobal();
     getGasTownContentFactory();
     getGasTownFederation();
     results.push('Multi-Instance: 4 towns');

@@ -371,8 +371,8 @@ export const COMPOUND_FORMULAS: CompoundFormula[] = [
     description: 'Compound: Parallel work across multiple rigs with synthesis',
     strategy: 'fan-out',
     subFormulas: [
-      { formulaName: 'mol-polecat-work', order: 1, params: { rig: 'hive-os' } },
-      { formulaName: 'mol-polecat-work', order: 1, params: { rig: 'orchestrator' } },
+      { formulaName: 'mol-polecat-work', order: 1, params: { rig: 'gastown-app' } },
+      { formulaName: 'mol-polecat-work', order: 1, params: { rig: 'gastown-backend' } },
       { formulaName: 'mol-beads-release', order: 2 },
     ],
     synthesisStep: { type: 'aggregate' },

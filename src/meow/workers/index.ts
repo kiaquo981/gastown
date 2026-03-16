@@ -1,5 +1,5 @@
 /**
- * Worker Roles — Gas Town hierarchy mapped to HIVE
+ * Worker Roles — Gas Town hierarchy
  *
  * Mayor (MOROS) → orchestrates, never codes
  * Polecat → ephemeral workers in isolated worktrees

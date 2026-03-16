@@ -178,41 +178,41 @@ const DEMO_CONVOYS: ConvoyRow[] = [
 ];
 
 const DEMO_WORKERS: WorkerRow[] = [
-  { name: 'nux', rig: 'hive-os', agentType: 'polecat', issueId: 'gt-1kp', issueTitle: 'Observability Tower Charts', workStatus: 'working', lastActivity: '30s ago' },
-  { name: 'dag', rig: 'hive-os', agentType: 'polecat', issueId: 'gt-1kq', issueTitle: 'Health Score Engine', workStatus: 'working', lastActivity: '1m ago' },
-  { name: 'toast', rig: 'orchestrator', agentType: 'polecat', issueId: 'gt-2ab', issueTitle: 'FrankFlow Hook Pattern', workStatus: 'stale', lastActivity: '8m ago' },
-  { name: 'refinery', rig: 'hive-os', agentType: 'refinery', issueId: '', issueTitle: '', workStatus: 'idle', lastActivity: '5m ago' },
-  { name: 'witness', rig: 'hive-os', agentType: 'crew', issueId: '', issueTitle: '', workStatus: 'idle', lastActivity: '12m ago' },
+  { name: 'nux', rig: 'frontend', agentType: 'polecat', issueId: 'gt-1kp', issueTitle: 'Observability Tower Charts', workStatus: 'working', lastActivity: '30s ago' },
+  { name: 'dag', rig: 'frontend', agentType: 'polecat', issueId: 'gt-1kq', issueTitle: 'Health Score Engine', workStatus: 'working', lastActivity: '1m ago' },
+  { name: 'toast', rig: 'backend', agentType: 'polecat', issueId: 'gt-2ab', issueTitle: 'FrankFlow Hook Pattern', workStatus: 'stale', lastActivity: '8m ago' },
+  { name: 'refinery', rig: 'frontend', agentType: 'refinery', issueId: '', issueTitle: '', workStatus: 'idle', lastActivity: '5m ago' },
+  { name: 'witness', rig: 'frontend', agentType: 'crew', issueId: '', issueTitle: '', workStatus: 'idle', lastActivity: '12m ago' },
 ];
 
 const DEMO_SESSIONS: SessionRow[] = [
-  { name: 'gt-hive-os-nux', role: 'polecat', rig: 'hive-os', worker: 'nux', activity: '30s ago' },
-  { name: 'gt-hive-os-dag', role: 'polecat', rig: 'hive-os', worker: 'dag', activity: '1m ago' },
-  { name: 'gt-orchestrator-toast', role: 'polecat', rig: 'orchestrator', worker: 'toast', activity: '8m ago' },
-  { name: 'gt-hive-os-witness', role: 'witness', rig: 'hive-os', worker: '', activity: '12m ago' },
-  { name: 'gt-hive-os-refinery', role: 'refinery', rig: 'hive-os', worker: '', activity: '5m ago' },
+  { name: 'gt-frontend-nux', role: 'polecat', rig: 'frontend', worker: 'nux', activity: '30s ago' },
+  { name: 'gt-frontend-dag', role: 'polecat', rig: 'frontend', worker: 'dag', activity: '1m ago' },
+  { name: 'gt-backend-toast', role: 'polecat', rig: 'backend', worker: 'toast', activity: '8m ago' },
+  { name: 'gt-frontend-witness', role: 'witness', rig: 'frontend', worker: '', activity: '12m ago' },
+  { name: 'gt-frontend-refinery', role: 'refinery', rig: 'frontend', worker: '', activity: '5m ago' },
 ];
 
 const DEMO_ACTIVITY: ActivityRow[] = [
-  { time: '30s ago', icon: '🔨', type: 'progress', category: 'work', actor: 'nux', rig: 'hive-os', summary: 'Committed ObservabilityTower null-safety fixes' },
-  { time: '1m ago', icon: '🔨', type: 'progress', category: 'work', actor: 'dag', rig: 'hive-os', summary: 'Health score calculation engine wired' },
-  { time: '3m ago', icon: '✉️', type: 'mail', category: 'comms', actor: 'toast', rig: 'orchestrator', summary: 'Sent status update to Mayor' },
-  { time: '5m ago', icon: '🔀', type: 'merge', category: 'work', actor: 'refinery', rig: 'hive-os', summary: 'Merged feat/gas-town-null-safety → main' },
-  { time: '8m ago', icon: '⚠️', type: 'stale', category: 'system', actor: 'toast', rig: 'orchestrator', summary: 'No activity detected — may be stuck' },
+  { time: '30s ago', icon: '🔨', type: 'progress', category: 'work', actor: 'nux', rig: 'frontend', summary: 'Committed ObservabilityTower null-safety fixes' },
+  { time: '1m ago', icon: '🔨', type: 'progress', category: 'work', actor: 'dag', rig: 'frontend', summary: 'Health score calculation engine wired' },
+  { time: '3m ago', icon: '✉️', type: 'mail', category: 'comms', actor: 'toast', rig: 'backend', summary: 'Sent status update to Mayor' },
+  { time: '5m ago', icon: '🔀', type: 'merge', category: 'work', actor: 'refinery', rig: 'frontend', summary: 'Merged feat/gas-town-null-safety → main' },
+  { time: '8m ago', icon: '⚠️', type: 'stale', category: 'system', actor: 'toast', rig: 'backend', summary: 'No activity detected — may be stuck' },
   { time: '12m ago', icon: '📋', type: 'sling', category: 'work', actor: 'mayor', rig: '', summary: 'Slung gt-1kr: Convoy Tracker progress bars' },
-  { time: '20m ago', icon: '🦨', type: 'session_start', category: 'agent', actor: 'nux', rig: 'hive-os', summary: 'Session started for gt-1kp' },
-  { time: '25m ago', icon: '✅', type: 'done', category: 'work', actor: 'dag', rig: 'hive-os', summary: 'Completed gt-1kn: BeadsView velocity fix' },
+  { time: '20m ago', icon: '🦨', type: 'session_start', category: 'agent', actor: 'nux', rig: 'frontend', summary: 'Session started for gt-1kp' },
+  { time: '25m ago', icon: '✅', type: 'done', category: 'work', actor: 'dag', rig: 'frontend', summary: 'Completed gt-1kn: BeadsView velocity fix' },
 ];
 
 const DEMO_MAIL: MailRow[] = [
-  { id: 'msg-1', from: 'hive-os/polecats/nux', to: 'mayor/', subject: 'Null-safety audit complete — 14 fixes applied', age: '2m ago', priority: 'normal', read: false },
-  { id: 'msg-2', from: 'orchestrator/polecats/toast', to: 'mayor/', subject: 'FrankFlow pattern learner blocked on type resolution', age: '8m ago', priority: 'high', read: false },
-  { id: 'msg-3', from: 'mayor/', to: 'hive-os/polecats/dag', subject: 'Priority: finish health score before convoy tracker', age: '15m ago', priority: 'normal', read: true },
+  { id: 'msg-1', from: 'frontend/polecats/nux', to: 'mayor/', subject: 'Null-safety audit complete — 14 fixes applied', age: '2m ago', priority: 'normal', read: false },
+  { id: 'msg-2', from: 'backend/polecats/toast', to: 'mayor/', subject: 'FrankFlow pattern learner blocked on type resolution', age: '8m ago', priority: 'high', read: false },
+  { id: 'msg-3', from: 'mayor/', to: 'frontend/polecats/dag', subject: 'Priority: finish health score before convoy tracker', age: '15m ago', priority: 'normal', read: true },
 ];
 
 const DEMO_MERGE_QUEUE: MergeQueueRow[] = [
-  { number: 42, repo: 'hive-os', title: 'feat: Gas Town null-safety fixes', ciStatus: 'pass', mergeable: 'ready' },
-  { number: 15, repo: 'orchestrator', title: 'feat: FrankFlow hook pattern learner', ciStatus: 'pending', mergeable: 'pending' },
+  { number: 42, repo: 'frontend', title: 'feat: Gas Town null-safety fixes', ciStatus: 'pass', mergeable: 'ready' },
+  { number: 15, repo: 'backend', title: 'feat: FrankFlow hook pattern learner', ciStatus: 'pending', mergeable: 'pending' },
 ];
 
 const DEMO_DOGS: DogRow[] = [
@@ -233,9 +233,9 @@ const DEMO_ISSUES: IssueRow[] = [
 ];
 
 const DEMO_HOOKS: HookRow[] = [
-  { id: 'gt-1kp', title: 'Observability Tower Charts', agent: 'hive-os/polecats/nux', age: '20m', isStale: false },
-  { id: 'gt-1kq', title: 'Health Score Engine', agent: 'hive-os/polecats/dag', age: '18m', isStale: false },
-  { id: 'gt-2ab', title: 'FrankFlow Hook Pattern', agent: 'orchestrator/polecats/toast', age: '45m', isStale: false },
+  { id: 'gt-1kp', title: 'Observability Tower Charts', agent: 'frontend/polecats/nux', age: '20m', isStale: false },
+  { id: 'gt-1kq', title: 'Health Score Engine', agent: 'frontend/polecats/dag', age: '18m', isStale: false },
+  { id: 'gt-2ab', title: 'FrankFlow Hook Pattern', agent: 'backend/polecats/toast', age: '45m', isStale: false },
 ];
 
 // ─── New Panel Demo Data ──────────────────────────────────────────────────
@@ -263,7 +263,7 @@ const DEMO_GUZZOLINE = {
 };
 
 const DEMO_NDI = {
-  agentId: 'ag-dropglobal-01', beadId: 'bead-1kp', moleculeId: 'mol-abc',
+  agentId: 'ag-gastown-01', beadId: 'bead-1kp', moleculeId: 'mol-abc',
   overallStatus: 'healthy' as const,
   idempotent: true,
   pillars: [
@@ -305,7 +305,7 @@ const DEMO_MALL = [
 
 const DEMO_COMPOUNDS = [
   { id: 'cf-full-release', name: 'Full Release Pipeline', strategy: 'sequential', subs: ['mol-polecat-work', 'mol-patrol-witness', 'mol-beads-release'] },
-  { id: 'cf-multi-rig', name: 'Multi-Rig Deploy', strategy: 'fan-out', subs: ['mol-polecat-work (hive-os)', 'mol-polecat-work (orchestrator)', 'mol-beads-release'] },
+  { id: 'cf-multi-rig', name: 'Multi-Rig Deploy', strategy: 'fan-out', subs: ['mol-polecat-work (frontend)', 'mol-polecat-work (backend)', 'mol-beads-release'] },
   { id: 'cf-patrol-suite', name: 'Full Patrol Suite', strategy: 'parallel', subs: ['mol-patrol-deacon', 'mol-patrol-witness', 'mol-patrol-refinery'] },
 ];
 
@@ -325,7 +325,7 @@ const DEMO_BEADS_PIPELINE = [
 ];
 
 const DEMO_SEANCE_LOG = [
-  { id: 'seance-1', session: 'gt-hive-os-nux-old', agent: 'nux', deathReason: 'timeout', beadsRecovered: 2, time: '14m ago' },
+  { id: 'seance-1', session: 'gt-frontend-nux-old', agent: 'nux', deathReason: 'timeout', beadsRecovered: 2, time: '14m ago' },
   { id: 'seance-2', session: 'gt-orch-toast-v2', agent: 'toast', deathReason: 'oom', beadsRecovered: 1, time: '1h ago' },
 ];
 

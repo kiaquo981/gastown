@@ -306,7 +306,7 @@ export function registerDefaultPlugins(registry: ExtensionRegistry): void {
     capabilities: ['ShellExec', 'FileRead'],
     entryPoint: 'plugins/eslint-guard/run.ts',
     config: { fix: true, maxWarnings: 10 },
-    tags: ['rig:hive-os', 'quality', 'lint'],
+    tags: ['rig:gastown-app', 'quality', 'lint'],
   });
 
   registry.register({
@@ -320,7 +320,7 @@ export function registerDefaultPlugins(registry: ExtensionRegistry): void {
     capabilities: ['ShellExec'],
     entryPoint: 'plugins/typecheck-guard/run.ts',
     config: { strict: true },
-    tags: ['rig:hive-os', 'rig:orchestrator', 'quality', 'types'],
+    tags: ['rig:gastown-app', 'rig:gastown-backend', 'quality', 'types'],
   });
 
   registry.register({

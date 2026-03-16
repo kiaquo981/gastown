@@ -17,7 +17,7 @@ import type { BridgeResult } from './mail-whatsapp-bridge';
 
 const TAG = '[MAIL-EMAIL-BRIDGE]';
 const RESEND_API = 'https://api.resend.com/emails';
-const DEFAULT_FROM = 'noreply@hive-ecosystem.com';
+const DEFAULT_FROM = 'noreply@gastown-platform.com';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Email Templates (void aesthetic dark theme)
@@ -35,7 +35,7 @@ function wrapHtml(title: string, bodyContent: string): string {
   <h1 style="color:#e6edf3;font-size:20px;font-weight:600;margin:0 0 24px 0;">${title}</h1>
   ${bodyContent}
   <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:16px;margin-top:32px;">
-    <span style="color:#484f58;font-size:11px;">HIVE Ecosystem &middot; Automated Mail Bridge</span>
+    <span style="color:#484f58;font-size:11px;">Gas Town &middot; Automated Mail Bridge</span>
   </div>
 </div>
 </body>
