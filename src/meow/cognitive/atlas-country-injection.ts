@@ -3,7 +3,7 @@
  *
  * Inject country-specific intelligence from the ATLAS system.
  *
- * ATLAS = country expansion intelligence covering 7 LATAM countries + EU:
+ * ATLAS = country expansion intelligence covering multiple regions:
  *   AR (Argentina), BR (Brazil), MX (Mexico), CO (Colombia),
  *   CL (Chile), PE (Peru), EC (Ecuador), EU (Spain/Portugal)
  *
@@ -266,7 +266,7 @@ async function callGemini(prompt: string): Promise<string | null> {
           messages: [
             {
               role: 'system',
-              content: 'You are ATLAS, the country intelligence engine for a global e-commerce operation. Provide concise, actionable country-specific intelligence. Respond with valid JSON only.',
+              content: 'You are ATLAS, the country intelligence engine for a global operation. Provide concise, actionable country-specific intelligence. Respond with valid JSON only.',
             },
             { role: 'user', content: prompt },
           ],
@@ -493,15 +493,15 @@ export class AtlasCountryInjector {
     // Check BU
     if (bead.bu) {
       const buCountryMap: Record<string, CountryCode> = {
-        regional: 'MX',
-        'ecom-global': 'BR',
-        'drop-ar': 'AR',
-        'drop-mx': 'MX',
-        'drop-co': 'CO',
-        'drop-cl': 'CL',
-        'drop-pe': 'PE',
-        'drop-ec': 'EC',
-        'drop-eu': 'EU',
+        'bu-regional': 'MX',
+        'bu-global': 'BR',
+        'bu-ar': 'AR',
+        'bu-mx': 'MX',
+        'bu-co': 'CO',
+        'bu-cl': 'CL',
+        'bu-pe': 'PE',
+        'bu-ec': 'EC',
+        'bu-eu': 'EU',
       };
       const mapped = buCountryMap[bead.bu.toLowerCase()];
       if (mapped) countries.add(mapped);

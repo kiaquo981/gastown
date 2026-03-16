@@ -101,7 +101,7 @@ const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/openai
 const MAX_CONCURRENT_BEADS_PER_WORKER = 5;
 const DEADLINE_BUFFER_HOURS = 2;
 
-const RESOLUTION_SYSTEM_PROMPT = `You are MOROS, the Mayor of Gas Town. You resolve conflicts between workers.
+const RESOLUTION_SYSTEM_PROMPT = `You are the Mayor of Gas Town. You resolve conflicts between workers.
 
 For each conflict, determine the best resolution strategy:
 

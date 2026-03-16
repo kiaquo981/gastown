@@ -11,7 +11,7 @@
  *
  * Features:
  *   - Phase-specific formula trigger lists with resource allocation weights
- *   - Timezone-aware: adjusts phases based on business unit timezone (LATAM vs EU)
+ *   - Timezone-aware: adjusts phases based on business unit timezone
  *   - Phase transition: broadcast event, adjust worker allocation, shift formula priorities
  *   - Override: human can force phase change or extend current phase
  *   - DB persistence: meow_circadian_log for phase transitions and activities
@@ -214,10 +214,10 @@ const DEFAULT_PHASE_DEFINITIONS: PhaseDefinition[] = [
 
 /** Timezone aliases for common business regions */
 const TIMEZONE_PRESETS: Record<string, string> = {
-  'latam-br': 'America/Sao_Paulo',
-  'latam-ar': 'America/Argentina/Buenos_Aires',
-  'latam-mx': 'America/Mexico_City',
-  'latam-co': 'America/Bogota',
+  'region-br': 'America/Sao_Paulo',
+  'region-ar': 'America/Argentina/Buenos_Aires',
+  'region-mx': 'America/Mexico_City',
+  'region-co': 'America/Bogota',
   'eu-pt': 'Europe/Lisbon',
   'eu-es': 'Europe/Madrid',
   'us-east': 'America/New_York',

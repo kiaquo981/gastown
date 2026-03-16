@@ -30,7 +30,7 @@ const router = Router();
 function requireMaestroAuth(req: Request, res: Response, next: Function) {
   if (req.method === 'GET') return next();
   const key = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
-  if (!key || key !== process.env.HIVE_API_KEY) {
+  if (!key || key !== process.env.GASTOWN_API_KEY) {
     return res.status(401).json({ error: 'Unauthorized — set x-api-key header' });
   }
   next();

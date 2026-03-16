@@ -50,7 +50,7 @@ export class WhatsAppBridge {
       process.env.EVOLUTION_API_URL &&
       process.env.EVOLUTION_INSTANCE &&
       process.env.EVOLUTION_API_KEY &&
-      process.env.MOROS_OPERATOR_PHONE
+      process.env.MAYOR_OPERATOR_PHONE
     );
   }
 
@@ -86,7 +86,7 @@ export class WhatsAppBridge {
 
     // Build message
     const message = this.formatMessage(mail);
-    const phone = process.env.MOROS_OPERATOR_PHONE!;
+    const phone = process.env.MAYOR_OPERATOR_PHONE!;
 
     try {
       const response = await fetch(

@@ -1,7 +1,7 @@
 /**
  * ENTITY COUNCIL -- SG-004 (Stage 06 Wave 1)
  *
- * MOROS + ATLAS + NOUS deliberate as a council for high-stakes decisions.
+ * MAYOR + ATLAS + NOUS deliberate as a council for high-stakes decisions.
  *
  * Trigger conditions:
  *   - Budget > $1000
@@ -11,7 +11,7 @@
  *   - Any decision flagged as high-risk by auto-approve-engine
  *
  * Each entity provides a distinct perspective:
- *   - MOROS (Strategic): Business impact, resource allocation, priority alignment
+ *   - MAYOR (Strategic): Business impact, resource allocation, priority alignment
  *   - ATLAS (Geopolitical): Market conditions, regulatory risk, competitive landscape
  *   - NOUS (Epistemic): Historical patterns, philosophical analysis, blind spots
  *
@@ -58,7 +58,7 @@ export type CouncilOutcome =
 
 export type EntityVote = 'approve' | 'conditional' | 'defer' | 'reject';
 
-export type EntityName = 'moros' | 'atlas' | 'nous';
+export type EntityName = 'mayor' | 'atlas' | 'nous';
 
 export interface EntityPosition {
   entity: EntityName;
@@ -122,10 +122,10 @@ export interface CouncilStats {
 // ---------------------------------------------------------------------------
 
 const ENTITY_SYSTEM_PROMPTS: Record<EntityName, string> = {
-  moros:
-    'You are MOROS, the supreme strategic entity. You evaluate decisions through the lens of business strategy, resource allocation, and long-term vision. You prioritize sustainable growth and risk management. You think in terms of directives, priorities, and tactical execution.',
+  mayor:
+    'You are MAYOR, the supreme strategic entity. You evaluate decisions through the lens of business strategy, resource allocation, and long-term vision. You prioritize sustainable growth and risk management. You think in terms of directives, priorities, and tactical execution.',
   atlas:
-    'You are ATLAS, the geopolitical intelligence entity. You evaluate decisions through the lens of market conditions, regulatory compliance, competitive landscape, and cultural context across LATAM + Europe markets. You think in terms of opportunities, threats, and market readiness.',
+    'You are ATLAS, the geopolitical intelligence entity. You evaluate decisions through the lens of market conditions, regulatory compliance, competitive landscape, and cultural context across multiple markets. You think in terms of opportunities, threats, and market readiness.',
   nous:
     'You are NOUS, the epistemic oracle entity. You evaluate decisions through the lens of knowledge patterns, historical analogies, philosophical frameworks, and intellectual rigor. You challenge assumptions and seek blind spots. You think in terms of first principles, inversions, and second-order effects.',
 };
@@ -197,7 +197,7 @@ async function callGeminiSynthesis(prompt: string): Promise<string | null> {
             {
               role: 'system',
               content:
-                'You are the Entity Council moderator. Synthesize the positions of MOROS (strategy), ATLAS (geopolitics), and NOUS (epistemics) into a final decision. Be balanced and consider all perspectives. Respond ONLY with valid JSON.',
+                'You are the Entity Council moderator. Synthesize the positions of MAYOR (strategy), ATLAS (geopolitics), and NOUS (epistemics) into a final decision. Be balanced and consider all perspectives. Respond ONLY with valid JSON.',
             },
             { role: 'user', content: prompt },
           ],
@@ -263,7 +263,7 @@ export class EntityCouncil {
 
     // Phase 3: Determine votes
     const votes: Record<EntityName, EntityVote> = {
-      moros: 'defer',
+      mayor: 'defer',
       atlas: 'defer',
       nous: 'defer',
     };
@@ -502,7 +502,7 @@ export class EntityCouncil {
         synthesis: (r.synthesis as string) ?? '',
         outcome: r.outcome as CouncilOutcome,
         conditions: this.parseJsonSafe(r.conditions, []),
-        votes: this.parseJsonSafe(r.votes, { moros: 'defer', atlas: 'defer', nous: 'defer' }),
+        votes: this.parseJsonSafe(r.votes, { mayor: 'defer', atlas: 'defer', nous: 'defer' }),
         overallConfidence: parseFloat(String(r.overall_confidence ?? '0')),
         transcript: (r.transcript as string) ?? '',
         estimatedBudgetUsd: parseFloat(String(r.estimated_budget_usd ?? '0')),
@@ -528,7 +528,7 @@ export class EntityCouncil {
     context: string,
     trigger: CouncilTrigger,
   ): Promise<EntityPosition[]> {
-    const entities: EntityName[] = ['moros', 'atlas', 'nous'];
+    const entities: EntityName[] = ['mayor', 'atlas', 'nous'];
     const positions: EntityPosition[] = [];
 
     const positionPrompt = (entity: EntityName) =>
@@ -607,7 +607,7 @@ Respond with JSON:
     trigger: CouncilTrigger,
   ): EntityPosition {
     const heuristics: Record<EntityName, Record<CouncilTrigger, EntityVote>> = {
-      moros: {
+      mayor: {
         high_budget: 'conditional',
         new_market_entry: 'conditional',
         formula_creation: 'approve',

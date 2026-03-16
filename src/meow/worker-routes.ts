@@ -21,13 +21,13 @@ import { startAutonomousLoop, stopAutonomousLoop, isAutonomousLoopRunning, getAu
 const router = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Auth middleware — GET is public, mutations require HIVE_API_KEY
+// Auth middleware — GET is public, mutations require GASTOWN_API_KEY
 // ─────────────────────────────────────────────────────────────────────────────
 
 function requireApiKey(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET') return next();
   const key = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
-  if (!key || key !== process.env.HIVE_API_KEY) {
+  if (!key || key !== process.env.GASTOWN_API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();

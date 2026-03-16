@@ -76,7 +76,7 @@ interface WorkerMetrics {
 
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
 
-const ALLOCATION_SYSTEM_PROMPT = `You are MOROS, the Mayor of Gas Town. You allocate workers to beads (tasks) optimally.
+const ALLOCATION_SYSTEM_PROMPT = `You are the Mayor of Gas Town. You allocate workers to beads (tasks) optimally.
 
 Consider these factors for each worker-bead pair:
 1. Skill match: Does the worker have capabilities matching the bead's requirements?

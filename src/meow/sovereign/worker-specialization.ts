@@ -6,7 +6,7 @@
  * aptitudes, assigns specialization tags, and routes future tasks accordingly.
  *
  * Features:
- *   - Track worker performance per skill/formula/domain (LATAM copy, EU ads, content creation)
+ *   - Track worker performance per skill/formula/domain (regional copy, EU ads, content creation)
  *   - Detect natural specializations: "this worker consistently excels at X"
  *   - Assign specialization tags: affects future task routing (prefer specialists)
  *   - Specialization levels: novice → competent → proficient → expert → master
@@ -39,7 +39,7 @@ export type SpecializationLevel =
   | 'master';
 
 export type SpecializationDomain =
-  | 'latam_copy'
+  | 'regional_copy'
   | 'eu_ads'
   | 'content_creation'
   | 'campaign_management'
@@ -168,7 +168,7 @@ const LEVEL_NAMES: SpecializationLevel[] = [
 ];
 
 const VALID_DOMAINS: SpecializationDomain[] = [
-  'latam_copy', 'eu_ads', 'content_creation', 'campaign_management',
+  'regional_copy', 'eu_ads', 'content_creation', 'campaign_management',
   'fulfillment', 'analytics', 'creative_design', 'audience_research',
   'pricing_optimization', 'recovery_operations', 'market_intelligence',
   'email_marketing', 'video_production', 'seo_optimization', 'customer_support',
@@ -179,7 +179,7 @@ const SKILL_DOMAIN_MAP: Record<string, SpecializationDomain> = {
   'meta_ads': 'campaign_management',
   'google_ads': 'campaign_management',
   'shopify_': 'fulfillment',
-  'copy_': 'latam_copy',
+  'copy_': 'regional_copy',
   'content_': 'content_creation',
   'creative_': 'creative_design',
   'analytics_': 'analytics',
@@ -721,7 +721,7 @@ Return JSON:
     // Check formula name for clues
     if (formulaName) {
       const fl = formulaName.toLowerCase();
-      if (fl.includes('latam') || fl.includes('latin')) return 'latam_copy';
+      if (fl.includes('regional') || fl.includes('local')) return 'regional_copy';
       if (fl.includes('eu') || fl.includes('europe')) return 'eu_ads';
       if (fl.includes('content') || fl.includes('blog')) return 'content_creation';
       if (fl.includes('campaign') || fl.includes('ads')) return 'campaign_management';
