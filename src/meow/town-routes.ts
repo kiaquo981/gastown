@@ -22,8 +22,19 @@ import { observabilityEngine } from './observability';
 import { wispSystem } from './wisp-system';
 import { getBeadsService } from './beads-service';
 import { skillCount, listSkills } from './skill-registry';
+import { maestroBridge } from './bridges/maestro-bridge';
 
 const router = Router();
+
+// ── Auth middleware for mutating Maestro endpoints ───────────────────────────
+function requireMaestroAuth(req: Request, res: Response, next: Function) {
+  if (req.method === 'GET') return next();
+  const key = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+  if (!key || key !== process.env.HIVE_API_KEY) {
+    return res.status(401).json({ error: 'Unauthorized — set x-api-key header' });
+  }
+  next();
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: safe async call — wraps a subsystem call in try/catch, returns
@@ -537,6 +548,88 @@ router.get('/api/meow/town/log', (req: Request, res: Response) => {
     console.error('[TOWN-ROUTES] Log endpoint error:', err);
     res.status(500).json({ error: 'Failed to retrieve townlog' });
   }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Maestro Bridge — /api/meow/town/maestro/*
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** POST /api/meow/town/maestro/register — Register a local Maestro instance */
+router.post('/api/meow/town/maestro/register', requireMaestroAuth, (req: Request, res: Response) => {
+  try {
+    const { callbackUrl, name, capabilities, maxSessions, hostname, os, version, metadata } = req.body;
+    if (!callbackUrl) {
+      return res.status(400).json({ error: 'callbackUrl is required' });
+    }
+    const instance = maestroBridge.register({ callbackUrl, name, capabilities, maxSessions, hostname, os, version, metadata });
+    res.json({ success: true, instance });
+  } catch (err) {
+    res.status(500).json({ error: 'Registration failed', details: String(err) });
+  }
+});
+
+/** POST /api/meow/town/maestro/heartbeat — Update heartbeat */
+router.post('/api/meow/town/maestro/heartbeat', requireMaestroAuth, (req: Request, res: Response) => {
+  const { instanceId, activeSessions, status, metadata } = req.body;
+  if (!instanceId) {
+    return res.status(400).json({ error: 'instanceId is required' });
+  }
+  const ok = maestroBridge.heartbeat(instanceId, { activeSessions, status, metadata });
+  if (!ok) {
+    return res.status(404).json({ error: `Maestro ${instanceId} not found — re-register` });
+  }
+  res.json({ success: true });
+});
+
+/** POST /api/meow/town/maestro/dispatch — Dispatch work to best available Maestro */
+router.post('/api/meow/town/maestro/dispatch', requireMaestroAuth, async (req: Request, res: Response) => {
+  try {
+    const { beadId, skill, title, description, priority, branch, context, payload } = req.body;
+    if (!beadId || !skill) {
+      return res.status(400).json({ error: 'beadId and skill are required' });
+    }
+    const result = await maestroBridge.dispatch({ beadId, skill, title: title || skill, description, priority: priority || 'normal', branch, context, payload });
+    if (!result) {
+      return res.status(503).json({ error: 'No available Maestro instances' });
+    }
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: 'Dispatch failed', details: String(err) });
+  }
+});
+
+/** POST /api/meow/town/maestro/report — Receive execution report from Maestro */
+router.post('/api/meow/town/maestro/report', requireMaestroAuth, (req: Request, res: Response) => {
+  try {
+    const { dispatchId, maestroId, success, output, prUrl, branch, artifacts, durationMs, sessionCount, error } = req.body;
+    if (!dispatchId || !maestroId) {
+      return res.status(400).json({ error: 'dispatchId and maestroId are required' });
+    }
+    maestroBridge.report({ dispatchId, maestroId, success, output: output || '', prUrl, branch, artifacts, durationMs, sessionCount, error });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Report failed', details: String(err) });
+  }
+});
+
+/** DELETE /api/meow/town/maestro/:id — Unregister a Maestro instance */
+router.delete('/api/meow/town/maestro/:id', requireMaestroAuth, (req: Request, res: Response) => {
+  const ok = maestroBridge.unregister(req.params.id);
+  if (!ok) return res.status(404).json({ error: 'Instance not found' });
+  res.json({ success: true });
+});
+
+/** GET /api/meow/town/maestro/list — List all Maestro instances */
+router.get('/api/meow/town/maestro/list', (_req: Request, res: Response) => {
+  res.json({
+    instances: maestroBridge.list(),
+    stats: maestroBridge.stats(),
+  });
+});
+
+/** GET /api/meow/town/maestro/stats — Bridge stats */
+router.get('/api/meow/town/maestro/stats', (_req: Request, res: Response) => {
+  res.json(maestroBridge.stats());
 });
 
 export default router;

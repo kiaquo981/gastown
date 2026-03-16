@@ -16,6 +16,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { broadcast, addActivity } from '../../sse';
 import { mayor } from './mayor';
 import { polecatManager } from './polecat';
+import { getPool } from '../../db/client';
+import { spawnPolecat } from '../execution/polecat-spawner';
+import { getBeadsService } from '../beads-service';
+import { maestroBridge } from '../bridges/maestro-bridge';
 import type { FeedEvent, FeedEventType, Bead, Mail } from '../types';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -80,6 +84,76 @@ export class GUPP {
 
   constructor(config?: Partial<GUPPConfig>) {
     this.config = { ...DEFAULT_CONFIG, ...config };
+    void this.hydrateFromDB();
+  }
+
+  // ─── DB Persistence (write-through cache) ──────────────────────────────────
+
+  /** Hydrate in-memory hooks from DB on startup (NDI guarantee across restarts). */
+  async hydrateFromDB(): Promise<void> {
+    const pool = getPool();
+    if (!pool) return;
+    try {
+      const res = await pool.query<{
+        id: string; agent_id: string; bead_id: string; skill: string;
+        priority: string; payload: Record<string, unknown>; status: string;
+        retry_count: number; max_retries: number; claimed_by: string | null;
+        claimed_at: string | null; completed_at: string | null;
+        expires_at: string | null; created_at: string;
+      }>(
+        `SELECT * FROM meow_hooks WHERE status NOT IN ('completed','failed','expired')`,
+      );
+      for (const row of res.rows) {
+        const hook: HookEntry = {
+          id: row.id,
+          agentId: row.agent_id,
+          beadId: row.bead_id,
+          skill: row.skill,
+          priority: row.priority as HookEntry['priority'],
+          payload: row.payload ?? {},
+          createdAt: new Date(row.created_at),
+          claimedAt: row.claimed_at ? new Date(row.claimed_at) : undefined,
+          claimedBy: row.claimed_by ?? undefined,
+          completedAt: row.completed_at ? new Date(row.completed_at) : undefined,
+          status: row.status as HookEntry['status'],
+          retryCount: row.retry_count,
+          maxRetries: row.max_retries,
+          expiresAt: row.expires_at ? new Date(row.expires_at) : undefined,
+        };
+        this.hooks.set(hook.id, hook);
+      }
+      if (res.rows.length > 0) {
+        console.log(`[GUPP] Hydrated ${res.rows.length} hooks from DB (NDI)`);
+      }
+    } catch (err) {
+      console.error('[GUPP] hydrateFromDB error:', err);
+    }
+  }
+
+  /** Upsert a hook to DB — fire-and-forget, never blocks the hot path. */
+  private persistHook(hook: HookEntry): void {
+    const pool = getPool();
+    if (!pool) return;
+    pool.query(
+      `INSERT INTO meow_hooks
+         (id, agent_id, bead_id, skill, priority, payload, status, retry_count, max_retries,
+          claimed_by, claimed_at, completed_at, expires_at, created_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+       ON CONFLICT (id) DO UPDATE SET
+         status       = EXCLUDED.status,
+         retry_count  = EXCLUDED.retry_count,
+         claimed_by   = EXCLUDED.claimed_by,
+         claimed_at   = EXCLUDED.claimed_at,
+         completed_at = EXCLUDED.completed_at`,
+      [
+        hook.id, hook.agentId, hook.beadId, hook.skill,
+        hook.priority, JSON.stringify(hook.payload),
+        hook.status, hook.retryCount, hook.maxRetries,
+        hook.claimedBy ?? null, hook.claimedAt ?? null,
+        hook.completedAt ?? null, hook.expiresAt ?? null,
+        hook.createdAt,
+      ],
+    ).catch(err => console.error('[GUPP] persistHook error:', err));
   }
 
   // ─── Hook Management ───────────────────────────────────────────────────────
@@ -105,6 +179,7 @@ export class GUPP {
     };
 
     this.hooks.set(hook.id, hook);
+    this.persistHook(hook);
 
     this.emitFeed('bead_updated', `Hook placed for agent ${agentId}: bead ${beadId} (${skill})`, {
       beadId,
@@ -129,6 +204,7 @@ export class GUPP {
     hook.status = 'claimed';
     hook.claimedAt = new Date();
     hook.claimedBy = workerId;
+    this.persistHook(hook);
 
     this.emitFeed('bead_updated', `Hook ${hookId} claimed by ${workerId}`, {
       beadId: hook.beadId,
@@ -145,6 +221,7 @@ export class GUPP {
     if (hook.status !== 'claimed') throw new Error(`Hook ${hookId} is ${hook.status}, must be claimed first`);
 
     hook.status = 'running';
+    this.persistHook(hook);
     return hook;
   }
 
@@ -155,6 +232,7 @@ export class GUPP {
 
     hook.status = 'completed';
     hook.completedAt = new Date();
+    this.persistHook(hook);
 
     this.emitFeed('bead_completed', `Hook ${hookId} completed for bead ${hook.beadId}`, {
       beadId: hook.beadId,
@@ -175,6 +253,7 @@ export class GUPP {
       hook.status = 'pending';
       hook.claimedAt = undefined;
       hook.claimedBy = undefined;
+      this.persistHook(hook);
 
       this.emitFeed('worker_error', `Hook ${hookId} failed (retry ${hook.retryCount}/${hook.maxRetries}): ${error}`, {
         beadId: hook.beadId,
@@ -183,6 +262,7 @@ export class GUPP {
     } else {
       // Exhausted retries
       hook.status = 'failed';
+      this.persistHook(hook);
 
       this.emitFeed('worker_error', `Hook ${hookId} permanently failed after ${hook.maxRetries} retries: ${error}`, {
         beadId: hook.beadId,
@@ -269,7 +349,7 @@ export class GUPP {
       }
     }
 
-    // 2. Auto-spawn polecats for pending hooks
+    // 2. Auto-spawn polecats for pending hooks → fire real execution
     if (this.config.autoSpawnPolecat) {
       const pending = this.getPendingHooks();
 
@@ -279,12 +359,16 @@ export class GUPP {
           hook.status = 'claimed';
           hook.claimedAt = new Date();
           hook.claimedBy = polecat.id;
+          this.persistHook(hook);
           spawned++;
 
           this.emitFeed('polecat_spawned', `GUPP auto-spawned polecat ${polecat.id} for hook ${hook.id}`, {
             beadId: hook.beadId,
             metadata: { hookId: hook.id, polecatId: polecat.id, skill: hook.skill },
           });
+
+          // Fire real execution asynchronously — never block the scan loop
+          void this.executeHook(hook);
         } catch {
           // Polecat pool full — will retry next scan
           break;
@@ -331,6 +415,94 @@ export class GUPP {
     }
 
     return recovered;
+  }
+
+  // ─── Real Execution Bridge ──────────────────────────────────────────────────
+
+  /**
+   * Execute a claimed hook. Prefers dispatching to a connected Maestro instance.
+   * Falls back to local spawnPolecat (Gemini + worktree + PR) if no Maestro available.
+   * Fire-and-forget from the scan loop — completes or fails the hook when done.
+   */
+  private async executeHook(hook: HookEntry): Promise<void> {
+    try {
+      // Deduplication: skip if another hook for the same bead is already running
+      const siblingHooks = this.listHooks().filter(
+        h => h.beadId === hook.beadId && h.id !== hook.id &&
+        (h.status === 'running' || h.status === 'claimed'),
+      );
+      if (siblingHooks.length > 0) {
+        hook.status = 'completed';
+        this.persistHook(hook);
+        return;
+      }
+
+      // Look up the bead for context
+      let bead: { id: string; title: string; description?: string } = {
+        id: hook.beadId,
+        title: hook.skill,
+      };
+      try {
+        const beadsService = getBeadsService();
+        const fullBead = await beadsService.get(hook.beadId);
+        if (fullBead) {
+          bead = { id: fullBead.id, title: fullBead.title, description: fullBead.description };
+        }
+      } catch {
+        // Bead lookup failed — use minimal placeholder
+      }
+
+      // Start the hook
+      this.startHook(hook.id);
+
+      // Strategy: try Maestro dispatch first, fall back to local polecat
+      if (maestroBridge.hasAvailableMaestro()) {
+        const dispatchResult = await maestroBridge.dispatch({
+          beadId: hook.beadId,
+          skill: hook.skill,
+          title: bead.title,
+          description: bead.description,
+          priority: hook.priority,
+          context: hook.payload ? JSON.stringify(hook.payload) : undefined,
+        });
+
+        if (dispatchResult?.accepted) {
+          // Maestro accepted — hook stays in 'running' until report comes back.
+          // The report endpoint will call completeHook/failHook.
+          // Watchdog: if Maestro never reports, the hook's expiresAt will trigger
+          // expiration in the scan loop, and NDI recover() resets on restart.
+          // Set a tighter timeout for Maestro-dispatched hooks (30 min).
+          hook.expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+          this.persistHook(hook);
+          return;
+        }
+        // Maestro dispatch failed — fall through to local execution
+      }
+
+      // Local fallback: Gemini + git worktree + PR
+      const tier: 'S' | 'A' | 'B' =
+        hook.priority === 'critical' ? 'S' :
+        hook.priority === 'high' ? 'A' : 'B';
+
+      const result = await spawnPolecat({
+        bead,
+        skill: hook.skill,
+        tier,
+        context: hook.payload ? JSON.stringify(hook.payload) : undefined,
+      });
+
+      if (result.success) {
+        this.completeHook(hook.id);
+      } else {
+        this.failHook(hook.id, result.output.slice(0, 500));
+      }
+    } catch (err) {
+      try {
+        this.failHook(hook.id, err instanceof Error ? err.message : String(err));
+      } catch {
+        // Hook may have been cleaned up — ignore
+      }
+    }
   }
 
   // ─── Stats ─────────────────────────────────────────────────────────────────

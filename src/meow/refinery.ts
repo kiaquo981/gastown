@@ -16,9 +16,16 @@
  * - Merge Dashboard Data projection (EP-091)
  */
 
+import { execFile } from 'child_process';
+import { promisify } from 'util';
+import * as path from 'path';
+import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { broadcast, addActivity } from '../sse';
+import { notifyBeadCompleted } from './autonomous-loop';
 // Types imported from local definitions (FeedEvent/FeedEventType used via SSE broadcast)
+
+const execFileAsync = promisify(execFile);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -103,42 +110,115 @@ const BACKOFF_MAX_MS = 10_000;
 // Default Quality Gates
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Set MEOW_STUB_GATES=false in env to run real CLI commands (tsc, eslint, npm test, npm run build).
+// Default (unset) = stub mode — all gates auto-pass. Safe for local dev & CI bootstrapping.
 const STUB_GATES_ENABLED = process.env.MEOW_STUB_GATES !== 'false';
+
+/** Derive gate working directory: bead worktree first, then env override, then cwd. */
+function resolveGateDir(item: MergeItem): string {
+  if (item.beadId) {
+    const wt = path.join(process.cwd(), '.worktrees', item.beadId);
+    if (fs.existsSync(wt)) return wt;
+  }
+  return process.env.MEOW_GATE_WORKDIR || process.cwd();
+}
+
+interface GateCmdResult { stdout: string; stderr: string; exitCode: number }
+
+async function runGateCmd(
+  program: string,
+  args: string[],
+  cwd: string,
+  timeoutMs: number,
+): Promise<GateCmdResult> {
+  try {
+    const { stdout, stderr } = await execFileAsync(program, args, {
+      cwd,
+      timeout: timeoutMs,
+      maxBuffer: 5 * 1024 * 1024,
+      env: { ...process.env },
+    });
+    return { stdout: stdout.trim(), stderr: stderr.trim(), exitCode: 0 };
+  } catch (err) {
+    const e = err as { stdout?: string; stderr?: string; code?: number };
+    return {
+      stdout: e.stdout?.trim() || '',
+      stderr: e.stderr?.trim() || String(err),
+      exitCode: e.code ?? 1,
+    };
+  }
+}
 
 async function defaultTypecheck(item: MergeItem): Promise<GateResult> {
   const start = Date.now();
   if (STUB_GATES_ENABLED) {
-    console.warn(`${PREFIX} typecheck gate is a STUB — auto-passing with no real validation (set MEOW_STUB_GATES=false to fail)`);
+    console.warn(`${PREFIX} typecheck gate is a STUB — auto-passing (set MEOW_STUB_GATES=false to enable)`);
     return { name: 'typecheck', status: 'passed', durationMs: Date.now() - start };
   }
-  return { name: 'typecheck', status: 'failed', durationMs: Date.now() - start, error: 'No real typecheck configured (MEOW_STUB_GATES=false)' };
+  const cwd = resolveGateDir(item);
+  console.log(`${PREFIX} typecheck running tsc --noEmit in ${cwd}`);
+  const result = await runGateCmd('npx', ['tsc', '--noEmit'], cwd, 120_000);
+  if (result.exitCode !== 0) {
+    return { name: 'typecheck', status: 'failed', durationMs: Date.now() - start, error: result.stderr || result.stdout };
+  }
+  return { name: 'typecheck', status: 'passed', durationMs: Date.now() - start };
 }
 
 async function defaultLint(item: MergeItem): Promise<GateResult> {
   const start = Date.now();
   if (STUB_GATES_ENABLED) {
-    console.warn(`${PREFIX} lint gate is a STUB — auto-passing with no real validation (set MEOW_STUB_GATES=false to fail)`);
+    console.warn(`${PREFIX} lint gate is a STUB — auto-passing (set MEOW_STUB_GATES=false to enable)`);
     return { name: 'lint', status: 'passed', durationMs: Date.now() - start };
   }
-  return { name: 'lint', status: 'failed', durationMs: Date.now() - start, error: 'No real lint configured (MEOW_STUB_GATES=false)' };
+  const cwd = resolveGateDir(item);
+  console.log(`${PREFIX} lint running npm run lint in ${cwd}`);
+  const npmResult = await runGateCmd('npm', ['run', 'lint', '--', '--max-warnings', '0'], cwd, 60_000);
+  if (npmResult.exitCode === 0) {
+    return { name: 'lint', status: 'passed', durationMs: Date.now() - start };
+  }
+  // Fallback to eslint directly if project has no lint script
+  if (npmResult.stderr.includes('Missing script') || npmResult.stderr.includes('missing script')) {
+    const eslintResult = await runGateCmd('npx', ['eslint', '.', '--ext', '.ts,.tsx', '--max-warnings', '0'], cwd, 60_000);
+    if (eslintResult.exitCode === 0) {
+      return { name: 'lint', status: 'passed', durationMs: Date.now() - start };
+    }
+    return { name: 'lint', status: 'failed', durationMs: Date.now() - start, error: eslintResult.stderr || eslintResult.stdout };
+  }
+  return { name: 'lint', status: 'failed', durationMs: Date.now() - start, error: npmResult.stderr || npmResult.stdout };
 }
 
 async function defaultTest(item: MergeItem): Promise<GateResult> {
   const start = Date.now();
   if (STUB_GATES_ENABLED) {
-    console.warn(`${PREFIX} test gate is a STUB — auto-passing with no real validation (set MEOW_STUB_GATES=false to fail)`);
+    console.warn(`${PREFIX} test gate is a STUB — auto-passing (set MEOW_STUB_GATES=false to enable)`);
     return { name: 'test', status: 'passed', durationMs: Date.now() - start };
   }
-  return { name: 'test', status: 'failed', durationMs: Date.now() - start, error: 'No real test runner configured (MEOW_STUB_GATES=false)' };
+  const cwd = resolveGateDir(item);
+  console.log(`${PREFIX} test running npm test in ${cwd}`);
+  const result = await runGateCmd('npm', ['test', '--', '--passWithNoTests'], cwd, 300_000);
+  if (result.exitCode !== 0) {
+    // Treat "no tests found" as a pass — a new bead may not have tests yet
+    if (result.stderr.includes('No tests found') || result.stdout.includes('No tests found')) {
+      return { name: 'test', status: 'passed', durationMs: Date.now() - start };
+    }
+    return { name: 'test', status: 'failed', durationMs: Date.now() - start, error: result.stderr || result.stdout };
+  }
+  return { name: 'test', status: 'passed', durationMs: Date.now() - start };
 }
 
 async function defaultBuild(item: MergeItem): Promise<GateResult> {
   const start = Date.now();
   if (STUB_GATES_ENABLED) {
-    console.warn(`${PREFIX} build gate is a STUB — auto-passing with no real validation (set MEOW_STUB_GATES=false to fail)`);
+    console.warn(`${PREFIX} build gate is a STUB — auto-passing (set MEOW_STUB_GATES=false to enable)`);
     return { name: 'build', status: 'passed', durationMs: Date.now() - start };
   }
-  return { name: 'build', status: 'failed', durationMs: Date.now() - start, error: 'No real build configured (MEOW_STUB_GATES=false)' };
+  const cwd = resolveGateDir(item);
+  console.log(`${PREFIX} build running npm run build in ${cwd}`);
+  const result = await runGateCmd('npm', ['run', 'build'], cwd, 300_000);
+  if (result.exitCode !== 0) {
+    return { name: 'build', status: 'failed', durationMs: Date.now() - start, error: result.stderr || result.stdout };
+  }
+  return { name: 'build', status: 'passed', durationMs: Date.now() - start };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -479,6 +559,7 @@ export class Refinery {
     // Close linked bead if present
     if (item.beadId) {
       closedBeads.push(item.beadId);
+      notifyBeadCompleted(item.beadId);
       console.log(`${PREFIX} Post-merge: closed bead ${item.beadId}`);
     }
 
@@ -554,8 +635,16 @@ export class Refinery {
     }
 
     try {
-      // In production: git merge --ff-only, git push
       console.log(`${PREFIX} Fast-path merge executing for ${itemId} (branch=${item.branch})`);
+
+      // Real git merge: fetch + merge --ff-only + push
+      const mergeResult = await this.gitMergeBranch(item.branch);
+      if (!mergeResult.success) {
+        this.releasePushLock(itemId);
+        item.status = 'blocked';
+        console.error(`${PREFIX} Git merge failed for ${itemId}: ${mergeResult.error}`);
+        return { success: false, error: mergeResult.error };
+      }
 
       // Cleanup (marks merged, releases lock, notifies, etc.)
       this.postMergeCleanup(itemId);
@@ -569,6 +658,47 @@ export class Refinery {
       console.error(`${PREFIX} Fast-path merge failed for ${itemId}: ${error}`);
       return { success: false, error };
     }
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Git Merge (real execution)
+  // ───────────────────────────────────────────────────────────────────────────
+
+  /** Perform real git merge: fetch → merge --no-ff → push. */
+  private async gitMergeBranch(branch: string): Promise<{ success: boolean; error?: string }> {
+    const cwd = process.env.MEOW_GATE_WORKDIR || process.cwd();
+
+    // Sanitize branch name: only allow safe characters
+    if (!/^[a-zA-Z0-9_\-./]+$/.test(branch)) {
+      return { success: false, error: `Invalid branch name: ${branch}` };
+    }
+
+    // Fetch latest
+    const fetchRes = await runGateCmd('git', ['fetch', 'origin'], cwd, 30_000);
+    if (fetchRes.exitCode !== 0) {
+      console.warn(`${PREFIX} git fetch warning: ${fetchRes.stderr}`);
+    }
+
+    // Merge the branch into current (usually main)
+    const mergeRes = await runGateCmd(
+      'git', ['merge', '--no-ff', `origin/${branch}`, '-m', `Merge ${branch} [MEOW Refinery]`],
+      cwd, 60_000,
+    );
+    if (mergeRes.exitCode !== 0) {
+      return { success: false, error: `git merge failed: ${mergeRes.stderr || mergeRes.stdout}` };
+    }
+
+    // Push
+    const pushRes = await runGateCmd('git', ['push', 'origin', 'HEAD'], cwd, 30_000);
+    if (pushRes.exitCode !== 0) {
+      return { success: false, error: `git push failed: ${pushRes.stderr || pushRes.stdout}` };
+    }
+
+    // Cleanup: delete merged branch
+    void runGateCmd('git', ['push', 'origin', '--delete', branch], cwd, 15_000).catch(() => {});
+
+    console.log(`${PREFIX} Git merge+push complete for branch ${branch}`);
+    return { success: true };
   }
 
   // ───────────────────────────────────────────────────────────────────────────
