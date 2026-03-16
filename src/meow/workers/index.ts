@@ -1,12 +1,12 @@
 /**
  * Worker Roles — Gas Town hierarchy
  *
- * Mayor (MOROS) → orchestrates, never codes
+ * Mayor → orchestrates, never codes
  * Polecat → ephemeral workers in isolated worktrees
  * Witness → supervises polecats, nudges/escalates
  * Deacon → system health daemon with Dogs
  * Boot → watchdog for Deacon (future)
- * Crew → long-lived named agents (NOUS + Copy Chief)
+ * Crew → long-lived named agents (persistent identity)
  * Refinery → merge queue manager (future)
  * Overseer → human operator
  */

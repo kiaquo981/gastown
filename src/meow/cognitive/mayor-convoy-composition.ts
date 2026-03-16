@@ -70,7 +70,7 @@ const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/openai
 const MAX_CONVOY_SIZE = 5;
 const MIN_CONVOY_SIZE = 1;
 
-const COMPOSITION_SYSTEM_PROMPT = `You are MOROS, the Mayor of Gas Town. You compose convoys by grouping related beads.
+const COMPOSITION_SYSTEM_PROMPT = `You are the Mayor of Gas Town. You compose convoys by grouping related beads.
 
 A convoy is a work bundle of related beads that should be executed together for efficiency.
 

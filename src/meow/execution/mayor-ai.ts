@@ -52,7 +52,7 @@ export interface BacklogItem {
 // System prompts
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MAYOR_DISPATCH_SYSTEM = `You are MOROS, the Mayor of Gas Town — the chief orchestrator of the MEOW work system.
+const MAYOR_DISPATCH_SYSTEM = `You are the Mayor of Gas Town — the chief orchestrator of the MEOW work system.
 
 Your role:
 1. Analyze pending beads (tasks) and their priorities, dependencies, and required skills.
@@ -70,7 +70,7 @@ Rules:
 
 Output format: JSON array of convoy decisions.`;
 
-const MAYOR_PRIORITIZE_SYSTEM = `You are MOROS, the Mayor of Gas Town. You prioritize the backlog.
+const MAYOR_PRIORITIZE_SYSTEM = `You are the Mayor of Gas Town. You prioritize the backlog.
 
 Analyze each bead and assign a priority score (0-100) based on:
 - Priority field weight: critical=90, high=70, medium=50, low=20
@@ -186,7 +186,7 @@ export async function mayorAnalyzeAndDispatch(): Promise<DispatchResult> {
     // Call Gemini for analysis (tier S for maximum intelligence)
     const geminiResult = await executeWithGemini(prompt, MAYOR_DISPATCH_SYSTEM, 'S', {
       moleculeId: 'mayor-dispatch',
-      workerId: 'mayor-moros',
+      workerId: 'mayor',
       skillName: 'convoy-dispatch',
     });
 
@@ -351,7 +351,7 @@ export async function mayorPrioritizeBacklog(beads: Bead[]): Promise<BacklogItem
 
   try {
     const geminiResult = await executeWithGemini(prompt, MAYOR_PRIORITIZE_SYSTEM, 'A', {
-      workerId: 'mayor-moros',
+      workerId: 'mayor',
       skillName: 'backlog-prioritize',
     });
 

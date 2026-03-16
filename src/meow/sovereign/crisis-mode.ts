@@ -147,7 +147,7 @@ const MAX_CRISIS_HISTORY = 100;
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL ?? '';
 const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE ?? '';
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY ?? '';
-const OPERATOR_PHONE = process.env.MOROS_OPERATOR_PHONE ?? '5511964682447';
+const OPERATOR_PHONE = process.env.MAYOR_OPERATOR_PHONE ?? '5511964682447';
 
 /** Predefined crisis trigger configurations and playbooks */
 const CRISIS_TRIGGERS: CrisisTriggerConfig[] = [

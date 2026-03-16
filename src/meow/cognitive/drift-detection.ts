@@ -680,7 +680,7 @@ export class DriftDetector {
   // ─── Internal: WhatsApp alert ──────────────────────────────────────
 
   private async sendWhatsAppAlert(event: DriftEvent): Promise<void> {
-    const phone = process.env.MOROS_OPERATOR_PHONE;
+    const phone = process.env.OPERATOR_PHONE;
     const evolutionUrl = process.env.EVOLUTION_API_URL;
     const evolutionInstance = process.env.EVOLUTION_INSTANCE;
     const evolutionKey = process.env.EVOLUTION_API_KEY;

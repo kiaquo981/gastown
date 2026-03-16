@@ -87,7 +87,7 @@ const PRIORITY_URGENCY_MAP: Record<string, number> = {
   low: 20,
 };
 
-const SCORING_SYSTEM_PROMPT = `You are MOROS, the Mayor of Gas Town. You score beads (tasks) for prioritization.
+const SCORING_SYSTEM_PROMPT = `You are the Mayor of Gas Town. You score beads (tasks) for prioritization.
 
 For each bead, provide scores on 5 dimensions (0-100):
 - urgency: How time-sensitive is this? Consider priority field, deadlines, SLA risk.

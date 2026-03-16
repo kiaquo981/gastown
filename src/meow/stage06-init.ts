@@ -2,8 +2,7 @@
  * Stage 06 — Sovereign Gas Town Initialization
  *
  * Boots all Stage 06 sovereign services:
- * - Entity Integration: MOROS supreme mayor, ATLAS world advisor, NOUS oracle, Entity Council (SG-001–004)
- * - Multi-Instance: Ecom Latam, Ecom Global, Content Factory, Federation (SG-005–008)
+ * - Entity Integration: ATLAS world advisor, NOUS oracle, Entity Council (SG-002–004)
  * - 24/7 Autonomy: circadian rhythm, self-scheduling, crisis mode, maintenance mode (SG-009–012)
  * - Evolution: formula marketplace, skill evolution, worker specialization, formula genesis (SG-013–016)
  * - Persistent Identity: worker memory, chronicle, decision journal, reputation (SG-017–020)
@@ -17,36 +16,18 @@ export async function initStage06(): Promise<void> {
   const t0 = Date.now();
   const results: string[] = [];
 
-  // ── Wave 1: Entity Integration (SG-001–004) ──────────────────────
+  // ── Wave 1: Entity Integration (SG-002–004) ──────────────────────
   try {
-    const { getMorosSupremeMayor } = await import('./sovereign/moros-supreme-mayor');
     const { getAtlasWorldAdvisor } = await import('./sovereign/atlas-world-advisor');
     const { getNousEpistemicOracle } = await import('./sovereign/nous-epistemic-oracle');
     const { getEntityCouncil } = await import('./sovereign/entity-council');
-    getMorosSupremeMayor();
     getAtlasWorldAdvisor();
     getNousEpistemicOracle();
     getEntityCouncil();
-    results.push('Entity Integration: 4 modules');
+    results.push('Entity Integration: 3 modules');
   } catch (err) {
     console.warn('[Stage06] Entity Integration init failed:', (err as Error).message);
     results.push('Entity Integration: FAILED');
-  }
-
-  // ── Wave 2: Multi-Instance (SG-005–008) ───────────────────────────
-  try {
-    const { getGasTownEcomLatam } = await import('./sovereign/gastown-ecom-latam');
-    const { getGasTownEcomGlobal } = await import('./sovereign/gastown-ecom-global');
-    const { getGasTownContentFactory } = await import('./sovereign/gastown-content-factory');
-    const { getGasTownFederation } = await import('./sovereign/gastown-federation');
-    getGasTownEcomLatam();
-    getGasTownEcomGlobal();
-    getGasTownContentFactory();
-    getGasTownFederation();
-    results.push('Multi-Instance: 4 towns');
-  } catch (err) {
-    console.warn('[Stage06] Multi-Instance init failed:', (err as Error).message);
-    results.push('Multi-Instance: FAILED');
   }
 
   // ── Wave 3: 24/7 Autonomy (SG-009–012) ────────────────────────────
@@ -170,11 +151,6 @@ export function shutdownStage06(): void {
   try {
     const { getWebhooksOutbound } = require('./sovereign/webhooks-outbound');
     getWebhooksOutbound().shutdown?.();
-  } catch { /* not loaded */ }
-
-  try {
-    const { getGasTownFederation } = require('./sovereign/gastown-federation');
-    getGasTownFederation().stop?.();
   } catch { /* not loaded */ }
 
   console.info('[MEOW] Stage 06 sovereign services stopped');

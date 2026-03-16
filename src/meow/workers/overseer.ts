@@ -244,7 +244,7 @@ export class Overseer {
   private async notifyWhatsApp(text: string): Promise<void> {
     if (!this.config.whatsappEnabled) return;
 
-    const phone = process.env.MOROS_OPERATOR_PHONE;
+    const phone = process.env.OPERATOR_PHONE;
     const evoUrl = process.env.EVOLUTION_API_URL;
     const evoInstance = process.env.EVOLUTION_INSTANCE;
     const evoKey = process.env.EVOLUTION_API_KEY;

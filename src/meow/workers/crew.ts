@@ -4,7 +4,7 @@
  * Gas Town: "Crew don't die. Crew remember. Crew persist."
  *
  * Unlike polecats (ephemeral), crew members are permanent agents with
- * persistent identity and context. Maps to MOROS, NOUS, Copy Chief.
+ * persistent identity and context. Persistent named agents.
  * No Witness supervision — crew answers only to the Mayor.
  */
 
@@ -51,9 +51,9 @@ const DEFAULT_CONFIG: CrewManagerConfig = {
 
 // Pre-registered crew mapped to existing Gas Town entities
 const DEFAULT_CREW: Array<{ id: string; name: string; tier: WorkerIdentity['tier']; model: WorkerIdentity['model']; agentDefId: string }> = [
-  { id: 'crew-moros',       name: 'MOROS',       tier: 'S', model: 'opus',   agentDefId: 'mayor-moros' },
-  { id: 'crew-nous',        name: 'NOUS',        tier: 'S', model: 'opus',   agentDefId: 'nous-entity' },
-  { id: 'crew-copy-chief',  name: 'Copy Chief',  tier: 'A', model: 'sonnet', agentDefId: 'copy-chief-schriefer' },
+  { id: 'crew-mayor',       name: 'Mayor',       tier: 'S', model: 'opus',   agentDefId: 'mayor' },
+  { id: 'crew-strategist',  name: 'Strategist',  tier: 'S', model: 'opus',   agentDefId: 'strategist' },
+  { id: 'crew-specialist',  name: 'Specialist',  tier: 'A', model: 'sonnet', agentDefId: 'specialist' },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ export class CrewManager {
     this.initDefaultCrew();
   }
 
-  /** Initialize default crew members (MOROS, NOUS, Copy Chief) */
+  /** Initialize default crew members */
   private initDefaultCrew(): void {
     const now = new Date();
     for (const def of DEFAULT_CREW) {

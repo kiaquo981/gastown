@@ -1,9 +1,8 @@
 /**
- * MAYOR — Chief of Staff (MOROS Entity Enhanced)
+ * MAYOR — Chief of Staff
  *
  * Gas Town: "Mayor never writes code. Mayor orchestrates."
  * Creates convoys, dispatches work, handles handoffs and escalations.
- * Maps to the existing MOROS entity in Gas Town.
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -33,8 +32,8 @@ export class Mayor {
 
   constructor() {
     this.state = {
-      id: 'mayor-moros',
-      name: 'MOROS',
+      id: 'mayor',
+      name: 'Mayor',
       activeConvoys: new Map(),
       inbox: [],
     };

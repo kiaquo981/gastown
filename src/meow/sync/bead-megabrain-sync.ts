@@ -7,7 +7,7 @@
  *   - Format as MegaBrain fragment
  *   - Insert into megabrain_fragments table
  *
- * Makes patterns searchable: "what worked for LATAM campaigns?"
+ * Makes patterns searchable: "what worked for regional campaigns?"
  * Uses Gemini for AI-powered pattern extraction.
  */
 

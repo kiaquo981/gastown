@@ -161,7 +161,7 @@ export interface SkillManifest {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type WorkerRole =
-  | 'mayor'       // Chief of Staff (MOROS) — orchestrates, never codes
+  | 'mayor'       // Chief of Staff — orchestrates, never codes
   | 'polecat'     // Ephemeral worker — spawned per task, isolated worktree
   | 'crew'        // Long-lived named agent — persistent identity
   | 'refinery'    // Merge queue manager — sequential rebase

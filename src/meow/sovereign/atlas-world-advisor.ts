@@ -12,7 +12,7 @@
  *   - Detects market condition changes proactively
  *   - Publishes structured advisories with recommended actions
  *   - Auto-injects country context into formula variables before execution
- *   - Feeds intelligence to MOROS for strategic directive generation
+ *   - Feeds intelligence to the Mayor for strategic directive generation
  *
  * Advisory types:
  *   - market_opportunity:   Favorable conditions detected (currency dip, holiday)
@@ -803,7 +803,7 @@ Respond with JSON array:
 If no advisories warranted, respond: []`;
 
     const raw = await callGemini(
-      'You are ATLAS, the geopolitical intelligence engine for a global e-commerce operation across LATAM + Europe. Provide actionable market intelligence. Respond ONLY with valid JSON.',
+      'You are ATLAS, the geopolitical intelligence engine for a global e-commerce operation across multiple markets. Provide actionable market intelligence. Respond ONLY with valid JSON.',
       prompt,
     );
 
