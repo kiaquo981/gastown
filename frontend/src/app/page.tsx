@@ -26,6 +26,8 @@ class ViewErrorBoundary extends Component<{ children: ReactNode; viewId: string 
 // ── View Components (lazy loaded, no SSR) ────────────────────────────────────
 const views: Record<string, ReturnType<typeof dynamic>> = {
   'gastown-hq': dynamic(() => import('@/components/GasTownHQView'), { ssr: false }),
+  'gastown-feed': dynamic(() => import('@/components/FeedView'), { ssr: false }),
+  'gastown-doctor': dynamic(() => import('@/components/DoctorView'), { ssr: false }),
   'gastown-timeline': dynamic(() => import('@/components/GasTownTimelineView'), { ssr: false }),
   // Engine (deep views)
   'engine-guzzoline': dynamic(() => import('@/components/GuzzolineGaugeView'), { ssr: false }),
@@ -36,6 +38,8 @@ const views: Record<string, ReturnType<typeof dynamic>> = {
   'engine-seance': dynamic(() => import('@/components/SeanceLogView'), { ssr: false }),
   'engine-tmux': dynamic(() => import('@/components/TmuxSessionView'), { ssr: false }),
   'engine-maestro': dynamic(() => import('@/components/MaestroIntegrationView'), { ssr: false }),
+  'engine-wasteland': dynamic(() => import('@/components/WastelandView'), { ssr: false }),
+  'engine-formulas': dynamic(() => import('@/components/FormulaLabView'), { ssr: false }),
   // MEOW Stack
   'meow-molecules': dynamic(() => import('@/components/MoleculeView'), { ssr: false }),
   'meow-beads': dynamic(() => import('@/components/BeadsView'), { ssr: false }),
@@ -60,6 +64,8 @@ const views: Record<string, ReturnType<typeof dynamic>> = {
 const NAV = [
   // Core
   { id: 'gastown-hq', label: 'HQ', icon: '🏙️', group: 'core' },
+  { id: 'gastown-feed', label: 'Feed', icon: '▦', group: 'core' },
+  { id: 'gastown-doctor', label: 'Doctor', icon: '🩺', group: 'core' },
   { id: 'gastown-timeline', label: 'Timeline', icon: '📅', group: 'core' },
   // Engine (deep views)
   { id: 'engine-guzzoline', label: 'Guzzoline', icon: '⛽', group: 'engine' },
@@ -70,6 +76,8 @@ const NAV = [
   { id: 'engine-seance', label: 'Seance', icon: '☠', group: 'engine' },
   { id: 'engine-tmux', label: 'tmux', icon: '$', group: 'engine' },
   { id: 'engine-maestro', label: 'Maestro', icon: '♦', group: 'engine' },
+  { id: 'engine-wasteland', label: 'Wasteland', icon: '🌐', group: 'engine' },
+  { id: 'engine-formulas', label: 'Formulas', icon: '📜', group: 'engine' },
   // MEOW Stack
   { id: 'meow-molecules', label: 'Molecules', icon: '🧬', group: 'meow' },
   { id: 'meow-beads', label: 'Beads', icon: '📿', group: 'meow' },
