@@ -1,7 +1,27 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Component, type ReactNode, type ErrorInfo } from 'react';
 import dynamic from 'next/dynamic';
+
+// ── Error Boundary to catch and display client-side errors ──────────────────
+class ViewErrorBoundary extends Component<{ children: ReactNode; viewId: string }, { error: Error | null }> {
+  state: { error: Error | null } = { error: null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: ErrorInfo) { console.error(`[GasTown] View crash in ${this.props.viewId}:`, error, info); }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ background: '#0f1419', color: '#f07178', padding: 40, fontFamily: 'monospace', minHeight: '60vh' }}>
+          <h2 style={{ color: '#e6e1cf', marginBottom: 16 }}>View Error: {this.props.viewId}</h2>
+          <pre style={{ color: '#ffb454', whiteSpace: 'pre-wrap', fontSize: 12, lineHeight: 1.6 }}>{this.state.error.message}</pre>
+          <pre style={{ color: '#6c7680', whiteSpace: 'pre-wrap', fontSize: 10, marginTop: 12 }}>{this.state.error.stack}</pre>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 20, padding: '8px 16px', background: '#1a1f26', border: '1px solid #2d363f', color: '#95e6cb', cursor: 'pointer' }}>Retry</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // ── View Components (lazy loaded, no SSR) ────────────────────────────────────
 const views: Record<string, ReturnType<typeof dynamic>> = {
@@ -156,7 +176,9 @@ export default function GasTownPage() {
       </nav>
 
       {/* ── Active View ──────────────────────────────────────────────────── */}
-      <ViewComponent />
+      <ViewErrorBoundary viewId={currentView} key={currentView}>
+        <ViewComponent />
+      </ViewErrorBoundary>
     </div>
   );
 }
