@@ -135,8 +135,8 @@ function MiniChart({
       </div>
       {/* Time axis */}
       <div className="flex justify-between mt-1">
-        <span className="text-[8px] text-white/15">{safeData.length > 0 ? formatTime(safeData[0].ts) : ''}</span>
-        <span className="text-[8px] text-white/15">{safeData.length > 0 ? formatTime(safeData[safeData.length - 1].ts) : ''}</span>
+        <span className="text-[8px] text-[#4a5159]">{safeData.length > 0 ? formatTime(safeData[0].ts) : ''}</span>
+        <span className="text-[8px] text-[#4a5159]">{safeData.length > 0 ? formatTime(safeData[safeData.length - 1].ts) : ''}</span>
       </div>
     </div>
   );
@@ -222,7 +222,7 @@ export default function ObservabilityTowerView() {
             </motion.span>
           )}
           <span className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400' : 'bg-red-400'}`} />
-          <span className="text-[10px] text-white/20">Updated {formatTime(lastUpdate)}</span>
+          <span className="text-[10px] text-[#4a5159]">Updated {formatTime(lastUpdate)}</span>
         </div>
       </div>
 
@@ -248,21 +248,21 @@ export default function ObservabilityTowerView() {
           value={filterMolecule}
           onChange={e => setFilterMolecule(e.target.value)}
           placeholder="Molecule..."
-          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
+          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-[#4a5159] outline-none focus:border-cyan-500/30 w-36"
         />
         <input
           type="text"
           value={filterWorker}
           onChange={e => setFilterWorker(e.target.value)}
           placeholder="Worker..."
-          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
+          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-[#4a5159] outline-none focus:border-cyan-500/30 w-36"
         />
         <input
           type="text"
           value={filterSkill}
           onChange={e => setFilterSkill(e.target.value)}
           placeholder="Skill..."
-          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
+          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-[#4a5159] outline-none focus:border-cyan-500/30 w-36"
         />
       </div>
 
@@ -310,7 +310,7 @@ export default function ObservabilityTowerView() {
       {/* Completion Rate Summary */}
       <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
         <div className="text-[10px] text-[#4a5159] uppercase tracking-wider mb-3">Molecule Completion</div>
-        <div className="h-2 bg-white/5 rounded-none overflow-hidden">
+        <div className="h-2 bg-[#2d363f]/30 rounded-none overflow-hidden">
           <motion.div
             className="h-full bg-emerald-400/50"
             initial={{ width: 0 }}
@@ -320,7 +320,7 @@ export default function ObservabilityTowerView() {
         </div>
         <div className="flex justify-between mt-2">
           <span className="text-xs text-[#4a5159]">{formatPct(stats.moleculeCompletionRate)} completed</span>
-          <span className="text-xs text-white/20">{stats.activeMolecules} active molecules</span>
+          <span className="text-xs text-[#4a5159]">{stats.activeMolecules} active molecules</span>
         </div>
       </div>
 
@@ -337,9 +337,9 @@ export default function ObservabilityTowerView() {
             const h = (p.value / maxVal) * 80;
             return (
               <div key={p.label} className="flex flex-col items-center gap-1 flex-1">
-                <span className="text-xs text-white/50">{formatMs(p.value)}</span>
+                <span className="text-xs text-[#6c7680]">{formatMs(p.value)}</span>
                 <div className={`w-full ${p.color} rounded-none`} style={{ height: `${Math.max(4, h)}px` }} />
-                <span className="text-[10px] text-white/25">{p.label}</span>
+                <span className="text-[10px] text-[#4a5159]">{p.label}</span>
               </div>
             );
           })}

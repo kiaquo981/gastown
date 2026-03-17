@@ -216,7 +216,7 @@ export default function MoleculeDAG({ steps, onStepClick, onCompleteStep, select
 
   if (layout.nodes.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-white/20 text-sm">
+      <div className="flex items-center justify-center h-full text-[#4a5159] text-sm">
         No steps to visualize
       </div>
     );

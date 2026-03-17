@@ -217,15 +217,15 @@ export default function MoleculeView() {
   /* ---------- Render ---------- */
 
   return (
-    <div className="h-full flex bg-[#0a0a0a] font-mono text-white/90">
+    <div className="h-full flex bg-[#0a0a0a] font-mono text-[#e6e1cf]">
       {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex-none px-6 py-4 border-b border-white/5">
+        <div className="flex-none px-6 py-4 border-b border-[#2d363f]">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <span className="text-lg font-bold tracking-tight">MEOW</span>
-              <span className="text-xs text-white/40">Molecule Engine of Work</span>
+              <span className="text-xs text-[#4a5159]">Molecule Engine of Work</span>
               <span className="px-2 py-0.5 text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 {activeMolecules} active
               </span>
@@ -234,7 +234,7 @@ export default function MoleculeView() {
             </div>
             <button
               onClick={() => setShowCookModal(true)}
-              className="px-3 py-1.5 text-xs bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              className="px-3 py-1.5 text-xs bg-[#2d363f]/30 border border-[#2d363f] hover:bg-[#2d363f]/50 transition-colors"
             >
               Cook Formula
             </button>
@@ -243,26 +243,26 @@ export default function MoleculeView() {
           {/* Filters */}
           <div className="flex items-center gap-3">
             {/* Tab switcher */}
-            <div className="flex border border-white/10">
+            <div className="flex border border-[#2d363f]">
               <button
                 onClick={() => setTab('molecules')}
-                className={`px-3 py-1 text-xs ${tab === 'molecules' ? 'bg-white/10 text-white/90' : 'text-white/40 hover:text-white/60'}`}
+                className={`px-3 py-1 text-xs ${tab === 'molecules' ? 'bg-[#2d363f]/50 text-[#e6e1cf]' : 'text-[#4a5159] hover:text-[#6c7680]'}`}
               >
                 Molecules
               </button>
               <button
                 onClick={() => setTab('convoys')}
-                className={`px-3 py-1 text-xs ${tab === 'convoys' ? 'bg-white/10 text-white/90' : 'text-white/40 hover:text-white/60'}`}
+                className={`px-3 py-1 text-xs ${tab === 'convoys' ? 'bg-[#2d363f]/50 text-[#e6e1cf]' : 'text-[#4a5159] hover:text-[#6c7680]'}`}
               >
                 Convoys
               </button>
             </div>
-            <div className="w-px h-5 bg-white/10" />
+            <div className="w-px h-5 bg-[#2d363f]/50" />
             {/* Phase filter */}
             <div className="flex gap-1">
               <button
                 onClick={() => setFilterPhase('all')}
-                className={`px-2 py-1 text-[10px] border ${filterPhase === 'all' ? 'bg-white/10 border-white/20 text-white/80' : 'border-white/5 text-white/30 hover:text-white/50'}`}
+                className={`px-2 py-1 text-[10px] border ${filterPhase === 'all' ? 'bg-[#2d363f]/50 border-[#2d363f] text-[#e6e1cf]' : 'border-[#2d363f] text-[#4a5159] hover:text-[#6c7680]'}`}
               >
                 All
               </button>
@@ -270,22 +270,22 @@ export default function MoleculeView() {
                 <button
                   key={p}
                   onClick={() => setFilterPhase(p)}
-                  className={`px-2 py-1 text-[10px] border ${filterPhase === p ? PHASE_BADGE[p] : 'border-white/5 text-white/30 hover:text-white/50'}`}
+                  className={`px-2 py-1 text-[10px] border ${filterPhase === p ? PHASE_BADGE[p] : 'border-[#2d363f] text-[#4a5159] hover:text-[#6c7680]'}`}
                 >
                   {PHASE_CONFIG[p].label}
                 </button>
               ))}
             </div>
-            <div className="w-px h-5 bg-white/10" />
+            <div className="w-px h-5 bg-[#2d363f]/50" />
             {/* Status filter */}
-            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as MoleculeStatus | 'all')} className="px-2 py-1 text-xs bg-[#0d1117] border border-white/10 text-white/70">
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as MoleculeStatus | 'all')} className="px-2 py-1 text-xs bg-[#1a1f26] border border-[#2d363f] text-[#e6e1cf]/80">
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="completed">Completed</option>
               <option value="failed">Failed</option>
               <option value="paused">Paused</option>
             </select>
-            <button onClick={() => { fetchMolecules(); fetchFeed(); fetchConvoys(); }} className="px-2 py-1 text-xs text-white/40 hover:text-white/70 border border-white/10 bg-[#0d1117]">
+            <button onClick={() => { fetchMolecules(); fetchFeed(); fetchConvoys(); }} className="px-2 py-1 text-xs text-[#4a5159] hover:text-[#e6e1cf]/80 border border-[#2d363f] bg-[#1a1f26]">
               Refresh
             </button>
           </div>
@@ -294,11 +294,11 @@ export default function MoleculeView() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {loading ? (
-            <div className="flex items-center justify-center h-full text-white/30 text-sm">Loading molecules...</div>
+            <div className="flex items-center justify-center h-full text-[#4a5159] text-sm">Loading molecules...</div>
           ) : tab === 'molecules' ? (
             /* Molecule cards grid */
             molecules.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-white/20">
+              <div className="flex flex-col items-center justify-center h-full text-[#4a5159]">
                 <div className="text-4xl mb-3">&#x2697;</div>
                 <div className="text-sm">No molecules found</div>
                 <div className="text-xs mt-1">Cook a formula to create your first molecule</div>
@@ -312,30 +312,30 @@ export default function MoleculeView() {
                     <button
                       key={mol.id}
                       onClick={() => setSelectedMolecule(mol)}
-                      className={`text-left p-4 bg-[#0d1117] border border-white/5 hover:border-white/10 transition-colors ${
-                        selectedMolecule?.id === mol.id ? 'border-white/20 bg-white/[0.03]' : ''
+                      className={`text-left p-4 bg-[#1a1f26] border border-[#2d363f] hover:border-[#2d363f] transition-colors ${
+                        selectedMolecule?.id === mol.id ? 'border-[#2d363f] bg-[#2d363f]/20' : ''
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <span className="text-xs text-white/80 font-bold leading-tight">{mol.name}</span>
+                        <span className="text-xs text-[#e6e1cf] font-bold leading-tight">{mol.name}</span>
                         <span className={`flex-none px-1.5 py-0.5 text-[10px] border ${PHASE_BADGE[mol.phase] || PHASE_BADGE.solid}`}>
                           {PHASE_CONFIG[mol.phase]?.label || mol.phase}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 mb-3 text-[10px] text-white/30">
+                      <div className="flex items-center gap-2 mb-3 text-[10px] text-[#4a5159]">
                         <span className="font-mono">{mol.id?.slice(0, 8)}</span>
                         <span className={`px-1 py-0.5 border ${STATUS_CONFIG[mol.status]?.cls || 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'}`}>
                           {STATUS_CONFIG[mol.status]?.label || mol.status}
                         </span>
-                        {mol.formulaName && <span className="text-white/20">{mol.formulaName}</span>}
+                        {mol.formulaName && <span className="text-[#4a5159]">{mol.formulaName}</span>}
                       </div>
                       {/* Progress bar */}
                       <div className="mb-1.5">
-                        <div className="flex items-center justify-between text-[10px] text-white/30 mb-1">
+                        <div className="flex items-center justify-between text-[10px] text-[#4a5159] mb-1">
                           <span>Steps</span>
                           <span>{progress.done}/{progress.total} ({pct}%)</span>
                         </div>
-                        <div className="w-full h-1.5 bg-white/5 overflow-hidden">
+                        <div className="w-full h-1.5 bg-[#2d363f]/30 overflow-hidden">
                           <div
                             className={`h-full transition-all duration-300 ${
                               mol.phase === 'ice9' ? 'bg-cyan-400/60' :
@@ -358,7 +358,7 @@ export default function MoleculeView() {
                             />
                           ))}
                           {mol.steps.length > 20 && (
-                            <span className="text-[9px] text-white/20 ml-1">+{mol.steps.length - 20}</span>
+                            <span className="text-[9px] text-[#4a5159] ml-1">+{mol.steps.length - 20}</span>
                           )}
                         </div>
                       )}
@@ -370,22 +370,22 @@ export default function MoleculeView() {
           ) : (
             /* Convoys tab */
             convoys.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-white/20">
+              <div className="flex flex-col items-center justify-center h-full text-[#4a5159]">
                 <div className="text-sm">No convoys</div>
               </div>
             ) : (
               <div className="space-y-3">
                 {convoys.map(c => (
-                  <div key={c.id} className="p-4 bg-[#0d1117] border border-white/5">
+                  <div key={c.id} className="p-4 bg-[#1a1f26] border border-[#2d363f]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-white/80">{c.name}</span>
-                      <span className="text-[10px] text-white/30">{c.status}</span>
+                      <span className="text-xs font-bold text-[#e6e1cf]">{c.name}</span>
+                      <span className="text-[10px] text-[#4a5159]">{c.status}</span>
                     </div>
-                    <div className="text-[10px] text-white/30">
+                    <div className="text-[10px] text-[#4a5159]">
                       {c.moleculeIds?.length || 0} molecules
                     </div>
                     {c.createdAt && (
-                      <div className="text-[10px] text-white/20 mt-1">{new Date(c.createdAt).toLocaleString()}</div>
+                      <div className="text-[10px] text-[#4a5159] mt-1">{new Date(c.createdAt).toLocaleString()}</div>
                     )}
                   </div>
                 ))}
@@ -396,18 +396,18 @@ export default function MoleculeView() {
       </div>
 
       {/* Right sidebar: detail or feed */}
-      <div className="w-[360px] flex-none border-l border-white/5 flex flex-col overflow-hidden bg-[#0a0a0a]">
+      <div className="w-[360px] flex-none border-l border-[#2d363f] flex flex-col overflow-hidden bg-[#0a0a0a]">
         {selectedMolecule ? (
           /* Molecule detail */
           <>
-            <div className="flex-none px-4 py-3 border-b border-white/5 flex items-center justify-between">
-              <span className="text-xs font-bold text-white/70 uppercase">Molecule Detail</span>
-              <button onClick={() => setSelectedMolecule(null)} className="text-white/30 hover:text-white/60 text-sm">X</button>
+            <div className="flex-none px-4 py-3 border-b border-[#2d363f] flex items-center justify-between">
+              <span className="text-xs font-bold text-[#e6e1cf]/80 uppercase">Molecule Detail</span>
+              <button onClick={() => setSelectedMolecule(null)} className="text-[#4a5159] hover:text-[#6c7680] text-sm">X</button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Name + phase */}
               <div>
-                <div className="text-sm text-white/90 font-bold mb-1">{selectedMolecule.name}</div>
+                <div className="text-sm text-[#e6e1cf] font-bold mb-1">{selectedMolecule.name}</div>
                 <div className="flex items-center gap-2">
                   <span className={`px-1.5 py-0.5 text-[10px] border ${PHASE_BADGE[selectedMolecule.phase]}`}>
                     {PHASE_CONFIG[selectedMolecule.phase]?.label}
@@ -420,29 +420,29 @@ export default function MoleculeView() {
               {/* Metadata */}
               <div className="grid grid-cols-2 gap-2 text-[10px]">
                 <div>
-                  <div className="text-white/30 uppercase mb-0.5">ID</div>
-                  <div className="text-white/50 font-mono">{selectedMolecule.id?.slice(0, 12)}</div>
+                  <div className="text-[#4a5159] uppercase mb-0.5">ID</div>
+                  <div className="text-[#6c7680] font-mono">{selectedMolecule.id?.slice(0, 12)}</div>
                 </div>
                 <div>
-                  <div className="text-white/30 uppercase mb-0.5">Formula</div>
-                  <div className="text-white/50">{selectedMolecule.formulaName || '-'}</div>
+                  <div className="text-[#4a5159] uppercase mb-0.5">Formula</div>
+                  <div className="text-[#6c7680]">{selectedMolecule.formulaName || '-'}</div>
                 </div>
                 {selectedMolecule.createdAt && (
                   <div>
-                    <div className="text-white/30 uppercase mb-0.5">Created</div>
-                    <div className="text-white/40">{new Date(selectedMolecule.createdAt).toLocaleDateString()}</div>
+                    <div className="text-[#4a5159] uppercase mb-0.5">Created</div>
+                    <div className="text-[#4a5159]">{new Date(selectedMolecule.createdAt).toLocaleDateString()}</div>
                   </div>
                 )}
                 {selectedMolecule.updatedAt && (
                   <div>
-                    <div className="text-white/30 uppercase mb-0.5">Updated</div>
-                    <div className="text-white/40">{new Date(selectedMolecule.updatedAt).toLocaleDateString()}</div>
+                    <div className="text-[#4a5159] uppercase mb-0.5">Updated</div>
+                    <div className="text-[#4a5159]">{new Date(selectedMolecule.updatedAt).toLocaleDateString()}</div>
                   </div>
                 )}
               </div>
               {/* Steps timeline (vertical DAG) */}
               <div>
-                <div className="text-[10px] text-white/30 uppercase mb-2">Steps ({selectedMolecule.steps?.length || 0})</div>
+                <div className="text-[10px] text-[#4a5159] uppercase mb-2">Steps ({selectedMolecule.steps?.length || 0})</div>
                 <div className="space-y-0">
                   {(selectedMolecule.steps || []).map((step, idx) => {
                     const isLast = idx === (selectedMolecule.steps?.length || 0) - 1;
@@ -451,15 +451,15 @@ export default function MoleculeView() {
                         {/* Timeline connector */}
                         <div className="flex flex-col items-center w-5 flex-none">
                           <div className={`w-3 h-3 border ${STEP_STATUS_COLOR[step.status]}`} />
-                          {!isLast && <div className="w-px flex-1 bg-white/10 min-h-[24px]" />}
+                          {!isLast && <div className="w-px flex-1 bg-[#2d363f]/50 min-h-[24px]" />}
                         </div>
                         {/* Step content */}
                         <div className="flex-1 pb-3 min-w-0">
                           <div className="flex items-center justify-between gap-2">
                             <span className={`text-xs ${STEP_STATUS_TEXT[step.status]}`}>{step.name}</span>
-                            <span className="text-[9px] text-white/20 uppercase flex-none">{step.status}</span>
+                            <span className="text-[9px] text-[#4a5159] uppercase flex-none">{step.status}</span>
                           </div>
-                          <div className="flex items-center gap-2 mt-0.5 text-[10px] text-white/20">
+                          <div className="flex items-center gap-2 mt-0.5 text-[10px] text-[#4a5159]">
                             {step.assignee && <span>{step.assignee}</span>}
                             {step.beadId && <span className="font-mono">bead:{step.beadId.slice(0, 6)}</span>}
                             {step.dependsOn && step.dependsOn.length > 0 && (
@@ -486,21 +486,21 @@ export default function MoleculeView() {
         ) : (
           /* Activity Feed */
           <>
-            <div className="flex-none px-4 py-3 border-b border-white/5">
-              <span className="text-xs font-bold text-white/70 uppercase">Activity Feed</span>
+            <div className="flex-none px-4 py-3 border-b border-[#2d363f]">
+              <span className="text-xs font-bold text-[#e6e1cf]/80 uppercase">Activity Feed</span>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {feed.length === 0 ? (
-                <div className="text-center py-8 text-white/15 text-xs">No events yet</div>
+                <div className="text-center py-8 text-[#4a5159] text-xs">No events yet</div>
               ) : (
                 feed.map(ev => (
-                  <div key={ev.id} className="p-2 bg-[#0d1117] border border-white/5">
+                  <div key={ev.id} className="p-2 bg-[#1a1f26] border border-[#2d363f]">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] text-white/50">{ev.type}</span>
-                      <span className="text-[9px] text-white/20">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+                      <span className="text-[10px] text-[#6c7680]">{ev.type}</span>
+                      <span className="text-[9px] text-[#4a5159]">{new Date(ev.timestamp).toLocaleTimeString()}</span>
                     </div>
-                    <div className="text-xs text-white/70">{ev.message}</div>
-                    {ev.actor && <div className="text-[10px] text-white/20 mt-0.5">{ev.actor}</div>}
+                    <div className="text-xs text-[#e6e1cf]/80">{ev.message}</div>
+                    {ev.actor && <div className="text-[10px] text-[#4a5159] mt-0.5">{ev.actor}</div>}
                   </div>
                 ))
               )}
@@ -512,27 +512,27 @@ export default function MoleculeView() {
       {/* Cook Modal */}
       {showCookModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-[600px] bg-[#0d1117] border border-white/10 p-6">
+          <div className="w-[600px] bg-[#1a1f26] border border-[#2d363f] p-6">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold text-white/80">Cook Formula</span>
-              <button onClick={() => setShowCookModal(false)} className="text-white/30 hover:text-white/60 text-sm">X</button>
+              <span className="text-sm font-bold text-[#e6e1cf]">Cook Formula</span>
+              <button onClick={() => setShowCookModal(false)} className="text-[#4a5159] hover:text-[#6c7680] text-sm">X</button>
             </div>
             <div className="mb-3">
-              <label className="block text-[10px] text-white/30 uppercase mb-1">Formula TOML</label>
+              <label className="block text-[10px] text-[#4a5159] uppercase mb-1">Formula TOML</label>
               <textarea
                 value={cookToml}
                 onChange={e => setCookToml(e.target.value)}
                 rows={15}
                 placeholder={`[formula]\nname = "my-formula"\nversion = "1.0.0"\n\n[[steps]]\nname = "step-1"\nskill = "research"\n\n[[steps]]\nname = "step-2"\nskill = "implement"\ndepends_on = ["step-1"]`}
-                className="w-full px-3 py-2 text-xs bg-[#0a0a0a] border border-white/10 text-white/90 placeholder-white/20 focus:outline-none focus:border-white/20 resize-none font-mono"
+                className="w-full px-3 py-2 text-xs bg-[#0a0a0a] border border-[#2d363f] text-[#e6e1cf] placeholder-white/20 focus:outline-none focus:border-[#2d363f] resize-none font-mono"
               />
             </div>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowCookModal(false)} className="px-3 py-1.5 text-xs text-white/40 border border-white/10 hover:bg-white/5">Cancel</button>
+              <button onClick={() => setShowCookModal(false)} className="px-3 py-1.5 text-xs text-[#4a5159] border border-[#2d363f] hover:bg-[#2d363f]/30">Cancel</button>
               <button
                 onClick={cookFormula}
                 disabled={!cookToml.trim() || cooking}
-                className="px-4 py-1.5 text-xs bg-white/10 border border-white/20 hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-1.5 text-xs bg-[#2d363f]/50 border border-[#2d363f] hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 {cooking ? 'Cooking...' : 'Cook & Pour'}
               </button>

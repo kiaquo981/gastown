@@ -137,9 +137,9 @@ function CheckCard({ check, index, expandedCheck, onToggle }: {
           <span className={`text-[10px] font-mono uppercase ${st.text}`}>{check.status}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono text-white/25">{fmtShort(check.lastChecked)}</span>
+          <span className="text-[10px] font-mono text-[#4a5159]">{fmtShort(check.lastChecked)}</span>
           {check.latencyMs !== undefined && (
-            <span className="text-[10px] font-mono text-white/20">{check.latencyMs}ms</span>
+            <span className="text-[10px] font-mono text-[#4a5159]">{check.latencyMs}ms</span>
           )}
         </div>
       </div>
@@ -186,17 +186,17 @@ function DogCard({ dog }: { dog: DogWorker }) {
             <span className={`text-[10px] font-mono uppercase ${txtCls}`}>{dog.status}</span>
           </div>
           {dog.description && (
-            <p className="text-[10px] font-mono text-white/25 mt-0.5 truncate">{dog.description}</p>
+            <p className="text-[10px] font-mono text-[#4a5159] mt-0.5 truncate">{dog.description}</p>
           )}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <span className="text-[10px] uppercase tracking-wider text-white/25 block">Last Run</span>
-          <span className="text-xs font-mono text-white/50">{fmtShort(dog.lastRun)}</span>
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block">Last Run</span>
+          <span className="text-xs font-mono text-[#6c7680]">{fmtShort(dog.lastRun)}</span>
         </div>
         <div>
-          <span className="text-[10px] uppercase tracking-wider text-white/25 block">Processed</span>
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block">Processed</span>
           <span className="text-xs font-mono text-[#e6e1cf]">{(dog.itemsProcessed ?? 0).toLocaleString()}</span>
         </div>
       </div>
@@ -339,7 +339,7 @@ export default function DeaconHealthView() {
         <button
           onClick={forcePatrol}
           disabled={patrolRunning}
-          className="px-4 py-2 bg-white/[0.03] border border-[#2d363f] rounded-none text-xs font-mono uppercase tracking-wider text-[#6c7680] hover:bg-white/[0.06] hover:border-white/15 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-[#2d363f]/20 border border-[#2d363f] rounded-none text-xs font-mono uppercase tracking-wider text-[#6c7680] hover:bg-[#2d363f]/40 hover:border-white/15 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {patrolRunning ? 'Patrolling...' : 'Force Patrol'}
         </button>
@@ -365,7 +365,7 @@ export default function DeaconHealthView() {
               initial={{ opacity: 0 }}
               animate={{ opacity: [0.2, 0.5, 0.2] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}
-              className="h-20 bg-white/[0.02] border border-[#2d363f] rounded-none"
+              className="h-20 bg-[#2d363f]/15 border border-[#2d363f] rounded-none"
             />
           ))}
         </div>
@@ -376,7 +376,7 @@ export default function DeaconHealthView() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">PATROL CHECKS</span>
-            <span className="text-[10px] font-mono text-white/15">{summary.passed}/{summary.total} passing</span>
+            <span className="text-[10px] font-mono text-[#4a5159]">{summary.passed}/{summary.total} passing</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {checks.map((check, i) => (
@@ -397,7 +397,7 @@ export default function DeaconHealthView() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">DEACON DOGS</span>
-            <span className="text-[10px] font-mono text-white/15">Special workers</span>
+            <span className="text-[10px] font-mono text-[#4a5159]">Special workers</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {dogs.map((dog) => (
@@ -430,14 +430,14 @@ export default function DeaconHealthView() {
           <div className="flex gap-2">
             <button
               onClick={() => setShowBootReport(!showBootReport)}
-              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-white/[0.03] transition-colors"
+              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-[#2d363f]/20 transition-colors"
             >
               {showBootReport ? 'Hide Report' : 'Show Report'}
             </button>
             <button
               onClick={forceBootCheck}
               disabled={forceCheckRunning}
-              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#6c7680] border border-[#2d363f] rounded-none hover:bg-white/[0.03] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#6c7680] border border-[#2d363f] rounded-none hover:bg-[#2d363f]/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {forceCheckRunning ? 'Checking...' : 'Force Check'}
             </button>
@@ -448,7 +448,7 @@ export default function DeaconHealthView() {
         {bootStatus && (
           <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">STATUS</span>
+              <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">STATUS</span>
               <span className={`text-sm font-mono capitalize ${
                 bootStatus.status === 'running' ? 'text-emerald-400' : 'text-zinc-400'
               }`}>
@@ -456,16 +456,16 @@ export default function DeaconHealthView() {
               </span>
             </div>
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">RESTART COUNT</span>
+              <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">RESTART COUNT</span>
               <span className="text-sm font-mono text-[#e6e1cf]">{bootStatus.restartCount}</span>
             </div>
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">UPTIME</span>
+              <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">UPTIME</span>
               <span className="text-sm font-mono text-[#e6e1cf]">{bootStatus.uptime || '--'}</span>
             </div>
             <div>
-              <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">LAST CHECK</span>
-              <span className="text-sm font-mono text-white/50">{fmtShort(bootStatus.lastCheck)}</span>
+              <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">LAST CHECK</span>
+              <span className="text-sm font-mono text-[#6c7680]">{fmtShort(bootStatus.lastCheck)}</span>
             </div>
           </div>
         )}
@@ -473,7 +473,7 @@ export default function DeaconHealthView() {
         {/* Monitored processes */}
         {bootStatus && (bootStatus.monitoredProcesses || []).length > 0 && (
           <div className="px-4 pb-4">
-            <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-2">MONITORED PROCESSES</span>
+            <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-2">MONITORED PROCESSES</span>
             <div className="flex flex-wrap gap-2">
               {(bootStatus.monitoredProcesses || []).map((proc) => (
                 <span
@@ -504,7 +504,7 @@ export default function DeaconHealthView() {
                 <div className="space-y-1 max-h-48 overflow-y-auto">
                   {(bootReport.entries || []).map((entry, i) => (
                     <div key={i} className="flex items-start gap-2 text-[11px] font-mono">
-                      <span className="text-white/20 shrink-0 w-16">{fmtShort(entry.ts)}</span>
+                      <span className="text-[#4a5159] shrink-0 w-16">{fmtShort(entry.ts)}</span>
                       <span className={`shrink-0 ${
                         entry.event.includes('error') || entry.event.includes('fail')
                           ? 'text-red-400/70'
@@ -516,12 +516,12 @@ export default function DeaconHealthView() {
                       </span>
                       <span className="text-[#4a5159]">{entry.process}</span>
                       {entry.detail && (
-                        <span className="text-white/20 truncate">{entry.detail}</span>
+                        <span className="text-[#4a5159] truncate">{entry.detail}</span>
                       )}
                     </div>
                   ))}
                   {(bootReport.entries || []).length === 0 && (
-                    <span className="text-[11px] font-mono text-white/20">No boot events recorded</span>
+                    <span className="text-[11px] font-mono text-[#4a5159]">No boot events recorded</span>
                   )}
                 </div>
               </div>
@@ -533,27 +533,27 @@ export default function DeaconHealthView() {
       {/* Bottom Summary — 4 KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">CHECKS PASSED</span>
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">CHECKS PASSED</span>
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-mono text-emerald-400">{summary.passed}</span>
-            <span className="text-sm font-mono text-white/20">/ {summary.total}</span>
+            <span className="text-sm font-mono text-[#4a5159]">/ {summary.total}</span>
           </div>
         </div>
         <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">WARNINGS</span>
-          <span className={`text-2xl font-mono ${summary.warned > 0 ? 'text-amber-400' : 'text-white/20'}`}>
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">WARNINGS</span>
+          <span className={`text-2xl font-mono ${summary.warned > 0 ? 'text-amber-400' : 'text-[#4a5159]'}`}>
             {summary.warned}
           </span>
         </div>
         <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">LAST PATROL</span>
-          <span className="text-sm font-mono text-white/50">{fmtFull(health?.lastPatrol)}</span>
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">LAST PATROL</span>
+          <span className="text-sm font-mono text-[#6c7680]">{fmtFull(health?.lastPatrol)}</span>
           {health?.patrolDuration && (
-            <span className="text-[10px] font-mono text-white/20 block mt-0.5">{health.patrolDuration}</span>
+            <span className="text-[10px] font-mono text-[#4a5159] block mt-0.5">{health.patrolDuration}</span>
           )}
         </div>
         <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">UPTIME SCORE</span>
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">UPTIME SCORE</span>
           <span className={`text-2xl font-mono ${
             Number(summary.uptimePct) >= 90 ? 'text-emerald-400'
             : Number(summary.uptimePct) >= 70 ? 'text-amber-400'
@@ -571,7 +571,7 @@ export default function DeaconHealthView() {
           transition={{ duration: 2, repeat: Infinity }}
           className="w-1.5 h-1.5 bg-emerald-400/60 rounded-none"
         />
-        <span className="text-[10px] font-mono text-white/20">Auto-refresh {POLL / 1000}s</span>
+        <span className="text-[10px] font-mono text-[#4a5159]">Auto-refresh {POLL / 1000}s</span>
       </div>
     </div>
   );

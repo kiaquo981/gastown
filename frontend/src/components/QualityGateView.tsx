@@ -235,11 +235,11 @@ export default function QualityGateView() {
               </div>
               <div className="text-right">
                 <div className="text-xs text-[#4a5159]">{passedCount} / {totalGates} gates passed</div>
-                <div className="text-xs text-white/20 mt-1">{selectedItem.branch}</div>
+                <div className="text-xs text-[#4a5159] mt-1">{selectedItem.branch}</div>
               </div>
             </div>
             {/* Progress bar */}
-            <div className="mt-3 h-1 bg-white/5 rounded-none overflow-hidden">
+            <div className="mt-3 h-1 bg-[#2d363f]/30 rounded-none overflow-hidden">
               <div
                 className="h-full bg-emerald-400/50 transition-all duration-500"
                 style={{ width: `${totalGates > 0 ? (passedCount / totalGates) * 100 : 0}%` }}
@@ -263,7 +263,7 @@ export default function QualityGateView() {
                 >
                   {/* Gate Header */}
                   <div
-                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
+                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-[#2d363f]/15 transition-colors"
                     onClick={() => setExpandedGate(isExpanded ? null : gate.name)}
                   >
                     <div className="flex items-center gap-3">
@@ -277,9 +277,9 @@ export default function QualityGateView() {
                     </div>
                     <div className="flex items-center gap-3">
                       {gate.durationMs && (
-                        <span className="text-xs text-white/25">{formatDuration(gate.durationMs)}</span>
+                        <span className="text-xs text-[#4a5159]">{formatDuration(gate.durationMs)}</span>
                       )}
-                      <span className="text-white/20 text-xs">{isExpanded ? '\u25B2' : '\u25BC'}</span>
+                      <span className="text-[#4a5159] text-xs">{isExpanded ? '\u25B2' : '\u25BC'}</span>
                     </div>
                   </div>
 
@@ -299,14 +299,14 @@ export default function QualityGateView() {
                             <div className="bg-[#0f1419] border border-[#2d363f] rounded-none p-3 max-h-48 overflow-y-auto">
                               {gate.logs.map((line, i) => (
                                 <div key={i} className="text-[11px] text-[#4a5159] leading-5">
-                                  <span className="text-white/15 mr-2">{String(i + 1).padStart(3, ' ')}</span>
+                                  <span className="text-[#4a5159] mr-2">{String(i + 1).padStart(3, ' ')}</span>
                                   {line}
                                 </div>
                               ))}
                             </div>
                           )}
                           {gate.logs.length === 0 && (
-                            <div className="text-xs text-white/20 py-2">No log output available</div>
+                            <div className="text-xs text-[#4a5159] py-2">No log output available</div>
                           )}
 
                           {/* Actions */}
@@ -363,15 +363,15 @@ export default function QualityGateView() {
                                 className="overflow-hidden"
                               >
                                 <div className="border-t border-[#2d363f] pt-3 mt-2 space-y-2">
-                                  <div className="text-[10px] text-white/25 uppercase tracking-wider">Run History</div>
+                                  <div className="text-[10px] text-[#4a5159] uppercase tracking-wider">Run History</div>
                                   {gate.history.map(run => {
                                     const runCfg = STATUS_CONFIG[run.status];
                                     return (
                                       <div key={run.runId} className="flex items-center gap-3 text-xs py-1">
                                         <span className={`font-bold ${runCfg.color}`}>{runCfg.icon}</span>
                                         <span className="text-[#4a5159]">{formatTime(run.startedAt)}</span>
-                                        {run.durationMs && <span className="text-white/20">{formatDuration(run.durationMs)}</span>}
-                                        <span className="text-white/15 truncate flex-1">{run.logs[0] ?? ''}</span>
+                                        {run.durationMs && <span className="text-[#4a5159]">{formatDuration(run.durationMs)}</span>}
+                                        <span className="text-[#4a5159] truncate flex-1">{run.logs[0] ?? ''}</span>
                                       </div>
                                     );
                                   })}
@@ -380,7 +380,7 @@ export default function QualityGateView() {
                             )}
                           </AnimatePresence>
                           {isHistoryOpen && gate.history.length === 0 && (
-                            <div className="text-xs text-white/20 py-1">No previous runs</div>
+                            <div className="text-xs text-[#4a5159] py-1">No previous runs</div>
                           )}
                         </div>
                       </motion.div>

@@ -48,7 +48,7 @@ const TYPE_COLORS: Record<string, { dot: string; border: string; bg: string; tex
   convoy:   { dot: 'bg-orange-400',  border: 'border-orange-500/30',  bg: 'bg-orange-500/10',  text: 'text-orange-400'  },
 };
 
-const DEFAULT_COLOR = { dot: 'bg-white/40', border: 'border-[#2d363f]', bg: 'bg-white/5', text: 'text-[#6c7680]' };
+const DEFAULT_COLOR = { dot: 'bg-white/40', border: 'border-[#2d363f]', bg: 'bg-[#2d363f]/30', text: 'text-[#6c7680]' };
 
 function getTypeColor(type: string) {
   const normalized = type.toLowerCase();
@@ -194,16 +194,16 @@ export default function GasTownTimelineView() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <h1 className="text-sm font-bold tracking-[0.2em] uppercase text-white/90">
+            <h1 className="text-sm font-bold tracking-[0.2em] uppercase text-[#e6e1cf]">
               GAS TOWN TIMELINE
             </h1>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-[#2d363f] text-[#4a5159]">
+            <span className="text-[10px] px-2 py-0.5 rounded bg-[#2d363f]/30 border border-[#2d363f] text-[#4a5159]">
               {totalEvents} events
             </span>
             {/* Connection indicator */}
             <div className="flex items-center gap-1.5">
               <div className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
-              <span className="text-[10px] text-white/20">{connected ? 'LIVE' : 'OFFLINE'}</span>
+              <span className="text-[10px] text-[#4a5159]">{connected ? 'LIVE' : 'OFFLINE'}</span>
             </div>
           </div>
 
@@ -216,7 +216,7 @@ export default function GasTownTimelineView() {
                 className={`text-[10px] px-3 py-1 rounded border transition-all ${
                   zoom === z
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                    : 'bg-white/5 border-[#2d363f] text-[#4a5159] hover:text-[#6c7680] hover:border-white/20'
+                    : 'bg-[#2d363f]/30 border-[#2d363f] text-[#4a5159] hover:text-[#6c7680] hover:border-[#2d363f]'
                 }`}
               >
                 {z}
@@ -242,7 +242,7 @@ export default function GasTownTimelineView() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center justify-center h-40 text-white/20 text-xs"
+            className="flex items-center justify-center h-40 text-[#4a5159] text-xs"
           >
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -255,7 +255,7 @@ export default function GasTownTimelineView() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center justify-center h-40 text-white/20 text-xs"
+            className="flex items-center justify-center h-40 text-[#4a5159] text-xs"
           >
             No events in the last {ZOOM_CONFIG[zoom].label.toLowerCase()}. Waiting for Gas Town activity...
           </motion.div>
@@ -271,7 +271,7 @@ export default function GasTownTimelineView() {
             style={{ width: Math.max(buckets.length * bucketWidth + 40, 800) }}
           >
             {/* ── Time axis line ── */}
-            <div className="absolute left-4 right-4 top-[100px] h-px bg-white/10" />
+            <div className="absolute left-4 right-4 top-[100px] h-px bg-[#2d363f]/50" />
 
             {/* ── Buckets ── */}
             <div className="flex items-start" style={{ gap: 0 }}>
@@ -296,7 +296,7 @@ export default function GasTownTimelineView() {
                     style={{ width: bucketWidth }}
                   >
                     {/* Time label */}
-                    <span className="text-[9px] text-white/20 mb-1 select-none">
+                    <span className="text-[9px] text-[#4a5159] mb-1 select-none">
                       {bucket.label}
                     </span>
 
@@ -330,7 +330,7 @@ export default function GasTownTimelineView() {
                           }}
                         />
                       ) : (
-                        <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#2d363f]/50" />
                       )}
                     </div>
 
@@ -355,7 +355,7 @@ export default function GasTownTimelineView() {
 
                     {/* Vertical connector line */}
                     {hasEvents && (
-                      <div className={`w-px h-4 ${isExpanded ? colors.dot.replace('bg-', 'bg-') : 'bg-white/5'}`} />
+                      <div className={`w-px h-4 ${isExpanded ? colors.dot.replace('bg-', 'bg-') : 'bg-[#2d363f]/30'}`} />
                     )}
                   </div>
                 );
@@ -387,7 +387,7 @@ export default function GasTownTimelineView() {
                         </span>
                         <button
                           onClick={() => setExpandedBucket(null)}
-                          className="text-[10px] text-white/20 hover:text-[#6c7680]"
+                          className="text-[10px] text-[#4a5159] hover:text-[#6c7680]"
                         >
                           CLOSE
                         </button>
@@ -404,13 +404,13 @@ export default function GasTownTimelineView() {
                               className={`text-[11px] p-1.5 rounded cursor-pointer transition-all border ${
                                 isSelected
                                   ? `${colors.bg} ${colors.border}`
-                                  : 'border-transparent hover:bg-white/[0.03]'
+                                  : 'border-transparent hover:bg-[#2d363f]/20'
                               }`}
                               onClick={() => setSelectedEvent(isSelected ? null : event)}
                             >
                               <div className="flex items-center gap-2">
                                 <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
-                                <span className="text-white/20 shrink-0">
+                                <span className="text-[#4a5159] shrink-0">
                                   {formatFullTime(event.ts)}
                                 </span>
                                 <span className={`${colors.text} uppercase text-[9px] shrink-0`}>
@@ -430,21 +430,21 @@ export default function GasTownTimelineView() {
                                     className="mt-1.5 pl-3.5 space-y-0.5 overflow-hidden"
                                   >
                                     <div className="text-[10px] text-[#4a5159]">
-                                      <span className="text-white/20">source:</span> {event.source}
+                                      <span className="text-[#4a5159]">source:</span> {event.source}
                                     </div>
                                     {event.moleculeId && (
                                       <div className="text-[10px] text-[#4a5159]">
-                                        <span className="text-white/20">molecule:</span>{' '}
+                                        <span className="text-[#4a5159]">molecule:</span>{' '}
                                         <span className="text-violet-400/60">{event.moleculeId}</span>
                                       </div>
                                     )}
                                     {event.level && (
                                       <div className="text-[10px] text-[#4a5159]">
-                                        <span className="text-white/20">level:</span> {event.level}
+                                        <span className="text-[#4a5159]">level:</span> {event.level}
                                       </div>
                                     )}
                                     {event.meta && Object.keys(event.meta).length > 0 && (
-                                      <div className="text-[10px] text-white/20 mt-1 bg-black/30 p-1 rounded">
+                                      <div className="text-[10px] text-[#4a5159] mt-1 bg-black/30 p-1 rounded">
                                         {JSON.stringify(event.meta, null, 2).slice(0, 200)}
                                       </div>
                                     )}
@@ -511,15 +511,15 @@ export default function GasTownTimelineView() {
         className="border-t border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between"
       >
         <div className="flex items-center gap-3">
-          <span className="text-[10px] text-white/20">
+          <span className="text-[10px] text-[#4a5159]">
             WINDOW: {ZOOM_CONFIG[zoom].label}
           </span>
-          <span className="text-[10px] text-white/20">
+          <span className="text-[10px] text-[#4a5159]">
             BUCKETS: {buckets.length}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-white/10">
+          <span className="text-[10px] text-[#4a5159]">
             poll: {POLL_INTERVAL / 1000}s
           </span>
         </div>

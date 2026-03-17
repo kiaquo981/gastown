@@ -89,7 +89,7 @@ function ActionButton({ label, variant = 'default', onClick }: {
   label: string; variant?: 'default' | 'warn' | 'success'; onClick: () => void;
 }) {
   const colors = {
-    default: 'border-[#2d363f] text-[#6c7680] hover:bg-white/5',
+    default: 'border-[#2d363f] text-[#6c7680] hover:bg-[#2d363f]/30',
     warn: 'border-amber-500/20 text-amber-400/80 hover:bg-amber-500/10',
     success: 'border-emerald-500/20 text-emerald-400/80 hover:bg-emerald-500/10',
   };
@@ -146,7 +146,7 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
             </div>
           </div>
           <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}
-            className="text-white/20 text-xs mt-1">&#x25BC;</motion.span>
+            className="text-[#4a5159] text-xs mt-1">&#x25BC;</motion.span>
         </div>
 
         {/* Capabilities tags */}
@@ -195,7 +195,7 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
               {member.contextState && Object.keys(member.contextState).length > 0 && (
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-[#4a5159] block mb-1">CONTEXT STATE</span>
-                  <pre className="text-[11px] font-mono text-[#4a5159] bg-white/[0.02] border border-[#2d363f] p-2 rounded-none overflow-x-auto max-h-24">
+                  <pre className="text-[11px] font-mono text-[#4a5159] bg-[#2d363f]/15 border border-[#2d363f] p-2 rounded-none overflow-x-auto max-h-24">
                     {JSON.stringify(member.contextState, null, 2)}
                   </pre>
                 </div>
@@ -211,8 +211,8 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
                         <span className={`w-1.5 h-1.5 rounded-none ${
                           rec.status === 'completed' ? 'bg-emerald-400' : rec.status === 'failed' ? 'bg-red-400' : 'bg-blue-400'
                         }`} />
-                        <span className="text-white/50 truncate flex-1">{rec.task}</span>
-                        <span className="text-white/25 shrink-0">{formatTime(rec.completedAt || rec.startedAt)}</span>
+                        <span className="text-[#6c7680] truncate flex-1">{rec.task}</span>
+                        <span className="text-[#4a5159] shrink-0">{formatTime(rec.completedAt || rec.startedAt)}</span>
                       </div>
                     ))}
                   </div>
@@ -376,12 +376,12 @@ export default function CrewRosterView() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search crew..."
-          className="flex-1 bg-white/[0.03] border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] placeholder:text-white/20 focus:outline-none focus:border-white/15 transition-colors"
+          className="flex-1 bg-[#2d363f]/20 border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] placeholder:text-[#4a5159] focus:outline-none focus:border-white/15 transition-colors"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="bg-white/[0.03] border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
+          className="bg-[#2d363f]/20 border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
         >
           <option value="all">All Status</option>
           <option value="active">Active</option>
@@ -391,7 +391,7 @@ export default function CrewRosterView() {
         <select
           value={specFilter}
           onChange={(e) => setSpecFilter(e.target.value)}
-          className="bg-white/[0.03] border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
+          className="bg-[#2d363f]/20 border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
         >
           <option value="all">All Specializations</option>
           {specializations.map((s) => (
@@ -420,7 +420,7 @@ export default function CrewRosterView() {
               initial={{ opacity: 0 }}
               animate={{ opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-              className="h-40 bg-white/[0.02] border border-[#2d363f] rounded-none"
+              className="h-40 bg-[#2d363f]/15 border border-[#2d363f] rounded-none"
             />
           ))}
         </div>
@@ -445,7 +445,7 @@ export default function CrewRosterView() {
 
       {/* Empty state */}
       {!loading && filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-white/20">
+        <div className="flex flex-col items-center justify-center py-20 text-[#4a5159]">
           <span className="text-3xl mb-3">&#x1F6E1;</span>
           <span className="text-sm font-mono">
             {crew.length === 0 ? 'No crew members registered' : 'No matches for current filters'}
@@ -471,7 +471,7 @@ export default function CrewRosterView() {
               <span className="text-xs text-[#4a5159] ml-2">{stats.mostActive.tasks} tasks</span>
             </div>
           ) : (
-            <span className="text-lg font-mono text-white/20">--</span>
+            <span className="text-lg font-mono text-[#4a5159]">--</span>
           )}
         </div>
       </div>
@@ -483,7 +483,7 @@ export default function CrewRosterView() {
           transition={{ duration: 2, repeat: Infinity }}
           className="w-1.5 h-1.5 bg-emerald-400/60 rounded-none"
         />
-        <span className="text-[10px] font-mono text-white/20">Auto-refresh {POLL / 1000}s</span>
+        <span className="text-[10px] font-mono text-[#4a5159]">Auto-refresh {POLL / 1000}s</span>
       </div>
     </div>
   );

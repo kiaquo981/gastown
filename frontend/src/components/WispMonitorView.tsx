@@ -118,7 +118,7 @@ function ttlGlowColor(pct: number): string {
 // ─── Skeleton ───────────────────────────────────────────────────────────────
 
 function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`bg-white/5 animate-pulse rounded-none ${className}`} />;
+  return <div className={`bg-[#2d363f]/30 animate-pulse rounded-none ${className}`} />;
 }
 
 // ─── Stat Card ──────────────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ function StatCard({
     <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4 flex-1 min-w-[140px]">
       <div className="text-[10px] uppercase tracking-widest text-[#4a5159] mb-1">{label}</div>
       <div className={`text-xl font-bold tabular-nums ${color}`}>{value}</div>
-      {subtext && <div className="text-[9px] text-white/20 mt-1">{subtext}</div>}
+      {subtext && <div className="text-[9px] text-[#4a5159] mt-1">{subtext}</div>}
     </div>
   );
 }
@@ -189,7 +189,7 @@ function WispCard({
       className={`
         relative bg-[#1a1f26] border rounded-none p-4 cursor-pointer
         transition-all duration-200 font-mono
-        ${isSelected ? 'border-white/20 bg-[#111827]' : 'border-[#2d363f] hover:border-[#2d363f]'}
+        ${isSelected ? 'border-[#2d363f] bg-[#1a1f26]' : 'border-[#2d363f] hover:border-[#2d363f]'}
         ${ttlPct >= 0 ? ttlGlowColor(ttlPct) : ''}
         ${isUrgent && !isDead ? 'animate-pulse' : ''}
       `}
@@ -206,7 +206,7 @@ function WispCard({
       </div>
 
       {/* Wisp ID */}
-      <div className="text-[11px] text-white/70 mb-0.5 pr-16 truncate">{truncId(wisp.id)}</div>
+      <div className="text-[11px] text-[#e6e1cf]/80 mb-0.5 pr-16 truncate">{truncId(wisp.id)}</div>
       <div className="text-[10px] text-[#4a5159] truncate mb-3">
         {wisp.formulaName || wisp.name}
       </div>
@@ -224,7 +224,7 @@ function WispCard({
               {isDead ? 'EXPIRED' : formatMs(ttlRemaining)}
             </span>
           </div>
-          <div className="h-1.5 bg-white/5 rounded-none overflow-hidden">
+          <div className="h-1.5 bg-[#2d363f]/30 rounded-none overflow-hidden">
             <motion.div
               className={`h-full rounded-none transition-colors duration-500 ${ttlBarColor(ttlPct)}`}
               initial={false}
@@ -243,13 +243,13 @@ function WispCard({
         </div>
       ) : (
         <div className="mb-3">
-          <div className="text-[9px] text-white/20 italic">TTL unknown</div>
+          <div className="text-[9px] text-[#4a5159] italic">TTL unknown</div>
         </div>
       )}
 
       {/* Step progress */}
       <div className="flex items-center gap-2 mb-3">
-        <div className="flex-1 h-1 bg-white/5 rounded-none overflow-hidden">
+        <div className="flex-1 h-1 bg-[#2d363f]/30 rounded-none overflow-hidden">
           <div
             className="h-full bg-violet-500/40 transition-all"
             style={{
@@ -263,7 +263,7 @@ function WispCard({
       </div>
 
       {/* Created time */}
-      <div className="text-[9px] text-white/20 mb-3">
+      <div className="text-[9px] text-[#4a5159] mb-3">
         {wisp.createdAt ? relativeTime(wisp.createdAt) : '--'}
       </div>
 
@@ -338,7 +338,7 @@ function DetailPanel({
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-[#2d363f] flex items-center justify-between">
         <div>
-          <div className="text-xs font-bold text-white/90 uppercase tracking-wider">Wisp Detail</div>
+          <div className="text-xs font-bold text-[#e6e1cf] uppercase tracking-wider">Wisp Detail</div>
           <div className="text-[10px] text-[#4a5159] mt-0.5">{truncId(wisp.id)}</div>
         </div>
         <button
@@ -365,7 +365,7 @@ function DetailPanel({
           ].map((row) => (
             <div key={row.label} className="flex justify-between items-start gap-2">
               <span className="text-[10px] text-[#4a5159] flex-shrink-0">{row.label}</span>
-              <span className="text-[10px] text-white/70 text-right break-all font-mono">
+              <span className="text-[10px] text-[#e6e1cf]/80 text-right break-all font-mono">
                 {row.value}
               </span>
             </div>
@@ -375,14 +375,14 @@ function DetailPanel({
         {/* TTL bar */}
         {ttlPct >= 0 && (
           <div className="mt-3">
-            <div className="h-2 bg-white/5 rounded-none overflow-hidden">
+            <div className="h-2 bg-[#2d363f]/30 rounded-none overflow-hidden">
               <motion.div
                 className={`h-full rounded-none ${ttlBarColor(ttlPct)}`}
                 animate={{ width: `${ttlPct}%` }}
                 transition={{ duration: 0.8 }}
               />
             </div>
-            <div className="text-[9px] text-white/20 mt-1 text-center tabular-nums">
+            <div className="text-[9px] text-[#4a5159] mt-1 text-center tabular-nums">
               {ttlPct.toFixed(1)}% remaining
             </div>
           </div>
@@ -395,13 +395,13 @@ function DetailPanel({
           Steps ({doneSteps}/{wisp.steps.length})
         </div>
         {wisp.steps.length === 0 ? (
-          <div className="text-[10px] text-white/15 italic">No steps defined</div>
+          <div className="text-[10px] text-[#4a5159] italic">No steps defined</div>
         ) : (
           <div className="space-y-1">
             {wisp.steps.map((step) => (
               <div
                 key={step.id}
-                className="flex items-center gap-2 py-1 border-b border-white/[0.03]"
+                className="flex items-center gap-2 py-1 border-b border-[#2d363f]/30"
               >
                 <div
                   className={`w-2 h-2 rounded-full flex-shrink-0 ${
@@ -637,18 +637,18 @@ export default function WispMonitorView() {
       <header className="flex items-center justify-between px-5 py-3 border-b border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
-          <h1 className="text-sm font-bold tracking-[0.2em] uppercase text-white/90">
+          <h1 className="text-sm font-bold tracking-[0.2em] uppercase text-[#e6e1cf]">
             Wisp Monitor
           </h1>
           <span className="text-[10px] px-2 py-0.5 bg-violet-500/10 border border-violet-500/30 text-violet-400 rounded-none">
             VAPOR PHASE
           </span>
-          <span className="text-[10px] px-2 py-0.5 bg-white/5 border border-[#2d363f] text-[#4a5159] rounded-none">
+          <span className="text-[10px] px-2 py-0.5 bg-[#2d363f]/30 border border-[#2d363f] text-[#4a5159] rounded-none">
             {wisps.length} wisps
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[10px] text-white/20">
+          <span className="text-[10px] text-[#4a5159]">
             {connected ? 'LIVE' : 'OFFLINE'} &middot; {POLL_INTERVAL / 1000}s
           </span>
         </div>
@@ -696,7 +696,7 @@ export default function WispMonitorView() {
             className={`text-[10px] px-2.5 py-1 border rounded-none transition-all ${
               sortMode === opt.value
                 ? 'border-violet-500/30 text-violet-400 bg-violet-500/10'
-                : 'border-[#2d363f] text-[#4a5159] hover:text-white/50 hover:border-[#2d363f]'
+                : 'border-[#2d363f] text-[#4a5159] hover:text-[#6c7680] hover:border-[#2d363f]'
             }`}
           >
             {opt.label}
@@ -733,7 +733,7 @@ export default function WispMonitorView() {
                   abortRef.current = ctrl;
                   fetchWisps(ctrl.signal);
                 }}
-                className="mt-2 text-[10px] uppercase tracking-widest px-4 py-2 border border-[#2d363f] hover:border-white/20 text-[#6c7680] hover:text-white/90 rounded-none transition-colors"
+                className="mt-2 text-[10px] uppercase tracking-widest px-4 py-2 border border-[#2d363f] hover:border-[#2d363f] text-[#6c7680] hover:text-[#e6e1cf] rounded-none transition-colors"
               >
                 Retry
               </button>
@@ -745,10 +745,10 @@ export default function WispMonitorView() {
               className="flex flex-col items-center justify-center h-full gap-4"
             >
               <div className="text-4xl opacity-15">&#x1F4A8;</div>
-              <div className="text-sm text-white/20 uppercase tracking-widest">
+              <div className="text-sm text-[#4a5159] uppercase tracking-widest">
                 No Active Wisps
               </div>
-              <p className="text-xs text-white/15 max-w-sm text-center leading-relaxed">
+              <p className="text-xs text-[#4a5159] max-w-sm text-center leading-relaxed">
                 No active wisps. Cook a formula and choose &ldquo;Wisp&rdquo; to create ephemeral molecules.
               </p>
               {/* Decorative vapor particles */}
@@ -811,10 +811,10 @@ export default function WispMonitorView() {
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="flex items-center justify-between px-5 py-2 border-t border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] text-white/20">
+          <span className="text-[10px] text-[#4a5159]">
             WISPS: {wisps.length}
           </span>
-          <span className="text-[10px] text-white/20">
+          <span className="text-[10px] text-[#4a5159]">
             SORT: {SORT_OPTIONS.find((o) => o.value === sortMode)?.label}
           </span>
         </div>
@@ -824,7 +824,7 @@ export default function WispMonitorView() {
               {stats.expiringSoon} CRITICAL
             </span>
           )}
-          <span className="text-[10px] text-white/10">
+          <span className="text-[10px] text-[#4a5159]">
             poll: {POLL_INTERVAL / 1000}s
           </span>
         </div>

@@ -172,13 +172,13 @@ function SkeletonCard() {
   return (
     <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4 animate-pulse">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-8 h-8 bg-white/5 rounded-none" />
+        <div className="w-8 h-8 bg-[#2d363f]/30 rounded-none" />
         <div className="flex-1 space-y-2">
-          <div className="h-3 w-24 bg-white/5 rounded-none" />
-          <div className="h-2 w-16 bg-white/5 rounded-none" />
+          <div className="h-3 w-24 bg-[#2d363f]/30 rounded-none" />
+          <div className="h-2 w-16 bg-[#2d363f]/30 rounded-none" />
         </div>
       </div>
-      <div className="h-6 w-full bg-white/5 rounded-none" />
+      <div className="h-6 w-full bg-[#2d363f]/30 rounded-none" />
     </div>
   );
 }
@@ -210,7 +210,7 @@ function WorkerCard({
         relative w-full text-left font-mono
         bg-[#1a1f26] border-2 rounded-none p-4
         transition-all duration-200 cursor-pointer
-        hover:bg-[#111827] hover:border-[#2d363f]
+        hover:bg-[#1a1f26] hover:border-[#2d363f]
         ${tierRing.border} ${tierRing.glow}
       `}
     >
@@ -228,11 +228,11 @@ function WorkerCard({
 
       {/* Name + Role */}
       <div className="flex items-center gap-2.5 mb-3 pr-16">
-        <div className="w-8 h-8 flex items-center justify-center bg-white/[0.03] border border-[#2d363f] rounded-none flex-shrink-0">
+        <div className="w-8 h-8 flex items-center justify-center bg-[#2d363f]/20 border border-[#2d363f] rounded-none flex-shrink-0">
           <span className="text-sm">
             {worker.role === 'Mayor' ? '\u{1F451}' :
              worker.role === 'Polecat' ? '\u{1F43E}' :
-             worker.role === 'Crew' ? '\u{1F41D}' :
+             worker.role === 'Crew' ? '\u{1F465}' :
              worker.role === 'Deacon' ? '\u{1F4DC}' :
              worker.role === 'Boot' ? '\u{1F462}' :
              worker.role === 'GUPP' ? '\u{1FA9D}' :
@@ -242,7 +242,7 @@ function WorkerCard({
           </span>
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-xs font-bold text-white/90 truncate">
+          <div className="text-xs font-bold text-[#e6e1cf] truncate">
             {worker.name}
           </div>
           <span
@@ -284,14 +284,14 @@ function WorkerCard({
       {/* Bottom stats row */}
       <div className="flex items-center justify-between pt-2 border-t border-[#2d363f]">
         <div className="flex items-center gap-1">
-          <span className="text-[9px] text-white/25">HB:</span>
+          <span className="text-[9px] text-[#4a5159]">HB:</span>
           <span className="text-[10px] text-[#4a5159] tabular-nums">
             {worker.heartbeat ? relativeTime(worker.heartbeat) : '--'}
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="text-[9px] text-white/25">$</span>
-          <span className="text-[10px] text-white/50 tabular-nums">
+          <span className="text-[9px] text-[#4a5159]">$</span>
+          <span className="text-[10px] text-[#6c7680] tabular-nums">
             {worker.cost.toFixed(4)}
           </span>
         </div>
@@ -489,10 +489,10 @@ export default function WorkerPoolView() {
       <header className="flex-shrink-0 px-6 py-3 border-b border-[#2d363f] bg-[#0f1419]/80 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold tracking-[0.2em] uppercase text-white/90">
+            <h1 className="text-lg font-bold tracking-[0.2em] uppercase text-[#e6e1cf]">
               Worker Colony
             </h1>
-            <span className="text-[10px] px-2 py-0.5 bg-white/5 border border-[#2d363f] text-[#4a5159]">
+            <span className="text-[10px] px-2 py-0.5 bg-[#2d363f]/30 border border-[#2d363f] text-[#4a5159]">
               MEOW Workers
             </span>
           </div>
@@ -521,7 +521,7 @@ export default function WorkerPoolView() {
         {/* Stats bar */}
         <div className="flex items-center gap-3 mb-3 overflow-x-auto">
           {[
-            { label: 'Total', value: stats.total, color: 'text-white/80' },
+            { label: 'Total', value: stats.total, color: 'text-[#e6e1cf]' },
             { label: 'Active', value: stats.alive, color: 'text-emerald-400' },
             { label: 'Idle', value: stats.idle, color: 'text-blue-400' },
             { label: 'Stale', value: stats.stale, color: 'text-amber-400' },
@@ -545,13 +545,13 @@ export default function WorkerPoolView() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="px-3 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f]
-              text-white/90 placeholder-white/30 w-56
-              focus:outline-none focus:border-white/20 rounded-none"
+              text-[#e6e1cf] placeholder-[#4a5159] w-56
+              focus:outline-none focus:border-[#2d363f] rounded-none"
           />
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-2 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f] text-white/70 rounded-none"
+            className="px-2 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f] text-[#e6e1cf]/80 rounded-none"
           >
             <option value="all">All Roles</option>
             {ROLES.map((r) => (
@@ -561,7 +561,7 @@ export default function WorkerPoolView() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-2 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f] text-white/70 rounded-none"
+            className="px-2 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f] text-[#e6e1cf]/80 rounded-none"
           >
             <option value="all">All Statuses</option>
             {STATUSES.map((s) => (
@@ -570,12 +570,12 @@ export default function WorkerPoolView() {
           </select>
           <button
             onClick={handleRetry}
-            className="px-2 py-1.5 text-xs text-[#4a5159] hover:text-white/70
+            className="px-2 py-1.5 text-xs text-[#4a5159] hover:text-[#e6e1cf]/80
               border border-[#2d363f] bg-[#1a1f26] rounded-none transition-colors"
           >
             Refresh
           </button>
-          <span className="text-[10px] text-white/20 ml-auto tabular-nums">
+          <span className="text-[10px] text-[#4a5159] ml-auto tabular-nums">
             {filteredWorkers.length} / {workers.length} shown
           </span>
         </div>
@@ -600,8 +600,8 @@ export default function WorkerPoolView() {
             <button
               onClick={handleRetry}
               className="mt-2 text-[10px] uppercase tracking-widest px-4 py-2
-                border border-[#2d363f] hover:border-white/20 text-[#6c7680]
-                hover:text-white/90 rounded-none transition-colors"
+                border border-[#2d363f] hover:border-[#2d363f] text-[#6c7680]
+                hover:text-[#e6e1cf] rounded-none transition-colors"
             >
               Retry Connection
             </button>
@@ -618,7 +618,7 @@ export default function WorkerPoolView() {
             animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center h-64 gap-3"
           >
-            <div className="text-3xl opacity-20">{'\u{1F41D}'}</div>
+            <div className="text-3xl opacity-20">{'\u{2699}'}</div>
             <div className="text-xs text-[#4a5159] uppercase tracking-wider">
               No workers match current filters
             </div>
@@ -649,7 +649,7 @@ export default function WorkerPoolView() {
             {poolCapacity.used} / {poolCapacity.total} active
           </span>
         </div>
-        <div className="w-full h-2 bg-white/5 rounded-none overflow-hidden">
+        <div className="w-full h-2 bg-[#2d363f]/30 rounded-none overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${capacityPct}%` }}
@@ -668,11 +668,11 @@ export default function WorkerPoolView() {
             {(['alive', 'stale', 'dead'] as WorkerStatus[]).map((s) => (
               <div key={s} className="flex items-center gap-1">
                 <div className={`w-1.5 h-1.5 rounded-full ${STATUS_INDICATOR[s].dot}`} />
-                <span className="text-[9px] text-white/25 uppercase">{s}</span>
+                <span className="text-[9px] text-[#4a5159] uppercase">{s}</span>
               </div>
             ))}
           </div>
-          <span className="text-[10px] text-white/20 tabular-nums">{capacityPct}%</span>
+          <span className="text-[10px] text-[#4a5159] tabular-nums">{capacityPct}%</span>
         </div>
       </footer>
     </div>

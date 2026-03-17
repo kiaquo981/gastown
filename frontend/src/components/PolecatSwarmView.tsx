@@ -244,7 +244,7 @@ function LifecycleBar({ status, progress }: { status: PolecatLifecycle; progress
         className="flex-1 relative"
         title={phase}
       >
-        <div className="h-1.5 bg-white/5">
+        <div className="h-1.5 bg-[#2d363f]/30">
           {(isPast || isCurrent) && (
             <motion.div
               className={`h-full ${isZombie ? 'bg-red-400/60' : isPast ? LIFECYCLE_BAR_COLORS[phase] : barColor}`}
@@ -257,7 +257,7 @@ function LifecycleBar({ status, progress }: { status: PolecatLifecycle; progress
           )}
         </div>
         {i < LIFECYCLE_ORDER.length - 1 && (
-          <div className="absolute right-0 top-0 w-px h-1.5 bg-white/10" />
+          <div className="absolute right-0 top-0 w-px h-1.5 bg-[#2d363f]/50" />
         )}
       </div>
     );
@@ -311,7 +311,7 @@ function PolecatCard({ polecat }: { polecat: Polecat }) {
         <LifecycleBar status={effectiveStatus} progress={polecat.progress} />
         <div className="flex justify-between mt-0.5">
           {LIFECYCLE_ORDER.map((phase) => (
-            <span key={phase} className="font-mono text-[8px] text-white/15 flex-1 text-center">
+            <span key={phase} className="font-mono text-[8px] text-[#4a5159] flex-1 text-center">
               {phase.slice(0, 3)}
             </span>
           ))}
@@ -321,26 +321,26 @@ function PolecatCard({ polecat }: { polecat: Polecat }) {
       {/* Details */}
       <div className="space-y-1">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-white/20">Bead</span>
+          <span className="font-mono text-[10px] text-[#4a5159]">Bead</span>
           <span className="font-mono text-[10px] text-cyan-400/60 truncate max-w-[120px]">
             {polecat.beadName || polecat.beadId}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-white/20">Branch</span>
+          <span className="font-mono text-[10px] text-[#4a5159]">Branch</span>
           <span className="font-mono text-[10px] text-violet-400/60 truncate max-w-[120px]">
             {polecat.worktreeBranch}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-white/20">Spawned</span>
+          <span className="font-mono text-[10px] text-[#4a5159]">Spawned</span>
           <span className="font-mono text-[10px] text-[#4a5159]">
             {timeSince(polecat.spawnTime)}
           </span>
         </div>
         {polecat.lastHeartbeat && (
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] text-white/20">Heartbeat</span>
+            <span className="font-mono text-[10px] text-[#4a5159]">Heartbeat</span>
             <span className={`font-mono text-[10px] ${polecat.isZombie ? 'text-red-400' : 'text-[#4a5159]'}`}>
               {timeSince(polecat.lastHeartbeat)}
             </span>
@@ -348,7 +348,7 @@ function PolecatCard({ polecat }: { polecat: Polecat }) {
         )}
         {polecat.prUrl && (
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[10px] text-white/20">PR</span>
+            <span className="font-mono text-[10px] text-[#4a5159]">PR</span>
             <span className="font-mono text-[10px] text-violet-400 truncate max-w-[120px]">
               {polecat.prUrl.split('/').pop()}
             </span>
@@ -531,12 +531,12 @@ export default function PolecatSwarmView() {
             <span className="font-mono text-[10px] text-cyan-400">
               {activeCount} active
             </span>
-            <span className="font-mono text-[10px] text-white/20">/</span>
+            <span className="font-mono text-[10px] text-[#4a5159]">/</span>
             <span className="font-mono text-[10px] text-[#4a5159]">
               {polecats.length} total
             </span>
           </div>
-          <span className="font-mono text-[10px] text-white/20">|</span>
+          <span className="font-mono text-[10px] text-[#4a5159]">|</span>
           <span className="font-mono text-[10px] text-[#4a5159]">
             {(stats.spawnRate ?? 0).toFixed(1)}/min spawn rate
           </span>
@@ -577,14 +577,14 @@ export default function PolecatSwarmView() {
                     <span className={`font-mono text-[10px] uppercase tracking-widest ${style.text}`}>
                       {style.label}
                     </span>
-                    <span className="font-mono text-[10px] text-white/20">
+                    <span className="font-mono text-[10px] text-[#4a5159]">
                       {cards.length}
                     </span>
                   </div>
 
                   {/* Cards flow */}
                   {cards.length === 0 ? (
-                    <div className="font-mono text-[10px] text-white/10 py-3 pl-6">
+                    <div className="font-mono text-[10px] text-[#4a5159] py-3 pl-6">
                       No polecats in this stage
                     </div>
                   ) : (
@@ -634,7 +634,7 @@ export default function PolecatSwarmView() {
                       {witness.overallHealth}%
                     </span>
                   </div>
-                  <div className="h-1.5 bg-white/5">
+                  <div className="h-1.5 bg-[#2d363f]/30">
                     <motion.div
                       className={`h-full ${
                         witness.overallHealth >= 80 ? 'bg-emerald-400' :
@@ -653,10 +653,10 @@ export default function PolecatSwarmView() {
                   <span className="font-mono text-[10px] uppercase text-[#4a5159] block mb-1">
                     Report Summary
                   </span>
-                  <p className="font-mono text-[11px] text-white/50 leading-relaxed">
+                  <p className="font-mono text-[11px] text-[#6c7680] leading-relaxed">
                     {witness.summary}
                   </p>
-                  <span className="font-mono text-[10px] text-white/15 mt-1 block">
+                  <span className="font-mono text-[10px] text-[#4a5159] mt-1 block">
                     {formatTime(witness.timestamp)}
                   </span>
                 </div>
@@ -672,7 +672,7 @@ export default function PolecatSwarmView() {
                         key={check.id}
                         className={`flex items-center gap-2 px-2 py-1.5 border ${
                           check.passed
-                            ? 'border-white/[0.03] bg-transparent'
+                            ? 'border-[#2d363f]/30 bg-transparent'
                             : 'border-red-500/20 bg-red-500/5'
                         }`}
                       >
@@ -681,7 +681,7 @@ export default function PolecatSwarmView() {
                         }`}>
                           {check.passed ? '\u2713' : '\u2717'}
                         </span>
-                        <span className="font-mono text-[10px] text-white/50 flex-1">
+                        <span className="font-mono text-[10px] text-[#6c7680] flex-1">
                           {check.name}
                         </span>
                         {check.details && (
@@ -714,7 +714,7 @@ export default function PolecatSwarmView() {
                                 {anomaly.severity}
                               </span>
                               {anomaly.polecatId && (
-                                <span className="font-mono text-[10px] text-white/20">
+                                <span className="font-mono text-[10px] text-[#4a5159]">
                                   {anomaly.polecatId}
                                 </span>
                               )}
@@ -730,7 +730,7 @@ export default function PolecatSwarmView() {
                 )}
               </>
             ) : (
-              <div className="text-center py-12 font-mono text-xs text-white/20">
+              <div className="text-center py-12 font-mono text-xs text-[#4a5159]">
                 No witness report available
               </div>
             )}
@@ -749,20 +749,20 @@ export default function PolecatSwarmView() {
             { label: 'Zombies', value: stats.zombieCount, cls: stats.zombieCount > 0 ? 'text-red-400' : 'text-[#4a5159]' },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-2">
-              <span className="font-mono text-[10px] uppercase text-white/20">{s.label}</span>
+              <span className="font-mono text-[10px] uppercase text-[#4a5159]">{s.label}</span>
               <span className={`font-mono text-xs font-medium ${s.cls}`}>{s.value}</span>
             </div>
           ))}
 
-          <div className="h-4 w-px bg-white/5" />
+          <div className="h-4 w-px bg-[#2d363f]/30" />
 
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase text-white/20">Avg Lifespan</span>
-            <span className="font-mono text-xs text-white/50">{formatDuration(stats.avgLifespan)}</span>
+            <span className="font-mono text-[10px] uppercase text-[#4a5159]">Avg Lifespan</span>
+            <span className="font-mono text-xs text-[#6c7680]">{formatDuration(stats.avgLifespan)}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase text-white/20">Cost/Polecat</span>
+            <span className="font-mono text-[10px] uppercase text-[#4a5159]">Cost/Polecat</span>
             <span className="font-mono text-xs text-amber-400/60">{formatCost(stats.costPerPolecat)}</span>
           </div>
         </div>

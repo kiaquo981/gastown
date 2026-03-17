@@ -204,7 +204,7 @@ export default function SkillsWorkshopView() {
   }, [skills, runtimeFilter, capabilityFilter, search]);
 
   // ── Render ──────────────────────────────────────────────────────────────
-  const rtColors = (rt: string) => RUNTIME_COLORS[rt] || { bg: 'bg-white/5', text: 'text-[#6c7680]', border: 'border-[#2d363f]' };
+  const rtColors = (rt: string) => RUNTIME_COLORS[rt] || { bg: 'bg-[#2d363f]/30', text: 'text-[#6c7680]', border: 'border-[#2d363f]' };
 
   return (
     <div className="min-h-screen bg-[#0f1419] text-[#e6e1cf] font-mono p-6 space-y-6">
@@ -226,7 +226,7 @@ export default function SkillsWorkshopView() {
             </span>
           )}
           {dataSource === 'loading' && (
-            <span className="px-2 py-1 text-[10px] uppercase tracking-wider bg-white/5 text-[#4a5159] border border-[#2d363f] rounded-none animate-pulse">
+            <span className="px-2 py-1 text-[10px] uppercase tracking-wider bg-[#2d363f]/30 text-[#4a5159] border border-[#2d363f] rounded-none animate-pulse">
               Loading...
             </span>
           )}
@@ -250,7 +250,7 @@ export default function SkillsWorkshopView() {
           placeholder="Search skills, capabilities, tools..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 min-w-[240px] px-3 py-2 bg-[#1a1f26] border border-[#2d363f] rounded-none text-sm text-[#e6e1cf] placeholder:text-white/20 outline-none focus:border-white/20 transition-colors font-mono"
+          className="flex-1 min-w-[240px] px-3 py-2 bg-[#1a1f26] border border-[#2d363f] rounded-none text-sm text-[#e6e1cf] placeholder:text-[#4a5159] outline-none focus:border-[#2d363f] transition-colors font-mono"
         />
         <div className="flex gap-1">
           {(['all', 'node', 'python', 'shell'] as RuntimeFilter[]).map(rt => (
@@ -259,7 +259,7 @@ export default function SkillsWorkshopView() {
               onClick={() => setRuntimeFilter(rt)}
               className={`px-3 py-2 text-xs uppercase tracking-wider border rounded-none transition-all ${
                 runtimeFilter === rt
-                  ? 'bg-white/10 border-white/20 text-white/90'
+                  ? 'bg-[#2d363f]/50 border-[#2d363f] text-[#e6e1cf]'
                   : 'bg-[#1a1f26] border-[#2d363f] text-[#4a5159] hover:text-[#6c7680]'
               }`}
             >
@@ -270,7 +270,7 @@ export default function SkillsWorkshopView() {
         <select
           value={capabilityFilter}
           onChange={e => setCapabilityFilter(e.target.value)}
-          className="px-3 py-2 bg-[#1a1f26] border border-[#2d363f] rounded-none text-sm text-[#e6e1cf] outline-none focus:border-white/20 transition-colors font-mono"
+          className="px-3 py-2 bg-[#1a1f26] border border-[#2d363f] rounded-none text-sm text-[#e6e1cf] outline-none focus:border-[#2d363f] transition-colors font-mono"
         >
           <option value="">All Capabilities</option>
           {allCapabilities.map(c => (
@@ -297,14 +297,14 @@ export default function SkillsWorkshopView() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25, delay: i * 0.03 }}
                 className={`bg-[#1a1f26] border rounded-none transition-all cursor-pointer ${
-                  isExpanded ? 'border-white/20 col-span-1 md:col-span-2 xl:col-span-3' : 'border-[#2d363f] hover:border-[#2d363f]'
+                  isExpanded ? 'border-[#2d363f] col-span-1 md:col-span-2 xl:col-span-3' : 'border-[#2d363f] hover:border-[#2d363f]'
                 }`}
                 onClick={() => setExpandedSkill(isExpanded ? null : skill.name)}
               >
                 {/* Card Header */}
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-white/90 tracking-tight">{skill.name}</h3>
+                    <h3 className="text-sm font-semibold text-[#e6e1cf] tracking-tight">{skill.name}</h3>
                     <span className={`px-2 py-0.5 text-[10px] uppercase tracking-wider border rounded-none ${rt.bg} ${rt.text} ${rt.border}`}>
                       {skill.runtime}
                     </span>
@@ -316,13 +316,13 @@ export default function SkillsWorkshopView() {
                     {skill.capabilities.slice(0, isExpanded ? undefined : 3).map(cap => (
                       <span
                         key={cap}
-                        className="px-2 py-0.5 text-[10px] bg-white/[0.04] border border-white/[0.06] text-white/50 rounded-none"
+                        className="px-2 py-0.5 text-[10px] bg-white/[0.04] border border-white/[0.06] text-[#6c7680] rounded-none"
                       >
                         {cap}
                       </span>
                     ))}
                     {!isExpanded && skill.capabilities.length > 3 && (
-                      <span className="px-2 py-0.5 text-[10px] text-white/25">
+                      <span className="px-2 py-0.5 text-[10px] text-[#4a5159]">
                         +{skill.capabilities.length - 3}
                       </span>
                     )}
@@ -330,7 +330,7 @@ export default function SkillsWorkshopView() {
 
                   {/* Tools */}
                   <div className="flex items-center gap-2 mt-3">
-                    <span className="text-[10px] uppercase tracking-wider text-white/20">Tools:</span>
+                    <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">Tools:</span>
                     <div className="flex flex-wrap gap-1">
                       {skill.tools.map(tool => (
                         <span key={tool} className="text-[10px] text-[#4a5159]">{tool}</span>
@@ -354,7 +354,7 @@ export default function SkillsWorkshopView() {
                         {/* Input Schema */}
                         <div>
                           <h4 className="text-[10px] uppercase tracking-wider text-[#4a5159] mb-2">Input Schema</h4>
-                          <pre className="text-[11px] text-white/50 bg-[#0f1419] border border-[#2d363f] p-3 rounded-none overflow-x-auto">
+                          <pre className="text-[11px] text-[#6c7680] bg-[#0f1419] border border-[#2d363f] p-3 rounded-none overflow-x-auto">
                             {JSON.stringify(skill.inputSchema, null, 2)}
                           </pre>
                         </div>
@@ -376,7 +376,7 @@ export default function SkillsWorkshopView() {
                           <button
                             onClick={() => executeSkill(skill.name)}
                             disabled={isExecuting}
-                            className="px-4 py-2 text-xs uppercase tracking-wider bg-white/5 border border-[#2d363f] text-white/70 hover:bg-white/10 hover:text-white/90 transition-all rounded-none disabled:opacity-40"
+                            className="px-4 py-2 text-xs uppercase tracking-wider bg-[#2d363f]/30 border border-[#2d363f] text-[#e6e1cf]/80 hover:bg-[#2d363f]/50 hover:text-[#e6e1cf] transition-all rounded-none disabled:opacity-40"
                           >
                             {isExecuting ? (
                               <span className="flex items-center gap-2">
@@ -415,7 +415,7 @@ export default function SkillsWorkshopView() {
       {/* Empty State */}
       {filtered.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-white/20 text-sm">No skills match your filters</p>
+          <p className="text-[#4a5159] text-sm">No skills match your filters</p>
           <button
             onClick={() => { setSearch(''); setRuntimeFilter('all'); setCapabilityFilter(''); }}
             className="mt-3 text-xs text-[#4a5159] hover:text-[#6c7680] underline transition-colors"
@@ -433,8 +433,8 @@ export default function SkillsWorkshopView() {
 function StatBox({ label, value, accent }: { label: string; value: number | string; accent?: string }) {
   return (
     <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-3">
-      <p className="text-[10px] uppercase tracking-wider text-white/25 mb-1">{label}</p>
-      <p className={`text-lg font-bold tabular-nums ${accent || 'text-white/80'}`}>{value}</p>
+      <p className="text-[10px] uppercase tracking-wider text-[#4a5159] mb-1">{label}</p>
+      <p className={`text-lg font-bold tabular-nums ${accent || 'text-[#e6e1cf]'}`}>{value}</p>
     </div>
   );
 }

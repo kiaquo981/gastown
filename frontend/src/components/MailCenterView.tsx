@@ -254,8 +254,8 @@ export default function MailCenterView() {
             {dataSource === 'db' && <span className="px-2 py-0.5 text-[10px] rounded-none bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">LIVE</span>}
             {dataSource === 'mock' && <span className="px-2 py-0.5 text-[10px] rounded-none bg-amber-500/10 text-amber-400 border border-amber-500/20">DEMO</span>}
           </div>
-          <div className="flex items-center gap-6 text-xs text-white/50">
-            <div>Mailboxes: <span className="text-white/80">{stats?.totalMailboxes ?? '-'}</span></div>
+          <div className="flex items-center gap-6 text-xs text-[#6c7680]">
+            <div>Mailboxes: <span className="text-[#e6e1cf]">{stats?.totalMailboxes ?? '-'}</span></div>
             <div>Unread: <span className="text-amber-400">{stats?.unreadTotal ?? '-'}</span></div>
             <div>Queued: <span className="text-blue-400">{stats?.queued ?? '-'}</span></div>
             <div>DND: <span className="text-red-400">{stats?.dndCount ?? '-'}</span></div>
@@ -284,9 +284,9 @@ export default function MailCenterView() {
             <div className="p-3 border-b border-[#2d363f] text-[10px] text-[#4a5159] uppercase tracking-widest">Mailboxes</div>
             {sorted.map(mb => (
               <button key={mb.workerId} onClick={() => { setSelBox(mb.workerId); setSelMsg(null); setSelIds(new Set()); }}
-                className={`w-full text-left px-3 py-2.5 border-b border-white/[0.03] flex items-center justify-between transition-colors ${selBox === mb.workerId ? 'bg-white/5' : 'hover:bg-white/[0.02]'}`}>
+                className={`w-full text-left px-3 py-2.5 border-b border-[#2d363f]/30 flex items-center justify-between transition-colors ${selBox === mb.workerId ? 'bg-[#2d363f]/30' : 'hover:bg-[#2d363f]/15'}`}>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs text-white/70 truncate">{mb.workerName || mb.workerId}</div>
+                  <div className="text-xs text-[#e6e1cf]/80 truncate">{mb.workerName || mb.workerId}</div>
                   <div className="text-[10px] text-[#4a5159] mt-0.5">
                     {mb.totalMessages} msgs{mb.lastActivity && <span className="ml-1">| {timeAgo(mb.lastActivity)}</span>}
                   </div>
@@ -299,7 +299,7 @@ export default function MailCenterView() {
                 </div>
               </button>
             ))}
-            {sorted.length === 0 && <div className="p-4 text-xs text-white/20 text-center">No mailboxes found</div>}
+            {sorted.length === 0 && <div className="p-4 text-xs text-[#4a5159] text-center">No mailboxes found</div>}
           </motion.div>
         )}
 
@@ -314,7 +314,7 @@ export default function MailCenterView() {
                     {/* Toolbar */}
                     <div className="flex items-center justify-between px-4 py-2 border-b border-[#2d363f] bg-[#1a1f26]">
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-white/50">{selBox}</span>
+                        <span className="text-xs text-[#6c7680]">{selBox}</span>
                         <span className="text-[10px] text-[#4a5159]">{filtered.length} msgs</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -323,12 +323,12 @@ export default function MailCenterView() {
                             Mark {selIds.size} Read
                           </button>
                         )}
-                        <button onClick={() => markAllRead(selBox)} className="px-2 py-1 text-[10px] bg-white/5 text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-white/10 transition-colors">
+                        <button onClick={() => markAllRead(selBox)} className="px-2 py-1 text-[10px] bg-[#2d363f]/30 text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-[#2d363f]/50 transition-colors">
                           Mark All Read
                         </button>
                         {curMb && (
                           <button onClick={() => toggleDnd(selBox, !curMb.dnd)}
-                            className={`px-2 py-1 text-[10px] border rounded-none transition-colors ${curMb.dnd ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-white/5 text-[#4a5159] border-[#2d363f] hover:bg-white/10'}`}>
+                            className={`px-2 py-1 text-[10px] border rounded-none transition-colors ${curMb.dnd ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-[#2d363f]/30 text-[#4a5159] border-[#2d363f] hover:bg-[#2d363f]/50'}`}>
                             {curMb.dnd ? 'DND ON' : 'DND OFF'}
                           </button>
                         )}
@@ -338,7 +338,7 @@ export default function MailCenterView() {
                     <div className="flex-1 overflow-y-auto">
                       {filtered.map(msg => (
                         <motion.div key={msg.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                          className={`flex items-center gap-3 px-4 py-3 border-b border-white/[0.03] cursor-pointer transition-colors ${selMsg?.id === msg.id ? 'bg-white/[0.06]' : 'hover:bg-white/[0.02]'} ${!msg.read ? 'border-l-2 border-l-blue-400' : ''}`}
+                          className={`flex items-center gap-3 px-4 py-3 border-b border-[#2d363f]/30 cursor-pointer transition-colors ${selMsg?.id === msg.id ? 'bg-[#2d363f]/40' : 'hover:bg-[#2d363f]/15'} ${!msg.read ? 'border-l-2 border-l-blue-400' : ''}`}
                           onClick={() => { setSelMsg(msg); if (!msg.read && selBox) markRead(selBox, msg.id); }}>
                           <input type="checkbox" checked={selIds.has(msg.id)}
                             onChange={e => { e.stopPropagation(); toggleSel(msg.id); }} className="accent-blue-400 flex-shrink-0" />
@@ -346,24 +346,24 @@ export default function MailCenterView() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="text-xs text-[#6c7680] truncate" style={{ maxWidth: 120 }}>{tab === 'sent' ? msg.to : msg.from}</span>
-                              <span className={`text-xs truncate flex-1 ${msg.read ? 'text-[#4a5159]' : 'text-white/80 font-semibold'}`}>{msg.subject}</span>
+                              <span className={`text-xs truncate flex-1 ${msg.read ? 'text-[#4a5159]' : 'text-[#e6e1cf] font-semibold'}`}>{msg.subject}</span>
                             </div>
-                            <div className="text-[10px] text-white/25 mt-0.5 truncate">{trunc(msg.body, 80)}</div>
+                            <div className="text-[10px] text-[#4a5159] mt-0.5 truncate">{trunc(msg.body, 80)}</div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                             <span className={`text-[9px] uppercase ${TYPE_CLR[msg.type] || 'text-[#4a5159]'}`}>{msg.type}</span>
                             <span className={`px-1.5 py-0.5 text-[9px] border rounded-none ${PRIO[msg.priority]}`}>{msg.priority}</span>
-                            <span className="text-[10px] text-white/25 w-10 text-right">{timeAgo(msg.createdAt)}</span>
+                            <span className="text-[10px] text-[#4a5159] w-10 text-right">{timeAgo(msg.createdAt)}</span>
                           </div>
                         </motion.div>
                       ))}
                       {filtered.length === 0 && !loading && (
-                        <div className="flex items-center justify-center h-40 text-xs text-white/20">No messages</div>
+                        <div className="flex items-center justify-center h-40 text-xs text-[#4a5159]">No messages</div>
                       )}
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-center justify-center h-full text-xs text-white/20">Select a mailbox</div>
+                  <div className="flex items-center justify-center h-full text-xs text-[#4a5159]">Select a mailbox</div>
                 )}
               </motion.div>
             )}
@@ -372,8 +372,8 @@ export default function MailCenterView() {
             {tab === 'mailboxes' && (
               <motion.div key="mb" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-4">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs text-white/50">{mailboxes.length} mailboxes</span>
-                  <button onClick={runCleanup} className="px-2 py-1 text-[10px] bg-white/5 text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-white/10 transition-colors">Cleanup</button>
+                  <span className="text-xs text-[#6c7680]">{mailboxes.length} mailboxes</span>
+                  <button onClick={runCleanup} className="px-2 py-1 text-[10px] bg-[#2d363f]/30 text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-[#2d363f]/50 transition-colors">Cleanup</button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {sorted.map(mb => (
@@ -381,7 +381,7 @@ export default function MailCenterView() {
                       className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4 hover:border-[#2d363f] transition-colors cursor-pointer"
                       onClick={() => { setSelBox(mb.workerId); setTab('inbox'); }}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-white/70 font-semibold truncate">{mb.workerName || mb.workerId}</span>
+                        <span className="text-xs text-[#e6e1cf]/80 font-semibold truncate">{mb.workerName || mb.workerId}</span>
                         {mb.dnd && <span className="text-[9px] text-red-400 bg-red-500/10 px-1.5 py-0.5 border border-red-500/20 rounded-none">DND</span>}
                       </div>
                       <div className="flex items-center gap-4 text-[10px] text-[#4a5159]">
@@ -397,22 +397,22 @@ export default function MailCenterView() {
             {/* Broadcast Tab */}
             {tab === 'broadcast' && (
               <motion.div key="bc" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-6 max-w-xl">
-                <h2 className="text-sm font-bold text-white/70 mb-4">Broadcast to All Mailboxes</h2>
+                <h2 className="text-sm font-bold text-[#e6e1cf]/80 mb-4">Broadcast to All Mailboxes</h2>
                 <div className="space-y-3">
                   <div>
                     <label className="block text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Subject</label>
-                    <input value={bSubj} onChange={e => setBSubj(e.target.value)} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/80 focus:border-blue-500/40 focus:outline-none" placeholder="Subject..." />
+                    <input value={bSubj} onChange={e => setBSubj(e.target.value)} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf] focus:border-blue-500/40 focus:outline-none" placeholder="Subject..." />
                   </div>
                   <div>
                     <label className="block text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Body</label>
-                    <textarea value={bBody} onChange={e => setBBody(e.target.value)} rows={6} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/80 focus:border-blue-500/40 focus:outline-none resize-none" placeholder="Message..." />
+                    <textarea value={bBody} onChange={e => setBBody(e.target.value)} rows={6} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf] focus:border-blue-500/40 focus:outline-none resize-none" placeholder="Message..." />
                   </div>
                   <div>
                     <label className="block text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Priority</label>
                     <div className="flex gap-2">
                       {(['low', 'normal', 'high', 'critical'] as const).map(p => (
                         <button key={p} onClick={() => setBPri(p)}
-                          className={`px-3 py-1.5 text-[10px] border rounded-none transition-colors ${bPri === p ? PRIO[p] : 'bg-white/[0.02] text-[#4a5159] border-[#2d363f]'}`}>{p}</button>
+                          className={`px-3 py-1.5 text-[10px] border rounded-none transition-colors ${bPri === p ? PRIO[p] : 'bg-[#2d363f]/15 text-[#4a5159] border-[#2d363f]'}`}>{p}</button>
                       ))}
                     </div>
                   </div>
@@ -427,12 +427,12 @@ export default function MailCenterView() {
             {/* Queue Workers Tab */}
             {tab === 'queue' && (
               <motion.div key="q" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-4">
-                <h2 className="text-sm font-bold text-white/70 mb-4">Mail Queue Workers</h2>
+                <h2 className="text-sm font-bold text-[#e6e1cf]/80 mb-4">Mail Queue Workers</h2>
                 <div className="space-y-2">
                   {queueWorkers.map(qw => (
                     <div key={qw.id} className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4 flex items-center justify-between">
                       <div>
-                        <div className="text-xs text-white/70 font-semibold">{qw.id}</div>
+                        <div className="text-xs text-[#e6e1cf]/80 font-semibold">{qw.id}</div>
                         <div className="flex items-center gap-4 text-[10px] text-[#4a5159] mt-1">
                           <span>Claimed: {qw.claimed}</span>
                           <span>Processed: {qw.processed}</span>
@@ -444,7 +444,7 @@ export default function MailCenterView() {
                       </span>
                     </div>
                   ))}
-                  {queueWorkers.length === 0 && <div className="text-xs text-white/20 text-center py-8">No queue workers</div>}
+                  {queueWorkers.length === 0 && <div className="text-xs text-[#4a5159] text-center py-8">No queue workers</div>}
                 </div>
               </motion.div>
             )}
@@ -457,32 +457,32 @@ export default function MailCenterView() {
             <motion.div key="det" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
               className="w-96 border-l border-[#2d363f] bg-[#1a1f26] overflow-y-auto flex-shrink-0">
               <div className="p-4 border-b border-[#2d363f] flex items-center justify-between">
-                <span className="text-xs text-white/50">Detail</span>
+                <span className="text-xs text-[#6c7680]">Detail</span>
                 <button onClick={() => setSelMsg(null)} className="text-[#4a5159] hover:text-[#6c7680] text-sm">x</button>
               </div>
               <div className="p-4 space-y-4">
                 <div>
-                  <div className="text-[10px] text-white/25 uppercase tracking-widest mb-1">Subject</div>
-                  <div className="text-sm text-white/80">{selMsg.subject}</div>
+                  <div className="text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Subject</div>
+                  <div className="text-sm text-[#e6e1cf]">{selMsg.subject}</div>
                 </div>
                 <div className="flex gap-4">
-                  <div><div className="text-[10px] text-white/25 uppercase tracking-widest mb-1">From</div><div className="text-xs text-[#6c7680]">{selMsg.from}</div></div>
-                  <div><div className="text-[10px] text-white/25 uppercase tracking-widest mb-1">To</div><div className="text-xs text-[#6c7680]">{selMsg.to}</div></div>
+                  <div><div className="text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">From</div><div className="text-xs text-[#6c7680]">{selMsg.from}</div></div>
+                  <div><div className="text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">To</div><div className="text-xs text-[#6c7680]">{selMsg.to}</div></div>
                 </div>
                 <div className="flex gap-3">
                   <span className={`px-2 py-0.5 text-[9px] border rounded-none ${PRIO[selMsg.priority]}`}>{selMsg.priority}</span>
                   <span className={`text-[9px] uppercase ${TYPE_CLR[selMsg.type]}`}>{selMsg.type}</span>
-                  <span className="text-[10px] text-white/25">{timeAgo(selMsg.createdAt)}</span>
+                  <span className="text-[10px] text-[#4a5159]">{timeAgo(selMsg.createdAt)}</span>
                 </div>
                 <div>
-                  <div className="text-[10px] text-white/25 uppercase tracking-widest mb-1">Body</div>
-                  <div className="text-xs text-[#6c7680] whitespace-pre-wrap leading-relaxed bg-white/[0.02] border border-[#2d363f] rounded-none p-3">{selMsg.body}</div>
+                  <div className="text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Body</div>
+                  <div className="text-xs text-[#6c7680] whitespace-pre-wrap leading-relaxed bg-[#2d363f]/15 border border-[#2d363f] rounded-none p-3">{selMsg.body}</div>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => { setCTo(selMsg.from); setCSubj(`Re: ${selMsg.subject}`); setShowCompose(true); }}
                     className="px-3 py-1.5 text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-none hover:bg-blue-500/30 transition-colors">Reply</button>
                   <button onClick={() => { setCSubj(`Fwd: ${selMsg.subject}`); setCBody(`\n\n--- Forwarded ---\nFrom: ${selMsg.from}\n\n${selMsg.body}`); setShowCompose(true); }}
-                    className="px-3 py-1.5 text-[10px] bg-white/5 text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-white/10 transition-colors">Forward</button>
+                    className="px-3 py-1.5 text-[10px] bg-[#2d363f]/30 text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-[#2d363f]/50 transition-colors">Forward</button>
                 </div>
               </div>
             </motion.div>
@@ -498,23 +498,23 @@ export default function MailCenterView() {
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-[#0f1419] border border-[#2d363f] rounded-none w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white/70">Compose Message</h3>
+                <h3 className="text-sm font-bold text-[#e6e1cf]/80">Compose Message</h3>
                 <button onClick={() => setShowCompose(false)} className="text-[#4a5159] hover:text-[#6c7680] text-sm">x</button>
               </div>
               <div>
                 <label className="block text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">To</label>
-                <select value={cTo} onChange={e => setCTo(e.target.value)} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/80 focus:border-blue-500/40 focus:outline-none">
+                <select value={cTo} onChange={e => setCTo(e.target.value)} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf] focus:border-blue-500/40 focus:outline-none">
                   <option value="">Select worker...</option>
                   {mailboxes.map(m => <option key={m.workerId} value={m.workerId}>{m.workerName || m.workerId}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Subject</label>
-                <input value={cSubj} onChange={e => setCSubj(e.target.value)} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/80 focus:border-blue-500/40 focus:outline-none" placeholder="Subject..." />
+                <input value={cSubj} onChange={e => setCSubj(e.target.value)} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf] focus:border-blue-500/40 focus:outline-none" placeholder="Subject..." />
               </div>
               <div>
                 <label className="block text-[10px] text-[#4a5159] uppercase tracking-widest mb-1">Body</label>
-                <textarea value={cBody} onChange={e => setCBody(e.target.value)} rows={5} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/80 focus:border-blue-500/40 focus:outline-none resize-none" placeholder="Message body..." />
+                <textarea value={cBody} onChange={e => setCBody(e.target.value)} rows={5} className="w-full bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf] focus:border-blue-500/40 focus:outline-none resize-none" placeholder="Message body..." />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
@@ -522,7 +522,7 @@ export default function MailCenterView() {
                   <div className="flex gap-1">
                     {(['low', 'normal', 'high', 'critical'] as const).map(p => (
                       <button key={p} onClick={() => setCPri(p)}
-                        className={`flex-1 px-2 py-1.5 text-[10px] border rounded-none transition-colors ${cPri === p ? PRIO[p] : 'bg-white/[0.02] text-[#4a5159] border-[#2d363f]'}`}>{p}</button>
+                        className={`flex-1 px-2 py-1.5 text-[10px] border rounded-none transition-colors ${cPri === p ? PRIO[p] : 'bg-[#2d363f]/15 text-[#4a5159] border-[#2d363f]'}`}>{p}</button>
                     ))}
                   </div>
                 </div>
@@ -531,13 +531,13 @@ export default function MailCenterView() {
                   <div className="flex gap-1">
                     {(['info', 'task', 'escalation', 'alert'] as const).map(t => (
                       <button key={t} onClick={() => setCType(t)}
-                        className={`flex-1 px-2 py-1.5 text-[10px] border rounded-none transition-colors ${cType === t ? 'bg-white/10 text-white/70 border-white/20' : 'bg-white/[0.02] text-[#4a5159] border-[#2d363f]'}`}>{t}</button>
+                        className={`flex-1 px-2 py-1.5 text-[10px] border rounded-none transition-colors ${cType === t ? 'bg-[#2d363f]/50 text-[#e6e1cf]/80 border-[#2d363f]' : 'bg-[#2d363f]/15 text-[#4a5159] border-[#2d363f]'}`}>{t}</button>
                     ))}
                   </div>
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <button onClick={() => setShowCompose(false)} className="px-4 py-2 text-xs text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-white/5 transition-colors">Cancel</button>
+                <button onClick={() => setShowCompose(false)} className="px-4 py-2 text-xs text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-[#2d363f]/30 transition-colors">Cancel</button>
                 <button onClick={sendMail} disabled={sending || !cTo || !cSubj || !cBody}
                   className="px-4 py-2 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-none hover:bg-blue-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                   {sending ? 'Sending...' : 'Send'}

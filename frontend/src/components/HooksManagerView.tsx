@@ -181,8 +181,8 @@ export default function HooksManagerView() {
         className="flex items-center justify-between mb-5"
       >
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold tracking-wide text-white/90">HOOKS MANAGER</h1>
-          <span className="text-xs text-white/20">{hooks.length} hooks registered</span>
+          <h1 className="text-lg font-bold tracking-wide text-[#e6e1cf]">HOOKS MANAGER</h1>
+          <span className="text-xs text-[#4a5159]">{hooks.length} hooks registered</span>
         </div>
         <button
           onClick={() => { setShowAddForm(!showAddForm); if (showAddForm) resetForm() }}
@@ -215,7 +215,7 @@ export default function HooksManagerView() {
                     value={formName}
                     onChange={e => setFormName(e.target.value)}
                     placeholder="my-hook"
-                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf]/80 placeholder-[#4a5159] focus:outline-none focus:border-[#2d363f]"
                   />
                 </div>
                 <div>
@@ -223,7 +223,7 @@ export default function HooksManagerView() {
                   <select
                     value={formType}
                     onChange={e => setFormType(e.target.value as 'pre' | 'post')}
-                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 focus:outline-none"
+                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf]/80 focus:outline-none"
                   >
                     <option value="pre" className="bg-[#1a1f26]">Pre</option>
                     <option value="post" className="bg-[#1a1f26]">Post</option>
@@ -234,7 +234,7 @@ export default function HooksManagerView() {
                   <select
                     value={formTarget}
                     onChange={e => setFormTarget(e.target.value)}
-                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 focus:outline-none"
+                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf]/80 focus:outline-none"
                   >
                     {Object.entries(TARGET_LABELS).map(([k, v]) => (
                       <option key={k} value={k} className="bg-[#1a1f26]">{v}</option>
@@ -249,7 +249,7 @@ export default function HooksManagerView() {
                   value={formActionUrl}
                   onChange={e => setFormActionUrl(e.target.value)}
                   placeholder="https://example.com/webhook"
-                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
+                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf]/80 placeholder-[#4a5159] focus:outline-none focus:border-[#2d363f]"
                 />
               </div>
 
@@ -260,7 +260,7 @@ export default function HooksManagerView() {
                   onChange={e => setFormScript(e.target.value)}
                   placeholder="// JavaScript hook script"
                   rows={3}
-                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20 resize-y"
+                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf]/80 placeholder-[#4a5159] focus:outline-none focus:border-[#2d363f] resize-y"
                 />
               </div>
 
@@ -270,7 +270,7 @@ export default function HooksManagerView() {
                   value={formDesc}
                   onChange={e => setFormDesc(e.target.value)}
                   placeholder="What this hook does..."
-                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
+                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-[#e6e1cf]/80 placeholder-[#4a5159] focus:outline-none focus:border-[#2d363f]"
                 />
               </div>
 
@@ -296,8 +296,8 @@ export default function HooksManagerView() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-xs uppercase tracking-wider transition-colors ${
               activeTab === tab
-                ? 'text-white/80 border-b-2 border-violet-500/60'
-                : 'text-[#4a5159] hover:text-white/50'
+                ? 'text-[#e6e1cf] border-b-2 border-violet-500/60'
+                : 'text-[#4a5159] hover:text-[#6c7680]'
             }`}
           >
             {tab === 'registry' ? 'Hook Registry' : 'Execution Log'}
@@ -317,8 +317,8 @@ export default function HooksManagerView() {
           >
             {hooks.length === 0 ? (
               <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-8 text-center">
-                <p className="text-sm text-white/20">No hooks registered</p>
-                <p className="text-[10px] text-white/10 mt-1">Click &quot;+ ADD HOOK&quot; to create one</p>
+                <p className="text-sm text-[#4a5159]">No hooks registered</p>
+                <p className="text-[10px] text-[#4a5159] mt-1">Click &quot;+ ADD HOOK&quot; to create one</p>
               </div>
             ) : (
               hooks.map((hook, i) => {
@@ -339,7 +339,7 @@ export default function HooksManagerView() {
                         onClick={() => toggleHook(hook)}
                         disabled={toggling === hook.id}
                         className={`relative w-10 h-5 rounded-full transition-colors ${
-                          hook.enabled ? 'bg-emerald-500/30' : 'bg-white/10'
+                          hook.enabled ? 'bg-emerald-500/30' : 'bg-[#2d363f]/50'
                         }`}
                       >
                         <motion.div
@@ -357,21 +357,21 @@ export default function HooksManagerView() {
                         onClick={() => setExpandedHook(isExpanded ? null : hook.id)}
                       >
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold text-white/80 truncate">{hook.name}</h3>
+                          <h3 className="text-sm font-semibold text-[#e6e1cf] truncate">{hook.name}</h3>
                           <span className={`px-1.5 py-0.5 text-[8px] border rounded-none ${typeInfo.color}`}>
                             {typeInfo.text}
                           </span>
-                          <span className="px-1.5 py-0.5 text-[8px] bg-white/5 border border-[#2d363f] text-[#4a5159] rounded-none">
+                          <span className="px-1.5 py-0.5 text-[8px] bg-[#2d363f]/30 border border-[#2d363f] text-[#4a5159] rounded-none">
                             {TARGET_LABELS[hook.target]}
                           </span>
                         </div>
                         {hook.description && (
-                          <p className="text-[10px] text-white/25 mt-0.5 truncate">{hook.description}</p>
+                          <p className="text-[10px] text-[#4a5159] mt-0.5 truncate">{hook.description}</p>
                         )}
                       </div>
 
                       {/* Meta */}
-                      <div className="flex items-center gap-3 text-[10px] text-white/20">
+                      <div className="flex items-center gap-3 text-[10px] text-[#4a5159]">
                         <span title="Fire count">{hook.fireCount}x</span>
                         {hook.lastFired && (
                           <span title="Last fired">{timeAgo(hook.lastFired)}</span>
@@ -400,13 +400,13 @@ export default function HooksManagerView() {
                             {/* Config */}
                             <div className="grid grid-cols-2 gap-3">
                               <div className="bg-[#0f1419] border border-[#2d363f] rounded-none p-3">
-                                <p className="text-[9px] text-white/25 uppercase mb-1">Action URL</p>
+                                <p className="text-[9px] text-[#4a5159] uppercase mb-1">Action URL</p>
                                 <p className="text-xs text-cyan-400/60 font-mono break-all">
                                   {hook.actionUrl || '--'}
                                 </p>
                               </div>
                               <div className="bg-[#0f1419] border border-[#2d363f] rounded-none p-3">
-                                <p className="text-[9px] text-white/25 uppercase mb-1">Script</p>
+                                <p className="text-[9px] text-[#4a5159] uppercase mb-1">Script</p>
                                 <pre className="text-[10px] text-[#4a5159] whitespace-pre-wrap break-all max-h-[80px] overflow-y-auto">
                                   {hook.script || '--'}
                                 </pre>
@@ -414,7 +414,7 @@ export default function HooksManagerView() {
                             </div>
 
                             {/* Metadata */}
-                            <div className="flex items-center gap-4 text-[10px] text-white/15">
+                            <div className="flex items-center gap-4 text-[10px] text-[#4a5159]">
                               <span>ID: {hook.id}</span>
                               <span>Created: {formatDate(hook.createdAt)}</span>
                               <span>Updated: {formatDate(hook.updatedAt)}</span>
@@ -426,21 +426,21 @@ export default function HooksManagerView() {
                                 Recent Executions ({hookExecs.length})
                               </p>
                               {hookExecs.length === 0 ? (
-                                <p className="text-[10px] text-white/15">No executions yet</p>
+                                <p className="text-[10px] text-[#4a5159]">No executions yet</p>
                               ) : (
                                 <div className="space-y-1">
                                   {hookExecs.map(exec => (
                                     <div
                                       key={exec.id}
-                                      className="flex items-center gap-2 px-2 py-1.5 bg-white/[0.02] border border-[#2d363f] rounded-none"
+                                      className="flex items-center gap-2 px-2 py-1.5 bg-[#2d363f]/15 border border-[#2d363f] rounded-none"
                                     >
                                       <span className={`w-1.5 h-1.5 rounded-full ${
                                         exec.result === 'success' ? 'bg-emerald-400' : 'bg-red-400'
                                       }`} />
                                       <span className="text-[10px] text-[#4a5159] font-mono">{exec.beadId}</span>
-                                      <span className="text-[9px] text-white/20 flex-1 truncate">{exec.message || '--'}</span>
-                                      <span className="text-[9px] text-white/15">{exec.duration}ms</span>
-                                      <span className="text-[9px] text-white/10">{timeAgo(exec.timestamp)}</span>
+                                      <span className="text-[9px] text-[#4a5159] flex-1 truncate">{exec.message || '--'}</span>
+                                      <span className="text-[9px] text-[#4a5159]">{exec.duration}ms</span>
+                                      <span className="text-[9px] text-[#4a5159]">{timeAgo(exec.timestamp)}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -467,12 +467,12 @@ export default function HooksManagerView() {
           >
             {executions.length === 0 ? (
               <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-8 text-center">
-                <p className="text-sm text-white/20">No hook executions recorded</p>
+                <p className="text-sm text-[#4a5159]">No hook executions recorded</p>
               </div>
             ) : (
               <div className="space-y-0">
                 {/* Header row */}
-                <div className="flex items-center gap-3 px-3 py-2 text-[9px] text-white/20 uppercase tracking-wider border-b border-[#2d363f]">
+                <div className="flex items-center gap-3 px-3 py-2 text-[9px] text-[#4a5159] uppercase tracking-wider border-b border-[#2d363f]">
                   <span className="w-4" />
                   <span className="w-32">Hook</span>
                   <span className="w-24">Bead</span>
@@ -487,16 +487,16 @@ export default function HooksManagerView() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: i * 0.015 }}
-                    className="flex items-center gap-3 px-3 py-2 border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors"
+                    className="flex items-center gap-3 px-3 py-2 border-b border-[#2d363f]/30 hover:bg-[#2d363f]/15 transition-colors"
                   >
                     <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                       exec.result === 'success' ? 'bg-emerald-400' : 'bg-red-400'
                     }`} />
-                    <span className="w-32 text-xs text-white/50 truncate">{exec.hookName}</span>
+                    <span className="w-32 text-xs text-[#6c7680] truncate">{exec.hookName}</span>
                     <span className="w-24 text-[10px] text-[#4a5159] font-mono">{exec.beadId}</span>
-                    <span className="flex-1 text-[10px] text-white/25 truncate">{exec.message || '--'}</span>
-                    <span className="w-16 text-[10px] text-white/15 text-right">{exec.duration}ms</span>
-                    <span className="w-24 text-[9px] text-white/10 text-right">{formatDate(exec.timestamp)}</span>
+                    <span className="flex-1 text-[10px] text-[#4a5159] truncate">{exec.message || '--'}</span>
+                    <span className="w-16 text-[10px] text-[#4a5159] text-right">{exec.duration}ms</span>
+                    <span className="w-24 text-[9px] text-[#4a5159] text-right">{formatDate(exec.timestamp)}</span>
                   </motion.div>
                 ))}
               </div>

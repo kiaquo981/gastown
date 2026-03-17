@@ -660,7 +660,7 @@ export default function GTTerminalView() {
           {/* Sidebar toggle */}
           <button
             onClick={() => setShowSidebar(s => !s)}
-            className="px-2 py-0.5 text-xs rounded-none border transition-colors hover:border-white/20"
+            className="px-2 py-0.5 text-xs rounded-none border transition-colors hover:border-[#2d363f]"
             style={{
               background: showSidebar ? '#c2d94c10' : 'transparent',
               borderColor: showSidebar ? '#c2d94c40' : 'rgba(255,255,255,0.08)',
@@ -851,7 +851,7 @@ export default function GTTerminalView() {
               autoCorrect="off"
               autoCapitalize="off"
               placeholder={isExecuting ? 'executing...' : 'type a command...'}
-              className="flex-1 bg-transparent outline-none font-mono text-sm placeholder:text-white/15"
+              className="flex-1 bg-transparent outline-none font-mono text-sm placeholder:text-[#4a5159]"
               style={{
                 color: '#e6e1cf',
                 caretColor: '#c2d94c',
