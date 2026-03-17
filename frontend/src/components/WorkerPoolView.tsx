@@ -5,7 +5,7 @@
  *
  * Grid/table showing all Gas Town workers from the MEOW system.
  * Polls /api/meow/workers/overview every 5s for aggregated worker data.
- * VOID AESTHETIC: bg-[#0a0e27], borders white/5, text white/87, font-mono.
+ * Ayu Dark aesthetic: bg-[#0f1419], borders [#2d363f], text [#e6e1cf], font-mono.
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -170,7 +170,7 @@ function buildWorkersFromOverview(data: OverviewData): Worker[] {
 
 function SkeletonCard() {
   return (
-    <div className="bg-[#0d1117] border border-white/5 rounded-none p-4 animate-pulse">
+    <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4 animate-pulse">
       <div className="flex items-center gap-3 mb-3">
         <div className="w-8 h-8 bg-white/5 rounded-none" />
         <div className="flex-1 space-y-2">
@@ -208,15 +208,15 @@ function WorkerCard({
       onClick={onClick}
       className={`
         relative w-full text-left font-mono
-        bg-[#0d1117] border-2 rounded-none p-4
+        bg-[#1a1f26] border-2 rounded-none p-4
         transition-all duration-200 cursor-pointer
-        hover:bg-[#111827] hover:border-white/10
+        hover:bg-[#111827] hover:border-[#2d363f]
         ${tierRing.border} ${tierRing.glow}
       `}
     >
       {/* Status indicator */}
       <div className="absolute top-3 right-3 flex items-center gap-1.5">
-        <span className="text-[9px] uppercase tracking-wider text-white/30">
+        <span className="text-[9px] uppercase tracking-wider text-[#4a5159]">
           {statusInd.label}
         </span>
         <div className={`w-2 h-2 rounded-full ${statusInd.dot}`}>
@@ -228,7 +228,7 @@ function WorkerCard({
 
       {/* Name + Role */}
       <div className="flex items-center gap-2.5 mb-3 pr-16">
-        <div className="w-8 h-8 flex items-center justify-center bg-white/[0.03] border border-white/5 rounded-none flex-shrink-0">
+        <div className="w-8 h-8 flex items-center justify-center bg-white/[0.03] border border-[#2d363f] rounded-none flex-shrink-0">
           <span className="text-sm">
             {worker.role === 'Mayor' ? '\u{1F451}' :
              worker.role === 'Polecat' ? '\u{1F43E}' :
@@ -259,7 +259,7 @@ function WorkerCard({
 
       {/* Tier badge */}
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-[9px] uppercase tracking-widest text-white/30">Tier</span>
+        <span className="text-[9px] uppercase tracking-widest text-[#4a5159]">Tier</span>
         <span
           className={`
             text-[10px] font-bold px-1.5 py-0.5 border rounded-none
@@ -276,16 +276,16 @@ function WorkerCard({
       {/* Assignment */}
       {worker.assignment && (
         <div className="mb-2">
-          <span className="text-[9px] uppercase tracking-widest text-white/30">Task: </span>
-          <span className="text-[10px] text-white/60 truncate">{worker.assignment}</span>
+          <span className="text-[9px] uppercase tracking-widest text-[#4a5159]">Task: </span>
+          <span className="text-[10px] text-[#6c7680] truncate">{worker.assignment}</span>
         </div>
       )}
 
       {/* Bottom stats row */}
-      <div className="flex items-center justify-between pt-2 border-t border-white/5">
+      <div className="flex items-center justify-between pt-2 border-t border-[#2d363f]">
         <div className="flex items-center gap-1">
           <span className="text-[9px] text-white/25">HB:</span>
-          <span className="text-[10px] text-white/40 tabular-nums">
+          <span className="text-[10px] text-[#4a5159] tabular-nums">
             {worker.heartbeat ? relativeTime(worker.heartbeat) : '--'}
           </span>
         </div>
@@ -484,15 +484,15 @@ export default function WorkerPoolView() {
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0e27] font-mono text-white/[0.87] overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0f1419] font-mono text-[#e6e1cf] overflow-hidden">
       {/* ── Header ───────────────────────────────────────────────────── */}
-      <header className="flex-shrink-0 px-6 py-3 border-b border-white/5 bg-[#0a0e27]/80 backdrop-blur-sm">
+      <header className="flex-shrink-0 px-6 py-3 border-b border-[#2d363f] bg-[#0f1419]/80 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold tracking-[0.2em] uppercase text-white/90">
               Worker Colony
             </h1>
-            <span className="text-[10px] px-2 py-0.5 bg-white/5 border border-white/10 text-white/40">
+            <span className="text-[10px] px-2 py-0.5 bg-white/5 border border-[#2d363f] text-[#4a5159]">
               MEOW Workers
             </span>
           </div>
@@ -510,7 +510,7 @@ export default function WorkerPoolView() {
                 transition-colors duration-200
                 ${autoRefresh
                   ? 'border-emerald-500/20 text-emerald-400 bg-emerald-500/5'
-                  : 'border-white/5 text-white/40 bg-transparent hover:text-white/60'}
+                  : 'border-[#2d363f] text-[#4a5159] bg-transparent hover:text-[#6c7680]'}
               `}
             >
               {autoRefresh ? 'Live' : 'Paused'}
@@ -529,9 +529,9 @@ export default function WorkerPoolView() {
           ].map((s) => (
             <div
               key={s.label}
-              className="px-3 py-2 bg-[#0d1117] border border-white/5 min-w-[80px]"
+              className="px-3 py-2 bg-[#1a1f26] border border-[#2d363f] min-w-[80px]"
             >
-              <div className="text-[9px] uppercase tracking-widest text-white/30">{s.label}</div>
+              <div className="text-[9px] uppercase tracking-widest text-[#4a5159]">{s.label}</div>
               <div className={`text-lg font-bold tabular-nums ${s.color}`}>{s.value}</div>
             </div>
           ))}
@@ -544,14 +544,14 @@ export default function WorkerPoolView() {
             placeholder="Search workers..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-[#0d1117] border border-white/10
+            className="px-3 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f]
               text-white/90 placeholder-white/30 w-56
               focus:outline-none focus:border-white/20 rounded-none"
           />
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-2 py-1.5 text-xs bg-[#0d1117] border border-white/10 text-white/70 rounded-none"
+            className="px-2 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f] text-white/70 rounded-none"
           >
             <option value="all">All Roles</option>
             {ROLES.map((r) => (
@@ -561,7 +561,7 @@ export default function WorkerPoolView() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-2 py-1.5 text-xs bg-[#0d1117] border border-white/10 text-white/70 rounded-none"
+            className="px-2 py-1.5 text-xs bg-[#1a1f26] border border-[#2d363f] text-white/70 rounded-none"
           >
             <option value="all">All Statuses</option>
             {STATUSES.map((s) => (
@@ -570,8 +570,8 @@ export default function WorkerPoolView() {
           </select>
           <button
             onClick={handleRetry}
-            className="px-2 py-1.5 text-xs text-white/40 hover:text-white/70
-              border border-white/10 bg-[#0d1117] rounded-none transition-colors"
+            className="px-2 py-1.5 text-xs text-[#4a5159] hover:text-white/70
+              border border-[#2d363f] bg-[#1a1f26] rounded-none transition-colors"
           >
             Refresh
           </button>
@@ -593,14 +593,14 @@ export default function WorkerPoolView() {
             <div className="text-sm text-red-400/80 font-mono uppercase tracking-widest">
               {error}
             </div>
-            <p className="text-xs text-white/30 max-w-xs text-center">
+            <p className="text-xs text-[#4a5159] max-w-xs text-center">
               Unable to reach the MEOW workers overview endpoint. Check that the orchestrator is
               running.
             </p>
             <button
               onClick={handleRetry}
               className="mt-2 text-[10px] uppercase tracking-widest px-4 py-2
-                border border-white/10 hover:border-white/20 text-white/60
+                border border-[#2d363f] hover:border-white/20 text-[#6c7680]
                 hover:text-white/90 rounded-none transition-colors"
             >
               Retry Connection
@@ -619,7 +619,7 @@ export default function WorkerPoolView() {
             className="flex flex-col items-center justify-center h-64 gap-3"
           >
             <div className="text-3xl opacity-20">{'\u{1F41D}'}</div>
-            <div className="text-xs text-white/30 uppercase tracking-wider">
+            <div className="text-xs text-[#4a5159] uppercase tracking-wider">
               No workers match current filters
             </div>
           </motion.div>
@@ -640,12 +640,12 @@ export default function WorkerPoolView() {
       </main>
 
       {/* ── Pool Capacity Bar ──────────────────────────────────────────── */}
-      <footer className="flex-shrink-0 px-6 py-3 border-t border-white/5 bg-[#0a0e27]/80 backdrop-blur-sm">
+      <footer className="flex-shrink-0 px-6 py-3 border-t border-[#2d363f] bg-[#0f1419]/80 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] uppercase tracking-widest text-white/30">
+          <span className="text-[10px] uppercase tracking-widest text-[#4a5159]">
             Pool Capacity
           </span>
-          <span className="text-[10px] text-white/40 tabular-nums">
+          <span className="text-[10px] text-[#4a5159] tabular-nums">
             {poolCapacity.used} / {poolCapacity.total} active
           </span>
         </div>

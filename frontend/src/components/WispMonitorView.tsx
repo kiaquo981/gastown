@@ -5,7 +5,7 @@
  *
  * Ephemeral molecule TTL dashboard. Wisps are molecules in VAPOR phase with
  * a time-to-live that auto-expires. Monitors countdown, allows promote/burn.
- * VOID AESTHETIC: bg-[#0a0e17], borders white/5, text white/87, font-mono, rounded-none.
+ * Ayu Dark aesthetic: bg-[#0f1419], borders [#2d363f], text [#e6e1cf], font-mono, rounded-none.
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -135,8 +135,8 @@ function StatCard({
   subtext?: string;
 }) {
   return (
-    <div className="bg-[#0d1117] border border-white/5 rounded-none p-4 flex-1 min-w-[140px]">
-      <div className="text-[10px] uppercase tracking-widest text-white/30 mb-1">{label}</div>
+    <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4 flex-1 min-w-[140px]">
+      <div className="text-[10px] uppercase tracking-widest text-[#4a5159] mb-1">{label}</div>
       <div className={`text-xl font-bold tabular-nums ${color}`}>{value}</div>
       {subtext && <div className="text-[9px] text-white/20 mt-1">{subtext}</div>}
     </div>
@@ -187,9 +187,9 @@ function WispCard({
       whileHover={{ y: -1 }}
       onClick={onSelect}
       className={`
-        relative bg-[#0d1117] border rounded-none p-4 cursor-pointer
+        relative bg-[#1a1f26] border rounded-none p-4 cursor-pointer
         transition-all duration-200 font-mono
-        ${isSelected ? 'border-white/20 bg-[#111827]' : 'border-white/5 hover:border-white/10'}
+        ${isSelected ? 'border-white/20 bg-[#111827]' : 'border-[#2d363f] hover:border-[#2d363f]'}
         ${ttlPct >= 0 ? ttlGlowColor(ttlPct) : ''}
         ${isUrgent && !isDead ? 'animate-pulse' : ''}
       `}
@@ -207,7 +207,7 @@ function WispCard({
 
       {/* Wisp ID */}
       <div className="text-[11px] text-white/70 mb-0.5 pr-16 truncate">{truncId(wisp.id)}</div>
-      <div className="text-[10px] text-white/30 truncate mb-3">
+      <div className="text-[10px] text-[#4a5159] truncate mb-3">
         {wisp.formulaName || wisp.name}
       </div>
 
@@ -215,7 +215,7 @@ function WispCard({
       {ttlPct >= 0 ? (
         <div className="mb-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[9px] text-white/30 uppercase tracking-wider">TTL</span>
+            <span className="text-[9px] text-[#4a5159] uppercase tracking-wider">TTL</span>
             <span
               className={`text-[10px] tabular-nums font-bold ${
                 isDead ? 'text-red-400' : ttlPct < 25 ? 'text-red-400' : ttlPct < 50 ? 'text-amber-400' : 'text-emerald-400'
@@ -257,7 +257,7 @@ function WispCard({
             }}
           />
         </div>
-        <span className="text-[9px] text-white/30 tabular-nums">
+        <span className="text-[9px] text-[#4a5159] tabular-nums">
           {doneSteps}/{wisp.steps.length} steps
         </span>
       </div>
@@ -333,25 +333,25 @@ function DetailPanel({
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 340, opacity: 0 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="w-[340px] h-full border-l border-white/5 bg-[#080b14] flex flex-col overflow-hidden flex-shrink-0"
+      className="w-[340px] h-full border-l border-[#2d363f] bg-[#1a1f26] flex flex-col overflow-hidden flex-shrink-0"
     >
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-white/5 flex items-center justify-between">
+      <div className="px-4 pt-4 pb-3 border-b border-[#2d363f] flex items-center justify-between">
         <div>
           <div className="text-xs font-bold text-white/90 uppercase tracking-wider">Wisp Detail</div>
-          <div className="text-[10px] text-white/30 mt-0.5">{truncId(wisp.id)}</div>
+          <div className="text-[10px] text-[#4a5159] mt-0.5">{truncId(wisp.id)}</div>
         </div>
         <button
           onClick={onClose}
-          className="text-[10px] text-white/30 hover:text-white/60 transition-colors px-2 py-1 border border-white/5 rounded-none hover:border-white/10"
+          className="text-[10px] text-[#4a5159] hover:text-[#6c7680] transition-colors px-2 py-1 border border-[#2d363f] rounded-none hover:border-[#2d363f]"
         >
           CLOSE
         </button>
       </div>
 
       {/* Metadata section */}
-      <div className="px-4 py-3 border-b border-white/5 overflow-y-auto flex-shrink-0">
-        <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">Metadata</div>
+      <div className="px-4 py-3 border-b border-[#2d363f] overflow-y-auto flex-shrink-0">
+        <div className="text-[10px] uppercase tracking-widest text-[#4a5159] mb-2">Metadata</div>
         <div className="space-y-1.5">
           {[
             { label: 'ID', value: wisp.id },
@@ -364,7 +364,7 @@ function DetailPanel({
             { label: 'Formula', value: wisp.formulaName || wisp.name || '--' },
           ].map((row) => (
             <div key={row.label} className="flex justify-between items-start gap-2">
-              <span className="text-[10px] text-white/40 flex-shrink-0">{row.label}</span>
+              <span className="text-[10px] text-[#4a5159] flex-shrink-0">{row.label}</span>
               <span className="text-[10px] text-white/70 text-right break-all font-mono">
                 {row.value}
               </span>
@@ -390,8 +390,8 @@ function DetailPanel({
       </div>
 
       {/* Steps section */}
-      <div className="flex-1 px-4 py-3 border-b border-white/5 overflow-y-auto min-h-0">
-        <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">
+      <div className="flex-1 px-4 py-3 border-b border-[#2d363f] overflow-y-auto min-h-0">
+        <div className="text-[10px] uppercase tracking-widest text-[#4a5159] mb-2">
           Steps ({doneSteps}/{wisp.steps.length})
         </div>
         {wisp.steps.length === 0 ? (
@@ -408,11 +408,11 @@ function DetailPanel({
                     STEP_STATUS_CLS[step.status]?.split(' ')[0] || 'bg-zinc-500/30'
                   }`}
                 />
-                <span className="text-[10px] text-white/60 truncate flex-1">{step.name}</span>
+                <span className="text-[10px] text-[#6c7680] truncate flex-1">{step.name}</span>
                 <span
                   className={`text-[8px] px-1 py-0 border rounded-none ${
                     STEP_STATUS_CLS[step.status] || 'bg-zinc-500/10 text-zinc-500'
-                  } border-white/5`}
+                  } border-[#2d363f]`}
                 >
                   {step.status}
                 </span>
@@ -424,9 +424,9 @@ function DetailPanel({
 
       {/* Vars section */}
       {wisp.vars && Object.keys(wisp.vars).length > 0 && (
-        <div className="px-4 py-3 border-b border-white/5 overflow-y-auto max-h-[120px] flex-shrink-0">
-          <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">Variables</div>
-          <pre className="text-[9px] text-white/40 bg-black/30 p-2 rounded-none overflow-auto max-h-[80px]">
+        <div className="px-4 py-3 border-b border-[#2d363f] overflow-y-auto max-h-[120px] flex-shrink-0">
+          <div className="text-[10px] uppercase tracking-widest text-[#4a5159] mb-2">Variables</div>
+          <pre className="text-[9px] text-[#4a5159] bg-black/30 p-2 rounded-none overflow-auto max-h-[80px]">
             {JSON.stringify(wisp.vars, null, 2)}
           </pre>
         </div>
@@ -434,7 +434,7 @@ function DetailPanel({
 
       {/* Actions */}
       <div className="px-4 py-4 mt-auto flex-shrink-0">
-        <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">Actions</div>
+        <div className="text-[10px] uppercase tracking-widest text-[#4a5159] mb-2">Actions</div>
         <div className="space-y-2">
           <button
             onClick={onPromote}
@@ -632,9 +632,9 @@ export default function WispMonitorView() {
   // ── Render ────────────────────────────────────────────────────────────
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0e17] font-mono text-white/[0.87] overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0f1419] font-mono text-[#e6e1cf] overflow-hidden">
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-[#080b14]/80 backdrop-blur-sm flex-shrink-0">
+      <header className="flex items-center justify-between px-5 py-3 border-b border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
           <h1 className="text-sm font-bold tracking-[0.2em] uppercase text-white/90">
@@ -643,7 +643,7 @@ export default function WispMonitorView() {
           <span className="text-[10px] px-2 py-0.5 bg-violet-500/10 border border-violet-500/30 text-violet-400 rounded-none">
             VAPOR PHASE
           </span>
-          <span className="text-[10px] px-2 py-0.5 bg-white/5 border border-white/10 text-white/40 rounded-none">
+          <span className="text-[10px] px-2 py-0.5 bg-white/5 border border-[#2d363f] text-[#4a5159] rounded-none">
             {wisps.length} wisps
           </span>
         </div>
@@ -655,7 +655,7 @@ export default function WispMonitorView() {
       </header>
 
       {/* ── Stats Bar ──────────────────────────────────────────────────── */}
-      <div className="flex items-stretch gap-3 px-5 py-3 border-b border-white/5 flex-shrink-0 overflow-x-auto">
+      <div className="flex items-stretch gap-3 px-5 py-3 border-b border-[#2d363f] flex-shrink-0 overflow-x-auto">
         <StatCard
           label="Active Wisps"
           value={stats.total}
@@ -687,8 +687,8 @@ export default function WispMonitorView() {
       </div>
 
       {/* ── Filters ────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 px-5 py-2 border-b border-white/5 flex-shrink-0">
-        <span className="text-[10px] uppercase tracking-widest text-white/30">Sort:</span>
+      <div className="flex items-center gap-2 px-5 py-2 border-b border-[#2d363f] flex-shrink-0">
+        <span className="text-[10px] uppercase tracking-widest text-[#4a5159]">Sort:</span>
         {SORT_OPTIONS.map((opt) => (
           <button
             key={opt.value}
@@ -696,7 +696,7 @@ export default function WispMonitorView() {
             className={`text-[10px] px-2.5 py-1 border rounded-none transition-all ${
               sortMode === opt.value
                 ? 'border-violet-500/30 text-violet-400 bg-violet-500/10'
-                : 'border-white/5 text-white/30 hover:text-white/50 hover:border-white/10'
+                : 'border-[#2d363f] text-[#4a5159] hover:text-white/50 hover:border-[#2d363f]'
             }`}
           >
             {opt.label}
@@ -722,7 +722,7 @@ export default function WispMonitorView() {
             >
               <div className="text-4xl opacity-20">&#x1F4A8;</div>
               <div className="text-sm text-red-400/80 uppercase tracking-widest">{error}</div>
-              <p className="text-xs text-white/30 max-w-xs text-center">
+              <p className="text-xs text-[#4a5159] max-w-xs text-center">
                 Unable to reach the MEOW engine wisp endpoint. Check that the orchestrator is running.
               </p>
               <button
@@ -733,7 +733,7 @@ export default function WispMonitorView() {
                   abortRef.current = ctrl;
                   fetchWisps(ctrl.signal);
                 }}
-                className="mt-2 text-[10px] uppercase tracking-widest px-4 py-2 border border-white/10 hover:border-white/20 text-white/60 hover:text-white/90 rounded-none transition-colors"
+                className="mt-2 text-[10px] uppercase tracking-widest px-4 py-2 border border-[#2d363f] hover:border-white/20 text-[#6c7680] hover:text-white/90 rounded-none transition-colors"
               >
                 Retry
               </button>
@@ -809,7 +809,7 @@ export default function WispMonitorView() {
       </div>
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
-      <footer className="flex items-center justify-between px-5 py-2 border-t border-white/5 bg-[#080b14]/80 backdrop-blur-sm flex-shrink-0">
+      <footer className="flex items-center justify-between px-5 py-2 border-t border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm flex-shrink-0">
         <div className="flex items-center gap-4">
           <span className="text-[10px] text-white/20">
             WISPS: {wisps.length}

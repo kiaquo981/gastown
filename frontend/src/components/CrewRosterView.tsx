@@ -4,7 +4,7 @@
  * CrewRosterView — GT-009: Crew Roster (Long-lived Agent Roster)
  *
  * Permanent, long-lived agents in Gas Town (unlike ephemeral polecats).
- * VOID AESTHETIC: bg-[#0a0e27], borders white/5, text white/87, font-mono.
+ * Ayu Dark aesthetic: bg-[#0f1419], borders [#2d363f], text [#e6e1cf], font-mono.
  * Auto-refresh every 8s with AbortController cleanup.
  */
 
@@ -79,8 +79,8 @@ function formatTime(ts: string | null): string {
 function StatBadge({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-[10px] uppercase tracking-wider text-white/40">{label}</span>
-      <span className="text-sm font-mono text-white/[0.87]">{value}</span>
+      <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">{label}</span>
+      <span className="text-sm font-mono text-[#e6e1cf]">{value}</span>
     </div>
   );
 }
@@ -89,7 +89,7 @@ function ActionButton({ label, variant = 'default', onClick }: {
   label: string; variant?: 'default' | 'warn' | 'success'; onClick: () => void;
 }) {
   const colors = {
-    default: 'border-white/10 text-white/60 hover:bg-white/5',
+    default: 'border-[#2d363f] text-[#6c7680] hover:bg-white/5',
     warn: 'border-amber-500/20 text-amber-400/80 hover:bg-amber-500/10',
     success: 'border-emerald-500/20 text-emerald-400/80 hover:bg-emerald-500/10',
   };
@@ -116,7 +116,7 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.25 }}
-      className={`bg-[#0d1117] border ${expanded ? 'border-white/10' : 'border-white/5'} rounded-none transition-colors`}
+      className={`bg-[#1a1f26] border ${expanded ? 'border-[#2d363f]' : 'border-[#2d363f]'} rounded-none transition-colors`}
     >
       {/* Card header — clickable */}
       <button onClick={onToggle} className="w-full text-left p-4 focus:outline-none">
@@ -124,25 +124,25 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <div className={`w-2 h-2 rounded-none ${st.dot}`} />
-              <h3 className="text-sm font-mono text-white/[0.87] truncate">{member.name}</h3>
+              <h3 className="text-sm font-mono text-[#e6e1cf] truncate">{member.name}</h3>
               <span className={`px-1.5 py-0.5 text-[10px] font-mono uppercase ${st.bg} ${st.text} border ${st.border} rounded-none`}>
                 {member.status}
               </span>
             </div>
-            <p className="text-xs font-mono text-white/40 mb-2">{member.specialization}</p>
+            <p className="text-xs font-mono text-[#4a5159] mb-2">{member.specialization}</p>
 
             {member.currentAssignment && (
               <div className="flex items-center gap-1.5 mb-3">
-                <span className="text-[10px] font-mono uppercase text-white/30">ASSIGNED:</span>
+                <span className="text-[10px] font-mono uppercase text-[#4a5159]">ASSIGNED:</span>
                 <span className="text-xs font-mono text-violet-400/80 truncate">{member.currentAssignment}</span>
               </div>
             )}
 
             {/* Performance metrics */}
             <div className="flex gap-4">
-              <StatBadge label="Tasks" value={member.metrics.tasksCompleted} />
-              <StatBadge label="Avg Duration" value={member.metrics.avgDuration} />
-              <StatBadge label="Success" value={`${member.metrics.successRate}%`} />
+              <StatBadge label="Tasks" value={member.metrics?.tasksCompleted ?? 0} />
+              <StatBadge label="Avg Duration" value={member.metrics?.avgDuration ?? '--'} />
+              <StatBadge label="Success" value={`${member.metrics?.successRate ?? 0}%`} />
             </div>
           </div>
           <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}
@@ -150,15 +150,15 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
         </div>
 
         {/* Capabilities tags */}
-        {member.capabilities.length > 0 && (
+        {(member.capabilities || []).length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {member.capabilities.slice(0, 6).map((cap) => (
+            {(member.capabilities || []).slice(0, 6).map((cap) => (
               <span key={cap} className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-cyan-400/80 bg-cyan-500/10 border border-cyan-500/15 rounded-none">
                 {cap}
               </span>
             ))}
-            {member.capabilities.length > 6 && (
-              <span className="text-[10px] font-mono text-white/30 self-center">+{member.capabilities.length - 6}</span>
+            {(member.capabilities || []).length > 6 && (
+              <span className="text-[10px] font-mono text-[#4a5159] self-center">+{(member.capabilities || []).length - 6}</span>
             )}
           </div>
         )}
@@ -174,7 +174,7 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-white/5 px-4 py-3 space-y-3">
+            <div className="border-t border-[#2d363f] px-4 py-3 space-y-3">
               {/* Action buttons */}
               <div className="flex gap-2 flex-wrap">
                 <ActionButton label="Assign Task" variant="success" onClick={() => onAction('assign', member.id)} />
@@ -194,8 +194,8 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
               {/* Context state */}
               {member.contextState && Object.keys(member.contextState).length > 0 && (
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 block mb-1">CONTEXT STATE</span>
-                  <pre className="text-[11px] font-mono text-white/40 bg-white/[0.02] border border-white/5 p-2 rounded-none overflow-x-auto max-h-24">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#4a5159] block mb-1">CONTEXT STATE</span>
+                  <pre className="text-[11px] font-mono text-[#4a5159] bg-white/[0.02] border border-[#2d363f] p-2 rounded-none overflow-x-auto max-h-24">
                     {JSON.stringify(member.contextState, null, 2)}
                   </pre>
                 </div>
@@ -204,7 +204,7 @@ function CrewCard({ member, expanded, onToggle, onAction }: {
               {/* Assignment history */}
               {member.assignmentHistory && member.assignmentHistory.length > 0 && (
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 block mb-1">ASSIGNMENT HISTORY</span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#4a5159] block mb-1">ASSIGNMENT HISTORY</span>
                   <div className="space-y-1">
                     {member.assignmentHistory.slice(0, 5).map((rec) => (
                       <div key={rec.id} className="flex items-center gap-2 text-[11px] font-mono">
@@ -337,7 +337,7 @@ export default function CrewRosterView() {
       const q = search.toLowerCase();
       return m.name.toLowerCase().includes(q)
         || m.specialization.toLowerCase().includes(q)
-        || m.capabilities.some((c) => c.toLowerCase().includes(q));
+        || (m.capabilities || []).some((c) => c.toLowerCase().includes(q));
     }
     return true;
   }), [crew, statusFilter, specFilter, search]);
@@ -345,12 +345,12 @@ export default function CrewRosterView() {
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#0a0e27] text-white/[0.87] font-mono p-6 space-y-6">
+    <div className="min-h-screen bg-[#0f1419] text-[#e6e1cf] font-mono p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl tracking-wider uppercase text-white/[0.87]">Crew Roster</h1>
-          <p className="text-xs text-white/30 mt-1">Long-lived agents &mdash; {stats.total} registered</p>
+          <h1 className="text-xl tracking-wider uppercase text-[#e6e1cf]">Crew Roster</h1>
+          <p className="text-xs text-[#4a5159] mt-1">Long-lived agents &mdash; {stats.total} registered</p>
         </div>
 
         {/* Status breakdown pills */}
@@ -362,7 +362,7 @@ export default function CrewRosterView() {
               <div key={s} className={`flex items-center gap-1.5 px-2.5 py-1 border rounded-none ${st.border} ${st.bg}`}>
                 <div className={`w-1.5 h-1.5 rounded-none ${st.dot}`} />
                 <span className={`text-[11px] uppercase ${st.text}`}>{s}</span>
-                <span className="text-[11px] text-white/40">{count}</span>
+                <span className="text-[11px] text-[#4a5159]">{count}</span>
               </div>
             );
           })}
@@ -376,12 +376,12 @@ export default function CrewRosterView() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search crew..."
-          className="flex-1 bg-white/[0.03] border border-white/5 rounded-none px-3 py-2 text-xs font-mono text-white/[0.87] placeholder:text-white/20 focus:outline-none focus:border-white/15 transition-colors"
+          className="flex-1 bg-white/[0.03] border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] placeholder:text-white/20 focus:outline-none focus:border-white/15 transition-colors"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="bg-white/[0.03] border border-white/5 rounded-none px-3 py-2 text-xs font-mono text-white/[0.87] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
+          className="bg-white/[0.03] border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
         >
           <option value="all">All Status</option>
           <option value="active">Active</option>
@@ -391,7 +391,7 @@ export default function CrewRosterView() {
         <select
           value={specFilter}
           onChange={(e) => setSpecFilter(e.target.value)}
-          className="bg-white/[0.03] border border-white/5 rounded-none px-3 py-2 text-xs font-mono text-white/[0.87] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
+          className="bg-white/[0.03] border border-[#2d363f] rounded-none px-3 py-2 text-xs font-mono text-[#e6e1cf] focus:outline-none focus:border-white/15 appearance-none cursor-pointer"
         >
           <option value="all">All Specializations</option>
           {specializations.map((s) => (
@@ -420,7 +420,7 @@ export default function CrewRosterView() {
               initial={{ opacity: 0 }}
               animate={{ opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-              className="h-40 bg-white/[0.02] border border-white/5 rounded-none"
+              className="h-40 bg-white/[0.02] border border-[#2d363f] rounded-none"
             />
           ))}
         </div>
@@ -455,20 +455,20 @@ export default function CrewRosterView() {
 
       {/* Summary section */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/30 block mb-1">TOTAL ASSIGNMENTS</span>
-          <span className="text-2xl font-mono text-white/[0.87]">{stats.totalAssignments}</span>
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">TOTAL ASSIGNMENTS</span>
+          <span className="text-2xl font-mono text-[#e6e1cf]">{stats.totalAssignments}</span>
         </div>
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/30 block mb-1">AVG COMPLETION TIME</span>
-          <span className="text-2xl font-mono text-white/[0.87]">{stats.avgCompletionTime}</span>
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">AVG COMPLETION TIME</span>
+          <span className="text-2xl font-mono text-[#e6e1cf]">{stats.avgCompletionTime}</span>
         </div>
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/30 block mb-1">MOST ACTIVE</span>
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
+          <span className="text-[10px] uppercase tracking-wider text-[#4a5159] block mb-1">MOST ACTIVE</span>
           {stats.mostActive ? (
             <div>
               <span className="text-lg font-mono text-emerald-400">{stats.mostActive.name}</span>
-              <span className="text-xs text-white/30 ml-2">{stats.mostActive.tasks} tasks</span>
+              <span className="text-xs text-[#4a5159] ml-2">{stats.mostActive.tasks} tasks</span>
             </div>
           ) : (
             <span className="text-lg font-mono text-white/20">--</span>

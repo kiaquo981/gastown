@@ -5,7 +5,7 @@
  *
  * Main monitoring view: KPI cards, cost/error/completion charts (CSS-based),
  * filtering by molecule/worker/skill/time, live data badge.
- * VOID AESTHETIC: bg-[#0a0e17], borders white/5, text white/87, font-mono.
+ * Ayu Dark aesthetic: bg-[#0f1419], borders [#2d363f], text [#e6e1cf], font-mono.
  * Polls /api/meow/observability/stats every 6s.
  */
 
@@ -104,9 +104,9 @@ function MiniChart({
   const latest = safeData.length > 0 ? safeData[safeData.length - 1]?.value ?? 0 : 0;
 
   return (
-    <div className="bg-[#080b14] border border-white/5 rounded-none p-4">
+    <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
       <div className="flex items-center justify-between mb-3">
-        <div className="text-[10px] text-white/30 uppercase tracking-wider">{label}</div>
+        <div className="text-[10px] text-[#4a5159] uppercase tracking-wider">{label}</div>
         <div className={`text-sm font-bold ${color}`}>{formatter(latest)}</div>
       </div>
       <div className="flex items-end gap-px" style={{ height: `${height}px` }}>
@@ -125,7 +125,7 @@ function MiniChart({
                 />
               </div>
               <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block z-10">
-                <div className="bg-[#0a0e17] border border-white/10 rounded-none px-2 py-1 text-[9px] text-white/60 whitespace-nowrap">
+                <div className="bg-[#0f1419] border border-[#2d363f] rounded-none px-2 py-1 text-[9px] text-[#6c7680] whitespace-nowrap">
                   {formatter(point.value)} {formatTime(point.ts)}
                 </div>
               </div>
@@ -191,9 +191,9 @@ export default function ObservabilityTowerView() {
     { label: 'Total Spans', value: stats.totalSpans.toLocaleString(), color: 'text-cyan-400' },
     { label: 'Cost Burn $/hr', value: formatCost(stats.costBurnRate), color: stats.costBurnRate > 5 ? 'text-red-400' : 'text-emerald-400' },
     { label: 'Error Rate', value: formatPct(stats.errorRate), color: stats.errorRate > 0.05 ? 'text-red-400' : 'text-emerald-400' },
-    { label: 'Latency P50', value: formatMs(stats.latencyP50), color: 'text-white/60' },
-    { label: 'Latency P95', value: formatMs(stats.latencyP95), color: stats.latencyP95 > 500 ? 'text-amber-400' : 'text-white/60' },
-    { label: 'Latency P99', value: formatMs(stats.latencyP99), color: stats.latencyP99 > 2000 ? 'text-red-400' : 'text-white/60' },
+    { label: 'Latency P50', value: formatMs(stats.latencyP50), color: 'text-[#6c7680]' },
+    { label: 'Latency P95', value: formatMs(stats.latencyP95), color: stats.latencyP95 > 500 ? 'text-amber-400' : 'text-[#6c7680]' },
+    { label: 'Latency P99', value: formatMs(stats.latencyP99), color: stats.latencyP99 > 2000 ? 'text-red-400' : 'text-[#6c7680]' },
     { label: 'Active Molecules', value: stats.activeMolecules, color: 'text-violet-400' },
     { label: 'Active Workers', value: stats.activeWorkers, color: 'text-amber-400' },
   ], [stats]);
@@ -201,14 +201,14 @@ export default function ObservabilityTowerView() {
   // ─── Render ─────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#0a0e17] text-white/[0.87] font-mono p-6 space-y-6">
+    <div className="min-h-screen bg-[#0f1419] text-[#e6e1cf] font-mono p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-2xl">{'\u{1F3EF}'}</span>
           <div>
             <h1 className="text-lg font-bold tracking-wide">OBSERVABILITY TOWER</h1>
-            <p className="text-xs text-white/40">GT-034 // System-wide monitoring dashboard</p>
+            <p className="text-xs text-[#4a5159]">GT-034 // System-wide monitoring dashboard</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -236,7 +236,7 @@ export default function ObservabilityTowerView() {
               className={`px-3 py-1 text-[10px] uppercase tracking-wider border rounded-none transition-colors ${
                 timeRange === r
                   ? 'border-cyan-500/50 bg-cyan-500/10 text-cyan-400'
-                  : 'border-white/5 bg-[#080b14] text-white/40 hover:text-white/60'
+                  : 'border-[#2d363f] bg-[#1a1f26] text-[#4a5159] hover:text-[#6c7680]'
               }`}
             >
               {r}
@@ -248,21 +248,21 @@ export default function ObservabilityTowerView() {
           value={filterMolecule}
           onChange={e => setFilterMolecule(e.target.value)}
           placeholder="Molecule..."
-          className="bg-[#080b14] border border-white/5 rounded-none px-3 py-1 text-xs text-white/60 placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
+          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
         />
         <input
           type="text"
           value={filterWorker}
           onChange={e => setFilterWorker(e.target.value)}
           placeholder="Worker..."
-          className="bg-[#080b14] border border-white/5 rounded-none px-3 py-1 text-xs text-white/60 placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
+          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
         />
         <input
           type="text"
           value={filterSkill}
           onChange={e => setFilterSkill(e.target.value)}
           placeholder="Skill..."
-          className="bg-[#080b14] border border-white/5 rounded-none px-3 py-1 text-xs text-white/60 placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
+          className="bg-[#1a1f26] border border-[#2d363f] rounded-none px-3 py-1 text-xs text-[#6c7680] placeholder:text-white/20 outline-none focus:border-cyan-500/30 w-36"
         />
       </div>
 
@@ -274,9 +274,9 @@ export default function ObservabilityTowerView() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.04 }}
-            className="bg-[#080b14] border border-white/5 p-4 rounded-none"
+            className="bg-[#1a1f26] border border-[#2d363f] p-4 rounded-none"
           >
-            <div className="text-[10px] text-white/30 uppercase tracking-wider">{kpi.label}</div>
+            <div className="text-[10px] text-[#4a5159] uppercase tracking-wider">{kpi.label}</div>
             <div className={`text-2xl font-bold mt-1 ${kpi.color}`}>{kpi.value}</div>
           </motion.div>
         ))}
@@ -308,8 +308,8 @@ export default function ObservabilityTowerView() {
       </div>
 
       {/* Completion Rate Summary */}
-      <div className="bg-[#080b14] border border-white/5 rounded-none p-4">
-        <div className="text-[10px] text-white/30 uppercase tracking-wider mb-3">Molecule Completion</div>
+      <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
+        <div className="text-[10px] text-[#4a5159] uppercase tracking-wider mb-3">Molecule Completion</div>
         <div className="h-2 bg-white/5 rounded-none overflow-hidden">
           <motion.div
             className="h-full bg-emerald-400/50"
@@ -319,14 +319,14 @@ export default function ObservabilityTowerView() {
           />
         </div>
         <div className="flex justify-between mt-2">
-          <span className="text-xs text-white/30">{formatPct(stats.moleculeCompletionRate)} completed</span>
+          <span className="text-xs text-[#4a5159]">{formatPct(stats.moleculeCompletionRate)} completed</span>
           <span className="text-xs text-white/20">{stats.activeMolecules} active molecules</span>
         </div>
       </div>
 
       {/* Latency Distribution */}
-      <div className="bg-[#080b14] border border-white/5 rounded-none p-4">
-        <div className="text-[10px] text-white/30 uppercase tracking-wider mb-4">Latency Distribution</div>
+      <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
+        <div className="text-[10px] text-[#4a5159] uppercase tracking-wider mb-4">Latency Distribution</div>
         <div className="flex items-end gap-6">
           {[
             { label: 'P50', value: stats.latencyP50, color: 'bg-cyan-500/40' },

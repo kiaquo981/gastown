@@ -8,7 +8,7 @@
  *
  * API: GET /api/meow/mayor/status, GET /api/meow/workers/overview
  * SSE: meow:dispatch channel for live convoy dispatches
- * VOID AESTHETIC: bg-[#0a0e27], border-white/5, text-white/[0.87], font-mono, rounded-none
+ * Ayu Dark aesthetic: bg-[#0f1419], border-[#2d363f], text-[#e6e1cf], font-mono, rounded-none
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -282,45 +282,45 @@ function CreateConvoyModal({ onClose, onSubmit }: {
       onClick={onClose}
     >
       <motion.div
-        className="w-[480px] bg-[#0d1117] border border-white/10 p-6"
+        className="w-[480px] bg-[#1a1f26] border border-[#2d363f] p-6"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="font-mono text-sm uppercase tracking-widest text-white/[0.87] mb-4">
+        <h3 className="font-mono text-sm uppercase tracking-widest text-[#e6e1cf] mb-4">
           Create Convoy
         </h3>
 
         <div className="space-y-4">
           <div>
-            <label className="block font-mono text-[10px] uppercase text-white/40 mb-1">
+            <label className="block font-mono text-[10px] uppercase text-[#4a5159] mb-1">
               Beads (comma-separated skill names)
             </label>
             <input
               value={beads}
               onChange={(e) => setBeads(e.target.value)}
               placeholder="parse-schema, gen-types, write-tests"
-              className="w-full bg-[#0a0e27] border border-white/10 px-3 py-2 font-mono text-xs text-white/[0.87] placeholder:text-white/20 outline-none focus:border-cyan-500/40"
+              className="w-full bg-[#0f1419] border border-[#2d363f] px-3 py-2 font-mono text-xs text-[#e6e1cf] placeholder:text-white/20 outline-none focus:border-cyan-500/40"
             />
           </div>
 
           <div>
-            <label className="block font-mono text-[10px] uppercase text-white/40 mb-1">
+            <label className="block font-mono text-[10px] uppercase text-[#4a5159] mb-1">
               Assigned Rig (optional)
             </label>
             <input
               value={rig}
               onChange={(e) => setRig(e.target.value)}
               placeholder="rig-alpha"
-              className="w-full bg-[#0a0e27] border border-white/10 px-3 py-2 font-mono text-xs text-white/[0.87] placeholder:text-white/20 outline-none focus:border-cyan-500/40"
+              className="w-full bg-[#0f1419] border border-[#2d363f] px-3 py-2 font-mono text-xs text-[#e6e1cf] placeholder:text-white/20 outline-none focus:border-cyan-500/40"
             />
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 font-mono text-[10px] uppercase text-white/40 border border-white/10 hover:border-white/20 hover:text-white/60 transition-colors"
+              className="px-4 py-2 font-mono text-[10px] uppercase text-[#4a5159] border border-[#2d363f] hover:border-white/20 hover:text-[#6c7680] transition-colors"
             >
               Cancel
             </button>
@@ -522,10 +522,10 @@ export default function MayorCommandView() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[#0a0e27]">
+      <div className="h-full flex items-center justify-center bg-[#0f1419]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-6 h-6 border-2 border-cyan-400/30 border-t-cyan-400 animate-spin" />
-          <span className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#4a5159]">
             Connecting to Mayor...
           </span>
         </div>
@@ -534,11 +534,11 @@ export default function MayorCommandView() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0e27] text-white/[0.87]">
+    <div className="h-full flex flex-col bg-[#0f1419] text-[#e6e1cf]">
       {/* ─── Header ──────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#2d363f]">
         <div className="flex items-center gap-4">
-          <h1 className="font-mono text-sm uppercase tracking-widest text-white/60">
+          <h1 className="font-mono text-sm uppercase tracking-widest text-[#6c7680]">
             Mayor Command Center
           </h1>
           <div className="flex items-center gap-2">
@@ -548,7 +548,7 @@ export default function MayorCommandView() {
             </span>
           </div>
           <span className="font-mono text-[10px] text-white/20">|</span>
-          <span className="font-mono text-[10px] text-white/30">
+          <span className="font-mono text-[10px] text-[#4a5159]">
             UP {status.uptime}
           </span>
         </div>
@@ -577,15 +577,15 @@ export default function MayorCommandView() {
       </div>
 
       {/* ─── KPI Strip ───────────────────────────────────────────────────── */}
-      <div className="flex gap-6 px-6 py-3 border-b border-white/5">
+      <div className="flex gap-6 px-6 py-3 border-b border-[#2d363f]">
         {[
           { label: 'Active', value: status.activeConvoys, cls: 'text-cyan-400' },
           { label: 'Queued', value: status.queuedConvoys, cls: 'text-amber-400' },
           { label: 'Dispatched', value: status.totalDispatched, cls: 'text-emerald-400' },
-          { label: 'Avg Dispatch', value: formatDuration(status.avgDispatchTime), cls: 'text-white/60' },
+          { label: 'Avg Dispatch', value: formatDuration(status.avgDispatchTime), cls: 'text-[#6c7680]' },
         ].map((kpi) => (
           <div key={kpi.label} className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase text-white/30">{kpi.label}</span>
+            <span className="font-mono text-[10px] uppercase text-[#4a5159]">{kpi.label}</span>
             <span className={`font-mono text-xs font-medium ${kpi.cls}`}>{kpi.value}</span>
           </div>
         ))}
@@ -595,9 +595,9 @@ export default function MayorCommandView() {
       <div className="flex-1 flex overflow-hidden">
 
         {/* ─── Left Column: Convoy Queue (60%) ─────────────────────────── */}
-        <div className="w-[60%] flex flex-col border-r border-white/5 overflow-hidden">
-          <div className="px-4 py-2 border-b border-white/5">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+        <div className="w-[60%] flex flex-col border-r border-[#2d363f] overflow-hidden">
+          <div className="px-4 py-2 border-b border-[#2d363f]">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[#4a5159]">
               Convoy Queue ({convoys.length})
             </span>
           </div>
@@ -619,7 +619,7 @@ export default function MayorCommandView() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="border-b border-white/5"
+                    className="border-b border-[#2d363f]"
                   >
                     {/* Convoy Row */}
                     <button
@@ -633,11 +633,11 @@ export default function MayorCommandView() {
                         {'\u25B6'}
                       </motion.span>
 
-                      <span className="font-mono text-xs text-white/40 w-[72px] shrink-0">
+                      <span className="font-mono text-xs text-[#4a5159] w-[72px] shrink-0">
                         {convoy.id}
                       </span>
 
-                      <span className="font-mono text-[10px] text-white/30 w-[60px] shrink-0">
+                      <span className="font-mono text-[10px] text-[#4a5159] w-[60px] shrink-0">
                         {convoy.beadsCount} beads
                       </span>
 
@@ -645,7 +645,7 @@ export default function MayorCommandView() {
                         <LegProgress legs={convoy.legs} />
                       </div>
 
-                      <span className="font-mono text-[10px] text-white/30 w-[60px] shrink-0">
+                      <span className="font-mono text-[10px] text-[#4a5159] w-[60px] shrink-0">
                         {convoy.legs.length} legs
                       </span>
 
@@ -677,11 +677,11 @@ export default function MayorCommandView() {
                                 {convoy.beads.map((bead) => (
                                   <span
                                     key={bead.id}
-                                    className="px-2 py-1 font-mono text-[10px] bg-[#0a0e27] border border-white/5"
+                                    className="px-2 py-1 font-mono text-[10px] bg-[#0f1419] border border-[#2d363f]"
                                   >
-                                    <span className="text-white/40">{bead.id}</span>
+                                    <span className="text-[#4a5159]">{bead.id}</span>
                                     <span className="text-white/10 mx-1">|</span>
-                                    <span className="text-white/60">{bead.name}</span>
+                                    <span className="text-[#6c7680]">{bead.name}</span>
                                     <span className="text-white/10 mx-1">|</span>
                                     <span className="text-cyan-400/60">{bead.skill}</span>
                                     <span className="text-white/10 mx-1">|</span>
@@ -705,10 +705,10 @@ export default function MayorCommandView() {
                                 {convoy.legs.map((leg) => (
                                   <div
                                     key={leg.index}
-                                    className="flex-1 bg-[#0a0e27] border border-white/5 p-2"
+                                    className="flex-1 bg-[#0f1419] border border-[#2d363f] p-2"
                                   >
                                     <div className="flex items-center justify-between mb-1">
-                                      <span className="font-mono text-[10px] text-white/60">{leg.label}</span>
+                                      <span className="font-mono text-[10px] text-[#6c7680]">{leg.label}</span>
                                       <span className={`w-2 h-2 ${LEG_STATUS_COLOR[leg.status]}`} />
                                     </div>
                                     <div className="font-mono text-[10px] text-white/20">
@@ -725,7 +725,7 @@ export default function MayorCommandView() {
                                 <span className="font-mono text-[10px] uppercase text-white/20 block mb-1">
                                   Synthesis
                                 </span>
-                                <div className="font-mono text-[11px] text-white/40 bg-[#0a0e27] border border-white/5 p-2">
+                                <div className="font-mono text-[11px] text-[#4a5159] bg-[#0f1419] border border-[#2d363f] p-2">
                                   {convoy.synthesis}
                                 </div>
                               </div>
@@ -749,8 +749,8 @@ export default function MayorCommandView() {
 
         {/* ─── Right Column: Decision Log (40%) ────────────────────────── */}
         <div className="w-[40%] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[#2d363f]">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[#4a5159]">
               Decision Log ({decisions.length})
             </span>
             <button
@@ -758,7 +758,7 @@ export default function MayorCommandView() {
               className={`font-mono text-[10px] px-2 py-0.5 border ${
                 pinDecisions
                   ? 'border-cyan-500/20 text-cyan-400 bg-cyan-500/5'
-                  : 'border-white/10 text-white/30 hover:text-white/50'
+                  : 'border-[#2d363f] text-[#4a5159] hover:text-white/50'
               } transition-colors`}
             >
               {pinDecisions ? 'AUTO-SCROLL ON' : 'AUTO-SCROLL OFF'}
@@ -789,7 +789,7 @@ export default function MayorCommandView() {
                   </span>
 
                   <div className="flex-1 min-w-0">
-                    <div className="font-mono text-[11px] text-white/60 leading-relaxed">
+                    <div className="font-mono text-[11px] text-[#6c7680] leading-relaxed">
                       {dec.description}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
@@ -797,7 +797,7 @@ export default function MayorCommandView() {
                         dec.outcome === 'success' ? 'text-emerald-400' :
                         dec.outcome === 'pending' ? 'text-amber-400' :
                         dec.outcome === 'failed' ? 'text-red-400' :
-                        'text-white/30'
+                        'text-[#4a5159]'
                       }`}>
                         {dec.outcome}
                       </span>
@@ -818,14 +818,14 @@ export default function MayorCommandView() {
       </div>
 
       {/* ─── Bottom Bar: Resource Allocation ─────────────────────────────── */}
-      <div className="border-t border-white/5 px-6 py-3">
+      <div className="border-t border-[#2d363f] px-6 py-3">
         <div className="flex items-center gap-6">
           {/* Worker roles */}
           <div className="flex-1 flex gap-4">
             {workers.map((w) => (
               <div key={w.role} className="flex-1 min-w-[120px]">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-mono text-[10px] uppercase text-white/30">{w.role}</span>
+                  <span className="font-mono text-[10px] uppercase text-[#4a5159]">{w.role}</span>
                   <span className="font-mono text-[10px] text-white/50">
                     {w.active}/{w.total}
                     <span className="text-white/20 ml-1">({w.utilization}%)</span>
@@ -837,10 +837,10 @@ export default function MayorCommandView() {
           </div>
 
           {/* Capacity gauge */}
-          <div className="shrink-0 flex items-center gap-4 pl-4 border-l border-white/5">
+          <div className="shrink-0 flex items-center gap-4 pl-4 border-l border-[#2d363f]">
             <div className="text-center">
               <div className="font-mono text-[10px] uppercase text-white/20 mb-0.5">Total</div>
-              <div className="font-mono text-sm text-white/60">{totalCapacity}</div>
+              <div className="font-mono text-sm text-[#6c7680]">{totalCapacity}</div>
             </div>
             <div className="text-center">
               <div className="font-mono text-[10px] uppercase text-white/20 mb-0.5">Used</div>

@@ -5,7 +5,7 @@
  *
  * Per-item gate detail: typecheck, lint, test, build, coderabbit.
  * Each gate shows status, log output, time taken; re-run / skip actions.
- * VOID AESTHETIC: bg-[#0a0e17], borders white/5, text white/87, font-mono.
+ * Ayu Dark aesthetic: bg-[#0f1419], borders [#2d363f], text [#e6e1cf], font-mono.
  * Polls /api/meow/refinery/queue every 8s for item details.
  */
 
@@ -185,19 +185,19 @@ export default function QualityGateView() {
   // ─── Render ─────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#0a0e17] text-white/[0.87] font-mono p-6 space-y-6">
+    <div className="min-h-screen bg-[#0f1419] text-[#e6e1cf] font-mono p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-2xl">{'\u{1F6E1}'}</span>
           <div>
             <h1 className="text-lg font-bold tracking-wide">QUALITY GATE INSPECTOR</h1>
-            <p className="text-xs text-white/40">GT-032 // Per-item gate detail and control</p>
+            <p className="text-xs text-[#4a5159]">GT-032 // Per-item gate detail and control</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-400' : 'bg-red-400'}`} />
-          <span className="text-xs text-white/30">{connected ? 'LIVE' : 'OFFLINE'}</span>
+          <span className="text-xs text-[#4a5159]">{connected ? 'LIVE' : 'OFFLINE'}</span>
         </div>
       </div>
 
@@ -210,7 +210,7 @@ export default function QualityGateView() {
             className={`px-3 py-1.5 text-xs border rounded-none transition-colors ${
               selectedItemId === item.id
                 ? 'border-cyan-500/50 bg-cyan-500/10 text-cyan-400'
-                : 'border-white/5 bg-[#080b14] text-white/40 hover:text-white/60'
+                : 'border-[#2d363f] bg-[#1a1f26] text-[#4a5159] hover:text-[#6c7680]'
             }`}
           >
             {item.branch}
@@ -224,17 +224,17 @@ export default function QualityGateView() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`border border-white/5 rounded-none p-4 ${VERDICT_STYLES[selectedItem.overallVerdict]?.bg ?? 'bg-zinc-500/10'}`}
+            className={`border border-[#2d363f] rounded-none p-4 ${VERDICT_STYLES[selectedItem.overallVerdict]?.bg ?? 'bg-zinc-500/10'}`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs text-white/30 uppercase tracking-wider">Overall Verdict</div>
-                <div className={`text-2xl font-bold mt-1 ${VERDICT_STYLES[selectedItem.overallVerdict]?.color ?? 'text-white/60'}`}>
+                <div className="text-xs text-[#4a5159] uppercase tracking-wider">Overall Verdict</div>
+                <div className={`text-2xl font-bold mt-1 ${VERDICT_STYLES[selectedItem.overallVerdict]?.color ?? 'text-[#6c7680]'}`}>
                   {selectedItem.overallVerdict}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-white/30">{passedCount} / {totalGates} gates passed</div>
+                <div className="text-xs text-[#4a5159]">{passedCount} / {totalGates} gates passed</div>
                 <div className="text-xs text-white/20 mt-1">{selectedItem.branch}</div>
               </div>
             </div>
@@ -259,7 +259,7 @@ export default function QualityGateView() {
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-[#080b14] border border-white/5 rounded-none"
+                  className="bg-[#1a1f26] border border-[#2d363f] rounded-none"
                 >
                   {/* Gate Header */}
                   <div
@@ -296,9 +296,9 @@ export default function QualityGateView() {
                         <div className="px-4 pb-4 space-y-3">
                           {/* Log Output */}
                           {gate.logs.length > 0 && (
-                            <div className="bg-[#0a0e17] border border-white/5 rounded-none p-3 max-h-48 overflow-y-auto">
+                            <div className="bg-[#0f1419] border border-[#2d363f] rounded-none p-3 max-h-48 overflow-y-auto">
                               {gate.logs.map((line, i) => (
-                                <div key={i} className="text-[11px] text-white/40 leading-5">
+                                <div key={i} className="text-[11px] text-[#4a5159] leading-5">
                                   <span className="text-white/15 mr-2">{String(i + 1).padStart(3, ' ')}</span>
                                   {line}
                                 </div>
@@ -362,14 +362,14 @@ export default function QualityGateView() {
                                 exit={{ height: 0, opacity: 0 }}
                                 className="overflow-hidden"
                               >
-                                <div className="border-t border-white/5 pt-3 mt-2 space-y-2">
+                                <div className="border-t border-[#2d363f] pt-3 mt-2 space-y-2">
                                   <div className="text-[10px] text-white/25 uppercase tracking-wider">Run History</div>
                                   {gate.history.map(run => {
                                     const runCfg = STATUS_CONFIG[run.status];
                                     return (
                                       <div key={run.runId} className="flex items-center gap-3 text-xs py-1">
                                         <span className={`font-bold ${runCfg.color}`}>{runCfg.icon}</span>
-                                        <span className="text-white/30">{formatTime(run.startedAt)}</span>
+                                        <span className="text-[#4a5159]">{formatTime(run.startedAt)}</span>
                                         {run.durationMs && <span className="text-white/20">{formatDuration(run.durationMs)}</span>}
                                         <span className="text-white/15 truncate flex-1">{run.logs[0] ?? ''}</span>
                                       </div>

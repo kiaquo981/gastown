@@ -703,7 +703,7 @@ export default function GTTerminalView() {
                       <button
                         key={qc.label}
                         onClick={() => handleQuickCommand(qc)}
-                        className="w-full text-left px-2 py-1.5 mb-0.5 rounded-none transition-colors border border-transparent hover:border-white/10 group"
+                        className="w-full text-left px-2 py-1.5 mb-0.5 rounded-none transition-colors border border-transparent hover:border-[#2d363f] group"
                         style={{ background: 'transparent' }}
                         onMouseEnter={e => {
                           (e.currentTarget as HTMLElement).style.background = '#0a0e1480';

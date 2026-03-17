@@ -757,7 +757,7 @@ export default function SeanceLogView() {
                             )}
                             {event.sessionId && (
                               <span className="text-[10px]" style={{ color: AYU.muted }}>
-                                [{event.sessionId.slice(0, 10)}]
+                                [{event.sessionId?.slice(0, 10) ?? '--'}]
                               </span>
                             )}
                           </div>

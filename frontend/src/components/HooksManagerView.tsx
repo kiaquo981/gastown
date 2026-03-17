@@ -173,7 +173,7 @@ export default function HooksManagerView() {
     : []
 
   return (
-    <div className="min-h-screen bg-[#0a0e17] text-white/[0.87] font-mono p-4">
+    <div className="min-h-screen bg-[#0f1419] text-[#e6e1cf] font-mono p-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
@@ -203,74 +203,74 @@ export default function HooksManagerView() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-5 bg-[#080b14] border border-violet-500/20 rounded-none overflow-hidden"
+            className="mb-5 bg-[#1a1f26] border border-violet-500/20 rounded-none overflow-hidden"
           >
             <div className="p-4 space-y-3">
-              <p className="text-xs text-white/40 uppercase tracking-wider font-semibold">New Hook</p>
+              <p className="text-xs text-[#4a5159] uppercase tracking-wider font-semibold">New Hook</p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[10px] text-white/30 uppercase mb-1 block">Name</label>
+                  <label className="text-[10px] text-[#4a5159] uppercase mb-1 block">Name</label>
                   <input
                     value={formName}
                     onChange={e => setFormName(e.target.value)}
                     placeholder="my-hook"
-                    className="w-full bg-[#0a0e17] border border-white/10 rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/30 uppercase mb-1 block">Type</label>
+                  <label className="text-[10px] text-[#4a5159] uppercase mb-1 block">Type</label>
                   <select
                     value={formType}
                     onChange={e => setFormType(e.target.value as 'pre' | 'post')}
-                    className="w-full bg-[#0a0e17] border border-white/10 rounded-none px-3 py-2 text-xs text-white/70 focus:outline-none"
+                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 focus:outline-none"
                   >
-                    <option value="pre" className="bg-[#080b14]">Pre</option>
-                    <option value="post" className="bg-[#080b14]">Post</option>
+                    <option value="pre" className="bg-[#1a1f26]">Pre</option>
+                    <option value="post" className="bg-[#1a1f26]">Post</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] text-white/30 uppercase mb-1 block">Target</label>
+                  <label className="text-[10px] text-[#4a5159] uppercase mb-1 block">Target</label>
                   <select
                     value={formTarget}
                     onChange={e => setFormTarget(e.target.value)}
-                    className="w-full bg-[#0a0e17] border border-white/10 rounded-none px-3 py-2 text-xs text-white/70 focus:outline-none"
+                    className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 focus:outline-none"
                   >
                     {Object.entries(TARGET_LABELS).map(([k, v]) => (
-                      <option key={k} value={k} className="bg-[#080b14]">{v}</option>
+                      <option key={k} value={k} className="bg-[#1a1f26]">{v}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] text-white/30 uppercase mb-1 block">Action URL (webhook)</label>
+                <label className="text-[10px] text-[#4a5159] uppercase mb-1 block">Action URL (webhook)</label>
                 <input
                   value={formActionUrl}
                   onChange={e => setFormActionUrl(e.target.value)}
                   placeholder="https://example.com/webhook"
-                  className="w-full bg-[#0a0e17] border border-white/10 rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
+                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] text-white/30 uppercase mb-1 block">Script (alternative to URL)</label>
+                <label className="text-[10px] text-[#4a5159] uppercase mb-1 block">Script (alternative to URL)</label>
                 <textarea
                   value={formScript}
                   onChange={e => setFormScript(e.target.value)}
                   placeholder="// JavaScript hook script"
                   rows={3}
-                  className="w-full bg-[#0a0e17] border border-white/10 rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20 resize-y"
+                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20 resize-y"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] text-white/30 uppercase mb-1 block">Description</label>
+                <label className="text-[10px] text-[#4a5159] uppercase mb-1 block">Description</label>
                 <input
                   value={formDesc}
                   onChange={e => setFormDesc(e.target.value)}
                   placeholder="What this hook does..."
-                  className="w-full bg-[#0a0e17] border border-white/10 rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
+                  className="w-full bg-[#0f1419] border border-[#2d363f] rounded-none px-3 py-2 text-xs text-white/70 placeholder-white/15 focus:outline-none focus:border-white/20"
                 />
               </div>
 
@@ -289,7 +289,7 @@ export default function HooksManagerView() {
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="flex border-b border-white/5 mb-4">
+      <div className="flex border-b border-[#2d363f] mb-4">
         {(['registry', 'log'] as const).map(tab => (
           <button
             key={tab}
@@ -297,7 +297,7 @@ export default function HooksManagerView() {
             className={`px-4 py-2 text-xs uppercase tracking-wider transition-colors ${
               activeTab === tab
                 ? 'text-white/80 border-b-2 border-violet-500/60'
-                : 'text-white/30 hover:text-white/50'
+                : 'text-[#4a5159] hover:text-white/50'
             }`}
           >
             {tab === 'registry' ? 'Hook Registry' : 'Execution Log'}
@@ -316,7 +316,7 @@ export default function HooksManagerView() {
             className="space-y-2"
           >
             {hooks.length === 0 ? (
-              <div className="bg-[#080b14] border border-white/5 rounded-none p-8 text-center">
+              <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-8 text-center">
                 <p className="text-sm text-white/20">No hooks registered</p>
                 <p className="text-[10px] text-white/10 mt-1">Click &quot;+ ADD HOOK&quot; to create one</p>
               </div>
@@ -330,7 +330,7 @@ export default function HooksManagerView() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
-                    className="bg-[#080b14] border border-white/5 rounded-none hover:border-white/10 transition-colors"
+                    className="bg-[#1a1f26] border border-[#2d363f] rounded-none hover:border-[#2d363f] transition-colors"
                   >
                     {/* Hook row */}
                     <div className="p-3 flex items-center gap-3">
@@ -361,7 +361,7 @@ export default function HooksManagerView() {
                           <span className={`px-1.5 py-0.5 text-[8px] border rounded-none ${typeInfo.color}`}>
                             {typeInfo.text}
                           </span>
-                          <span className="px-1.5 py-0.5 text-[8px] bg-white/5 border border-white/10 text-white/30 rounded-none">
+                          <span className="px-1.5 py-0.5 text-[8px] bg-white/5 border border-[#2d363f] text-[#4a5159] rounded-none">
                             {TARGET_LABELS[hook.target]}
                           </span>
                         </div>
@@ -394,20 +394,20 @@ export default function HooksManagerView() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="border-t border-white/5"
+                          className="border-t border-[#2d363f]"
                         >
                           <div className="p-4 space-y-3">
                             {/* Config */}
                             <div className="grid grid-cols-2 gap-3">
-                              <div className="bg-[#0a0e17] border border-white/5 rounded-none p-3">
+                              <div className="bg-[#0f1419] border border-[#2d363f] rounded-none p-3">
                                 <p className="text-[9px] text-white/25 uppercase mb-1">Action URL</p>
                                 <p className="text-xs text-cyan-400/60 font-mono break-all">
                                   {hook.actionUrl || '--'}
                                 </p>
                               </div>
-                              <div className="bg-[#0a0e17] border border-white/5 rounded-none p-3">
+                              <div className="bg-[#0f1419] border border-[#2d363f] rounded-none p-3">
                                 <p className="text-[9px] text-white/25 uppercase mb-1">Script</p>
-                                <pre className="text-[10px] text-white/40 whitespace-pre-wrap break-all max-h-[80px] overflow-y-auto">
+                                <pre className="text-[10px] text-[#4a5159] whitespace-pre-wrap break-all max-h-[80px] overflow-y-auto">
                                   {hook.script || '--'}
                                 </pre>
                               </div>
@@ -422,7 +422,7 @@ export default function HooksManagerView() {
 
                             {/* Recent executions for this hook */}
                             <div>
-                              <p className="text-[10px] text-white/30 uppercase tracking-wider mb-2">
+                              <p className="text-[10px] text-[#4a5159] uppercase tracking-wider mb-2">
                                 Recent Executions ({hookExecs.length})
                               </p>
                               {hookExecs.length === 0 ? (
@@ -432,12 +432,12 @@ export default function HooksManagerView() {
                                   {hookExecs.map(exec => (
                                     <div
                                       key={exec.id}
-                                      className="flex items-center gap-2 px-2 py-1.5 bg-white/[0.02] border border-white/5 rounded-none"
+                                      className="flex items-center gap-2 px-2 py-1.5 bg-white/[0.02] border border-[#2d363f] rounded-none"
                                     >
                                       <span className={`w-1.5 h-1.5 rounded-full ${
                                         exec.result === 'success' ? 'bg-emerald-400' : 'bg-red-400'
                                       }`} />
-                                      <span className="text-[10px] text-white/40 font-mono">{exec.beadId}</span>
+                                      <span className="text-[10px] text-[#4a5159] font-mono">{exec.beadId}</span>
                                       <span className="text-[9px] text-white/20 flex-1 truncate">{exec.message || '--'}</span>
                                       <span className="text-[9px] text-white/15">{exec.duration}ms</span>
                                       <span className="text-[9px] text-white/10">{timeAgo(exec.timestamp)}</span>
@@ -466,13 +466,13 @@ export default function HooksManagerView() {
             exit={{ opacity: 0 }}
           >
             {executions.length === 0 ? (
-              <div className="bg-[#080b14] border border-white/5 rounded-none p-8 text-center">
+              <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-8 text-center">
                 <p className="text-sm text-white/20">No hook executions recorded</p>
               </div>
             ) : (
               <div className="space-y-0">
                 {/* Header row */}
-                <div className="flex items-center gap-3 px-3 py-2 text-[9px] text-white/20 uppercase tracking-wider border-b border-white/5">
+                <div className="flex items-center gap-3 px-3 py-2 text-[9px] text-white/20 uppercase tracking-wider border-b border-[#2d363f]">
                   <span className="w-4" />
                   <span className="w-32">Hook</span>
                   <span className="w-24">Bead</span>
@@ -493,7 +493,7 @@ export default function HooksManagerView() {
                       exec.result === 'success' ? 'bg-emerald-400' : 'bg-red-400'
                     }`} />
                     <span className="w-32 text-xs text-white/50 truncate">{exec.hookName}</span>
-                    <span className="w-24 text-[10px] text-white/30 font-mono">{exec.beadId}</span>
+                    <span className="w-24 text-[10px] text-[#4a5159] font-mono">{exec.beadId}</span>
                     <span className="flex-1 text-[10px] text-white/25 truncate">{exec.message || '--'}</span>
                     <span className="w-16 text-[10px] text-white/15 text-right">{exec.duration}ms</span>
                     <span className="w-24 text-[9px] text-white/10 text-right">{formatDate(exec.timestamp)}</span>

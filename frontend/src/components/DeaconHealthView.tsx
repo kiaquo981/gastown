@@ -4,7 +4,7 @@
  * DeaconHealthView — GT-010: Deacon Health Dashboard (26 Patrol Checks)
  *
  * The Deacon runs 26 health checks across Gas Town.
- * VOID AESTHETIC: bg-[#0a0e27], borders white/5, text white/87, font-mono.
+ * Ayu Dark aesthetic: bg-[#0f1419], borders [#2d363f], text [#e6e1cf], font-mono.
  * Auto-refresh every 10s with AbortController cleanup.
  */
 
@@ -117,7 +117,7 @@ function CheckCard({ check, index, expandedCheck, onToggle }: {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2, delay: index * 0.03 }}
-      className={`bg-[#0d1117] border ${st.border} rounded-none ${st.glow} cursor-pointer transition-all hover:border-white/10`}
+      className={`bg-[#1a1f26] border ${st.border} rounded-none ${st.glow} cursor-pointer transition-all hover:border-[#2d363f]`}
       onClick={() => onToggle(check.name)}
     >
       <div className="p-3">
@@ -132,7 +132,7 @@ function CheckCard({ check, index, expandedCheck, onToggle }: {
               transition={{ duration: 2, repeat: Infinity }}
               className={`w-2.5 h-2.5 rounded-full shrink-0 ${st.dot}`}
             />
-            <span className="text-xs font-mono text-white/[0.87] truncate">{check.name}</span>
+            <span className="text-xs font-mono text-[#e6e1cf] truncate">{check.name}</span>
           </div>
           <span className={`text-[10px] font-mono uppercase ${st.text}`}>{check.status}</span>
         </div>
@@ -154,8 +154,8 @@ function CheckCard({ check, index, expandedCheck, onToggle }: {
             transition={{ duration: 0.15 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-white/5 px-3 py-2">
-              <p className="text-[11px] font-mono text-white/40 leading-relaxed">{check.details}</p>
+            <div className="border-t border-[#2d363f] px-3 py-2">
+              <p className="text-[11px] font-mono text-[#4a5159] leading-relaxed">{check.details}</p>
             </div>
           </motion.div>
         )}
@@ -175,13 +175,13 @@ function DogCard({ dog }: { dog: DogWorker }) {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[#0d1117] border border-white/5 rounded-none p-4"
+      className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4"
     >
       <div className="flex items-center gap-3 mb-3">
         <span className="text-xl">{icon}</span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="text-sm font-mono text-white/[0.87] capitalize">{dog.name.replace('_', ' ')}</h4>
+            <h4 className="text-sm font-mono text-[#e6e1cf] capitalize">{dog.name.replace('_', ' ')}</h4>
             <div className={`w-1.5 h-1.5 rounded-none ${dotCls}`} />
             <span className={`text-[10px] font-mono uppercase ${txtCls}`}>{dog.status}</span>
           </div>
@@ -197,7 +197,7 @@ function DogCard({ dog }: { dog: DogWorker }) {
         </div>
         <div>
           <span className="text-[10px] uppercase tracking-wider text-white/25 block">Processed</span>
-          <span className="text-xs font-mono text-white/[0.87]">{(dog.itemsProcessed ?? 0).toLocaleString()}</span>
+          <span className="text-xs font-mono text-[#e6e1cf]">{(dog.itemsProcessed ?? 0).toLocaleString()}</span>
         </div>
       </div>
     </motion.div>
@@ -316,13 +316,13 @@ export default function DeaconHealthView() {
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#0a0e27] text-white/[0.87] font-mono p-6 space-y-6">
+    <div className="min-h-screen bg-[#0f1419] text-[#e6e1cf] font-mono p-6 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div>
-            <h1 className="text-xl tracking-wider uppercase text-white/[0.87]">Deacon Health Center</h1>
-            <p className="text-xs text-white/30 mt-1">26 patrol checks &mdash; Gas Town infrastructure</p>
+            <h1 className="text-xl tracking-wider uppercase text-[#e6e1cf]">Deacon Health Center</h1>
+            <p className="text-xs text-[#4a5159] mt-1">26 patrol checks &mdash; Gas Town infrastructure</p>
           </div>
 
           {/* Overall health badge */}
@@ -339,7 +339,7 @@ export default function DeaconHealthView() {
         <button
           onClick={forcePatrol}
           disabled={patrolRunning}
-          className="px-4 py-2 bg-white/[0.03] border border-white/10 rounded-none text-xs font-mono uppercase tracking-wider text-white/60 hover:bg-white/[0.06] hover:border-white/15 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-white/[0.03] border border-[#2d363f] rounded-none text-xs font-mono uppercase tracking-wider text-[#6c7680] hover:bg-white/[0.06] hover:border-white/15 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {patrolRunning ? 'Patrolling...' : 'Force Patrol'}
         </button>
@@ -365,7 +365,7 @@ export default function DeaconHealthView() {
               initial={{ opacity: 0 }}
               animate={{ opacity: [0.2, 0.5, 0.2] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}
-              className="h-20 bg-white/[0.02] border border-white/5 rounded-none"
+              className="h-20 bg-white/[0.02] border border-[#2d363f] rounded-none"
             />
           ))}
         </div>
@@ -375,7 +375,7 @@ export default function DeaconHealthView() {
       {checks.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] uppercase tracking-wider text-white/30">PATROL CHECKS</span>
+            <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">PATROL CHECKS</span>
             <span className="text-[10px] font-mono text-white/15">{summary.passed}/{summary.total} passing</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -396,7 +396,7 @@ export default function DeaconHealthView() {
       {dogs.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] uppercase tracking-wider text-white/30">DEACON DOGS</span>
+            <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">DEACON DOGS</span>
             <span className="text-[10px] font-mono text-white/15">Special workers</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -408,10 +408,10 @@ export default function DeaconHealthView() {
       )}
 
       {/* Boot Watchdog Panel */}
-      <div className="bg-[#0d1117] border border-white/5 rounded-none">
-        <div className="flex items-center justify-between p-4 border-b border-white/5">
+      <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none">
+        <div className="flex items-center justify-between p-4 border-b border-[#2d363f]">
           <div className="flex items-center gap-3">
-            <span className="text-[10px] uppercase tracking-wider text-white/30">BOOT WATCHDOG</span>
+            <span className="text-[10px] uppercase tracking-wider text-[#4a5159]">BOOT WATCHDOG</span>
             {bootStatus && (
               <div className="flex items-center gap-1.5">
                 <div className={`w-1.5 h-1.5 rounded-none ${
@@ -430,14 +430,14 @@ export default function DeaconHealthView() {
           <div className="flex gap-2">
             <button
               onClick={() => setShowBootReport(!showBootReport)}
-              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-white/40 border border-white/5 rounded-none hover:bg-white/[0.03] transition-colors"
+              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#4a5159] border border-[#2d363f] rounded-none hover:bg-white/[0.03] transition-colors"
             >
               {showBootReport ? 'Hide Report' : 'Show Report'}
             </button>
             <button
               onClick={forceBootCheck}
               disabled={forceCheckRunning}
-              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-white/60 border border-white/10 rounded-none hover:bg-white/[0.03] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#6c7680] border border-[#2d363f] rounded-none hover:bg-white/[0.03] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {forceCheckRunning ? 'Checking...' : 'Force Check'}
             </button>
@@ -457,11 +457,11 @@ export default function DeaconHealthView() {
             </div>
             <div>
               <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">RESTART COUNT</span>
-              <span className="text-sm font-mono text-white/[0.87]">{bootStatus.restartCount}</span>
+              <span className="text-sm font-mono text-[#e6e1cf]">{bootStatus.restartCount}</span>
             </div>
             <div>
               <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">UPTIME</span>
-              <span className="text-sm font-mono text-white/[0.87]">{bootStatus.uptime || '--'}</span>
+              <span className="text-sm font-mono text-[#e6e1cf]">{bootStatus.uptime || '--'}</span>
             </div>
             <div>
               <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">LAST CHECK</span>
@@ -471,11 +471,11 @@ export default function DeaconHealthView() {
         )}
 
         {/* Monitored processes */}
-        {bootStatus && bootStatus.monitoredProcesses.length > 0 && (
+        {bootStatus && (bootStatus.monitoredProcesses || []).length > 0 && (
           <div className="px-4 pb-4">
             <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-2">MONITORED PROCESSES</span>
             <div className="flex flex-wrap gap-2">
-              {bootStatus.monitoredProcesses.map((proc) => (
+              {(bootStatus.monitoredProcesses || []).map((proc) => (
                 <span
                   key={proc}
                   className="px-2 py-0.5 text-[10px] font-mono text-violet-400/70 bg-violet-500/8 border border-violet-500/15 rounded-none"
@@ -497,12 +497,12 @@ export default function DeaconHealthView() {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="border-t border-white/5 p-4">
+              <div className="border-t border-[#2d363f] p-4">
                 {bootReport.summary && (
-                  <p className="text-xs font-mono text-white/40 mb-3">{bootReport.summary}</p>
+                  <p className="text-xs font-mono text-[#4a5159] mb-3">{bootReport.summary}</p>
                 )}
                 <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {bootReport.entries.map((entry, i) => (
+                  {(bootReport.entries || []).map((entry, i) => (
                     <div key={i} className="flex items-start gap-2 text-[11px] font-mono">
                       <span className="text-white/20 shrink-0 w-16">{fmtShort(entry.ts)}</span>
                       <span className={`shrink-0 ${
@@ -510,17 +510,17 @@ export default function DeaconHealthView() {
                           ? 'text-red-400/70'
                           : entry.event.includes('restart')
                           ? 'text-amber-400/70'
-                          : 'text-white/40'
+                          : 'text-[#4a5159]'
                       }`}>
                         [{entry.event}]
                       </span>
-                      <span className="text-white/30">{entry.process}</span>
+                      <span className="text-[#4a5159]">{entry.process}</span>
                       {entry.detail && (
                         <span className="text-white/20 truncate">{entry.detail}</span>
                       )}
                     </div>
                   ))}
-                  {bootReport.entries.length === 0 && (
+                  {(bootReport.entries || []).length === 0 && (
                     <span className="text-[11px] font-mono text-white/20">No boot events recorded</span>
                   )}
                 </div>
@@ -532,27 +532,27 @@ export default function DeaconHealthView() {
 
       {/* Bottom Summary — 4 KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
           <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">CHECKS PASSED</span>
           <div className="flex items-baseline gap-1">
             <span className="text-2xl font-mono text-emerald-400">{summary.passed}</span>
             <span className="text-sm font-mono text-white/20">/ {summary.total}</span>
           </div>
         </div>
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
           <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">WARNINGS</span>
           <span className={`text-2xl font-mono ${summary.warned > 0 ? 'text-amber-400' : 'text-white/20'}`}>
             {summary.warned}
           </span>
         </div>
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
           <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">LAST PATROL</span>
           <span className="text-sm font-mono text-white/50">{fmtFull(health?.lastPatrol)}</span>
           {health?.patrolDuration && (
             <span className="text-[10px] font-mono text-white/20 block mt-0.5">{health.patrolDuration}</span>
           )}
         </div>
-        <div className="bg-[#0d1117] border border-white/5 rounded-none p-4">
+        <div className="bg-[#1a1f26] border border-[#2d363f] rounded-none p-4">
           <span className="text-[10px] uppercase tracking-wider text-white/25 block mb-1">UPTIME SCORE</span>
           <span className={`text-2xl font-mono ${
             Number(summary.uptimePct) >= 90 ? 'text-emerald-400'

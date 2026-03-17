@@ -48,7 +48,7 @@ const TYPE_COLORS: Record<string, { dot: string; border: string; bg: string; tex
   convoy:   { dot: 'bg-orange-400',  border: 'border-orange-500/30',  bg: 'bg-orange-500/10',  text: 'text-orange-400'  },
 };
 
-const DEFAULT_COLOR = { dot: 'bg-white/40', border: 'border-white/10', bg: 'bg-white/5', text: 'text-white/60' };
+const DEFAULT_COLOR = { dot: 'bg-white/40', border: 'border-[#2d363f]', bg: 'bg-white/5', text: 'text-[#6c7680]' };
 
 function getTypeColor(type: string) {
   const normalized = type.toLowerCase();
@@ -183,13 +183,13 @@ export default function GasTownTimelineView() {
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#0a0e27] text-white font-mono flex flex-col">
+    <div className="min-h-screen bg-[#0f1419] text-white font-mono flex flex-col">
       {/* ── Header ── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="border-b border-white/5 bg-[#0d1117]/80 backdrop-blur-sm px-4 py-3"
+        className="border-b border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm px-4 py-3"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -197,7 +197,7 @@ export default function GasTownTimelineView() {
             <h1 className="text-sm font-bold tracking-[0.2em] uppercase text-white/90">
               GAS TOWN TIMELINE
             </h1>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-white/40">
+            <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-[#2d363f] text-[#4a5159]">
               {totalEvents} events
             </span>
             {/* Connection indicator */}
@@ -216,7 +216,7 @@ export default function GasTownTimelineView() {
                 className={`text-[10px] px-3 py-1 rounded border transition-all ${
                   zoom === z
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                    : 'bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:border-white/20'
+                    : 'bg-white/5 border-[#2d363f] text-[#4a5159] hover:text-[#6c7680] hover:border-white/20'
                 }`}
               >
                 {z}
@@ -230,7 +230,7 @@ export default function GasTownTimelineView() {
           {Object.entries(TYPE_COLORS).map(([type, colors]) => (
             <div key={type} className="flex items-center gap-1">
               <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
-              <span className="text-[9px] text-white/30 uppercase">{type}</span>
+              <span className="text-[9px] text-[#4a5159] uppercase">{type}</span>
             </div>
           ))}
         </div>
@@ -380,14 +380,14 @@ export default function GasTownTimelineView() {
                     className="absolute z-20"
                     style={{ left: Math.max(4, Math.min(leftOffset - 100, (buckets.length * bucketWidth) - 380)), top: 220 }}
                   >
-                    <div className="bg-[#0d1117] border border-white/10 rounded p-3 w-[360px] max-h-[240px] overflow-y-auto shadow-2xl">
+                    <div className="bg-[#1a1f26] border border-[#2d363f] rounded p-3 w-[360px] max-h-[240px] overflow-y-auto shadow-2xl">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] text-white/40 uppercase tracking-wider">
+                        <span className="text-[10px] text-[#4a5159] uppercase tracking-wider">
                           {bucket.label} — {bucket.events.length} event{bucket.events.length > 1 ? 's' : ''}
                         </span>
                         <button
                           onClick={() => setExpandedBucket(null)}
-                          className="text-[10px] text-white/20 hover:text-white/60"
+                          className="text-[10px] text-white/20 hover:text-[#6c7680]"
                         >
                           CLOSE
                         </button>
@@ -417,7 +417,7 @@ export default function GasTownTimelineView() {
                                   {event.type}
                                 </span>
                               </div>
-                              <p className="text-white/60 mt-0.5 pl-3.5 truncate">
+                              <p className="text-[#6c7680] mt-0.5 pl-3.5 truncate">
                                 {event.message}
                               </p>
                               {/* Expanded detail */}
@@ -429,17 +429,17 @@ export default function GasTownTimelineView() {
                                     exit={{ opacity: 0, height: 0 }}
                                     className="mt-1.5 pl-3.5 space-y-0.5 overflow-hidden"
                                   >
-                                    <div className="text-[10px] text-white/30">
+                                    <div className="text-[10px] text-[#4a5159]">
                                       <span className="text-white/20">source:</span> {event.source}
                                     </div>
                                     {event.moleculeId && (
-                                      <div className="text-[10px] text-white/30">
+                                      <div className="text-[10px] text-[#4a5159]">
                                         <span className="text-white/20">molecule:</span>{' '}
                                         <span className="text-violet-400/60">{event.moleculeId}</span>
                                       </div>
                                     )}
                                     {event.level && (
-                                      <div className="text-[10px] text-white/30">
+                                      <div className="text-[10px] text-[#4a5159]">
                                         <span className="text-white/20">level:</span> {event.level}
                                       </div>
                                     )}
@@ -468,7 +468,7 @@ export default function GasTownTimelineView() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="px-4 py-2 border-t border-white/5 bg-[#0d1117]/60"
+          className="px-4 py-2 border-t border-[#2d363f] bg-[#1a1f26]/60"
         >
           <div className="flex items-center gap-2 h-4">
             {(() => {
@@ -492,7 +492,7 @@ export default function GasTownTimelineView() {
                       className={`h-2 rounded ${colors.dot} relative group cursor-default`}
                       title={`${type}: ${count} (${pct.toFixed(1)}%)`}
                     >
-                      <span className="absolute -top-5 left-0 text-[8px] text-white/30 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      <span className="absolute -top-5 left-0 text-[8px] text-[#4a5159] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                         {type}: {count}
                       </span>
                     </motion.div>
@@ -508,7 +508,7 @@ export default function GasTownTimelineView() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="border-t border-white/5 bg-[#0d1117]/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between"
+        className="border-t border-[#2d363f] bg-[#1a1f26]/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between"
       >
         <div className="flex items-center gap-3">
           <span className="text-[10px] text-white/20">

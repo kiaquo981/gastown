@@ -8,7 +8,7 @@
  *
  * API: GET /api/meow/polecats, GET /api/meow/polecats/stats,
  *      GET /api/meow/polecats/health, GET /api/meow/witness/report
- * VOID AESTHETIC: bg-[#0a0e27], border-white/5, text-white/[0.87], font-mono, rounded-none
+ * Ayu Dark aesthetic: bg-[#0f1419], border-[#2d363f], text-[#e6e1cf], font-mono, rounded-none
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -274,7 +274,7 @@ function PolecatCard({ polecat }: { polecat: Polecat }) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`bg-[#0d1117] border ${polecat.isZombie ? 'border-red-500/30' : 'border-white/5'} p-3 w-[220px] shrink-0 relative`}
+      className={`bg-[#1a1f26] border ${polecat.isZombie ? 'border-red-500/30' : 'border-[#2d363f]'} p-3 w-[220px] shrink-0 relative`}
     >
       {/* Zombie indicator */}
       {polecat.isZombie && (
@@ -296,7 +296,7 @@ function PolecatCard({ polecat }: { polecat: Polecat }) {
           effectiveStatus === 'DONE' ? 'bg-emerald-400' :
           'bg-white/20'
         }`} />
-        <span className="font-mono text-xs text-white/[0.87] truncate">{polecat.name}</span>
+        <span className="font-mono text-xs text-[#e6e1cf] truncate">{polecat.name}</span>
       </div>
 
       {/* Lifecycle badge */}
@@ -332,14 +332,14 @@ function PolecatCard({ polecat }: { polecat: Polecat }) {
         </div>
         <div className="flex items-center justify-between">
           <span className="font-mono text-[10px] text-white/20">Spawned</span>
-          <span className="font-mono text-[10px] text-white/30">
+          <span className="font-mono text-[10px] text-[#4a5159]">
             {timeSince(polecat.spawnTime)}
           </span>
         </div>
         {polecat.lastHeartbeat && (
           <div className="flex items-center justify-between">
             <span className="font-mono text-[10px] text-white/20">Heartbeat</span>
-            <span className={`font-mono text-[10px] ${polecat.isZombie ? 'text-red-400' : 'text-white/30'}`}>
+            <span className={`font-mono text-[10px] ${polecat.isZombie ? 'text-red-400' : 'text-[#4a5159]'}`}>
               {timeSince(polecat.lastHeartbeat)}
             </span>
           </div>
@@ -498,17 +498,17 @@ export default function PolecatSwarmView() {
 
   const activeCount = polecats.filter((p) => !p.isZombie && p.status !== 'DONE').length;
   const witnessPassRate = witness
-    ? Math.round((witness.checks.filter((c) => c.passed).length / Math.max(witness.checks.length, 1)) * 100)
+    ? Math.round(((witness.checks || []).filter((c) => c.passed).length / Math.max((witness.checks || []).length, 1)) * 100)
     : 0;
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-[#0a0e27]">
+      <div className="h-full flex items-center justify-center bg-[#0f1419]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-6 h-6 border-2 border-cyan-400/30 border-t-cyan-400 animate-spin" />
-          <span className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#4a5159]">
             Scanning swarm...
           </span>
         </div>
@@ -517,11 +517,11 @@ export default function PolecatSwarmView() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0e27] text-white/[0.87]">
+    <div className="h-full flex flex-col bg-[#0f1419] text-[#e6e1cf]">
       {/* ─── Header ──────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#2d363f]">
         <div className="flex items-center gap-4">
-          <h1 className="font-mono text-sm uppercase tracking-widest text-white/60">
+          <h1 className="font-mono text-sm uppercase tracking-widest text-[#6c7680]">
             Polecat Swarm
           </h1>
           <div className="flex items-center gap-2">
@@ -530,13 +530,13 @@ export default function PolecatSwarmView() {
               {activeCount} active
             </span>
             <span className="font-mono text-[10px] text-white/20">/</span>
-            <span className="font-mono text-[10px] text-white/40">
+            <span className="font-mono text-[10px] text-[#4a5159]">
               {polecats.length} total
             </span>
           </div>
           <span className="font-mono text-[10px] text-white/20">|</span>
-          <span className="font-mono text-[10px] text-white/30">
-            {stats.spawnRate.toFixed(1)}/min spawn rate
+          <span className="font-mono text-[10px] text-[#4a5159]">
+            {(stats.spawnRate ?? 0).toFixed(1)}/min spawn rate
           </span>
         </div>
 
@@ -562,7 +562,7 @@ export default function PolecatSwarmView() {
       <div className="flex-1 flex overflow-hidden">
 
         {/* ─── Left: Swim Lanes (70%) ──────────────────────────────────── */}
-        <div className="w-[70%] flex flex-col overflow-hidden border-r border-white/5">
+        <div className="w-[70%] flex flex-col overflow-hidden border-r border-[#2d363f]">
           <div className="flex-1 overflow-auto p-4 space-y-4">
             {(Object.entries(swimLanes) as [PolecatLifecycle, Polecat[]][]).map(([lane, cards]) => {
               if (cards.length === 0 && lane === 'ZOMBIE') return null;
@@ -602,8 +602,8 @@ export default function PolecatSwarmView() {
 
         {/* ─── Right: Witness Panel (30%) ──────────────────────────────── */}
         <div className="w-[30%] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-white/30">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[#2d363f]">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[#4a5159]">
               Witness Oversight
             </span>
             <button
@@ -619,9 +619,9 @@ export default function PolecatSwarmView() {
             {witness ? (
               <>
                 {/* Health Score */}
-                <div className="bg-[#0d1117] border border-white/5 p-3">
+                <div className="bg-[#1a1f26] border border-[#2d363f] p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-[10px] uppercase text-white/30">
+                    <span className="font-mono text-[10px] uppercase text-[#4a5159]">
                       Overall Health
                     </span>
                     <span className={`font-mono text-lg font-medium ${
@@ -647,8 +647,8 @@ export default function PolecatSwarmView() {
                 </div>
 
                 {/* Summary */}
-                <div className="bg-[#0d1117] border border-white/5 p-3">
-                  <span className="font-mono text-[10px] uppercase text-white/30 block mb-1">
+                <div className="bg-[#1a1f26] border border-[#2d363f] p-3">
+                  <span className="font-mono text-[10px] uppercase text-[#4a5159] block mb-1">
                     Report Summary
                   </span>
                   <p className="font-mono text-[11px] text-white/50 leading-relaxed">
@@ -661,11 +661,11 @@ export default function PolecatSwarmView() {
 
                 {/* Checks */}
                 <div>
-                  <span className="font-mono text-[10px] uppercase text-white/30 mb-2 block">
+                  <span className="font-mono text-[10px] uppercase text-[#4a5159] mb-2 block">
                     Checks ({witnessPassRate}% pass)
                   </span>
                   <div className="space-y-1">
-                    {witness.checks.map((check) => (
+                    {(witness.checks || []).map((check) => (
                       <div
                         key={check.id}
                         className={`flex items-center gap-2 px-2 py-1.5 border ${
@@ -693,14 +693,14 @@ export default function PolecatSwarmView() {
                 </div>
 
                 {/* Anomalies */}
-                {witness.anomalies.length > 0 && (
+                {(witness.anomalies || []).length > 0 && (
                   <div>
-                    <span className="font-mono text-[10px] uppercase text-white/30 mb-2 block">
-                      Anomalies ({witness.anomalies.length})
+                    <span className="font-mono text-[10px] uppercase text-[#4a5159] mb-2 block">
+                      Anomalies ({(witness.anomalies || []).length})
                     </span>
                     <div className="space-y-2">
                       <AnimatePresence>
-                        {witness.anomalies.map((anomaly) => (
+                        {(witness.anomalies || []).map((anomaly) => (
                           <motion.div
                             key={anomaly.id}
                             initial={{ opacity: 0, x: 10 }}
@@ -717,7 +717,7 @@ export default function PolecatSwarmView() {
                                 </span>
                               )}
                             </div>
-                            <p className="font-mono text-[10px] text-white/40 leading-relaxed">
+                            <p className="font-mono text-[10px] text-[#4a5159] leading-relaxed">
                               {anomaly.message}
                             </p>
                           </motion.div>
@@ -737,14 +737,14 @@ export default function PolecatSwarmView() {
       </div>
 
       {/* ─── Bottom Stats Bar ────────────────────────────────────────────── */}
-      <div className="border-t border-white/5 px-6 py-3">
+      <div className="border-t border-[#2d363f] px-6 py-3">
         <div className="flex items-center gap-6">
           {[
-            { label: 'Spawned', value: stats.totalSpawned, cls: 'text-white/60' },
+            { label: 'Spawned', value: stats.totalSpawned, cls: 'text-[#6c7680]' },
             { label: 'Active', value: stats.active, cls: 'text-cyan-400' },
             { label: 'Completed', value: stats.completed, cls: 'text-emerald-400' },
-            { label: 'Failed', value: stats.failed, cls: stats.failed > 0 ? 'text-red-400' : 'text-white/30' },
-            { label: 'Zombies', value: stats.zombieCount, cls: stats.zombieCount > 0 ? 'text-red-400' : 'text-white/30' },
+            { label: 'Failed', value: stats.failed, cls: stats.failed > 0 ? 'text-red-400' : 'text-[#4a5159]' },
+            { label: 'Zombies', value: stats.zombieCount, cls: stats.zombieCount > 0 ? 'text-red-400' : 'text-[#4a5159]' },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-2">
               <span className="font-mono text-[10px] uppercase text-white/20">{s.label}</span>
