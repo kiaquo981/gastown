@@ -39,9 +39,10 @@ import stage04Routes from './meow/stage04-routes';
 import stage05Routes from './meow/stage05-routes';
 import stage06Routes from './meow/stage06-routes';
 
-// ── Maestro + FrankFlow Integration ─────────────────────────────────────────
+// ── Maestro + FrankFlow + Hetzner Integration ───────────────────────────────
 import { maestroRouter } from './meow/maestro';
 import { frankflowRouter } from './meow/frankflow';
+import { hetznerRouter } from './meow/hetzner';
 
 // ── App Setup ───────────────────────────────────────────────────────────────
 
@@ -113,9 +114,10 @@ app.use(stage05Routes);        // /api/meow/stage05/*
 app.use(stage06Routes);        // /api/meow/stage06/*
 app.use(finalRoutes);          // /api/meow/final/*
 
-// ── Maestro + FrankFlow ─────────────────────────────────────────────────────
+// ── Maestro + FrankFlow + Hetzner ───────────────────────────────────────────
 app.use(maestroRouter);                      // /api/maestro/* (prefix built-in)
 app.use('/api/frankflow', frankflowRouter);  // /api/frankflow/*
+app.use('/api/hetzner', hetznerRouter);      // /api/hetzner/*
 
 // ── 404 ──────────────────────────────────────────────────────────────────────
 
