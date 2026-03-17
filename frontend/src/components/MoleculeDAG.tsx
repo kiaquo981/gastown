@@ -323,7 +323,7 @@ export default function MoleculeDAG({ steps, onStepClick, onCompleteStep, select
                 fill={textColor}
                 fontFamily="monospace"
               >
-                {s.name.length > 20 ? s.name.slice(0, 18) + '..' : s.name}
+                {(s.name || '').length > 20 ? (s.name || '').slice(0, 18) + '..' : s.name || '?'}
               </text>
 
               {/* Status label */}

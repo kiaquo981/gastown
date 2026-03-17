@@ -494,7 +494,7 @@ export default function NDIStatusView() {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs truncate max-w-[60%]" style={{ color: AYU.text }}>
-                          {mol.name || mol.id.slice(0, 12)}
+                          {mol.name || (mol.id ?? '').slice(0, 12) || 'unnamed'}
                         </span>
                         <span
                           className="text-[10px] uppercase"
@@ -757,7 +757,7 @@ export default function NDIStatusView() {
                           </span>
                         </div>
                         <span className="text-[10px]" style={{ color: AYU.muted }}>
-                          {worker.id.slice(0, 10)}
+                          {(worker.id ?? '').slice(0, 10) || '?'}
                         </span>
                       </div>
                       {ctx?.deathReason && (

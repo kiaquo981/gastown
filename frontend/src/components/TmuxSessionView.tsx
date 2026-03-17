@@ -312,7 +312,7 @@ function WorkerDetail({ session }: { session: Session | null }) {
         <KVRow label="worker" value={session.workerName || '--'} />
         <KVRow label="role" value={session.role || '--'} color={T.cyan} />
         <KVRow label="rig (worktree)" value={session.rig || '--'} />
-        <KVRow label="session id" value={session.id.slice(0, 12)} color={T.muted} />
+        <KVRow label="session id" value={(session.id ?? '').slice(0, 12) || '?'} color={T.muted} />
         <KVRow label="last activity" value={fmtTimeFull(session.lastActivity)} />
       </div>
 

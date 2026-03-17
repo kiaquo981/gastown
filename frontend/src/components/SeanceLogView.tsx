@@ -597,7 +597,7 @@ export default function SeanceLogView() {
                         border: `1px solid ${seanceInput === member.id ? AYU.purple : AYU.border}`,
                       }}
                     >
-                      {member.name} ({member.id.slice(0, 8)})
+                      {member.name || 'unknown'} ({(member.id ?? '').slice(0, 8) || '?'})
                     </button>
                   ))}
                 </div>

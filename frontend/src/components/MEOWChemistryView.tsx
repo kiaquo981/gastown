@@ -555,15 +555,15 @@ function StepDAGPanel({
               )}
               {/* Name */}
               <text x={8} y={16} fontSize={9} fill={AYU.text} fontFamily="monospace" opacity={0.9}>
-                {s.name.length > 18 ? s.name.slice(0, 16) + '..' : s.name}
+                {(s.name || '').length > 18 ? (s.name || '').slice(0, 16) + '..' : s.name || '?'}
               </text>
               {/* Status label */}
               <text x={DAG_NODE_W - 8} y={16} fontSize={7} fill={STEP_STROKE[s.status]} fontFamily="monospace" textAnchor="end" opacity={0.7}>
-                {s.status.toUpperCase()}
+                {(s.status || '').toUpperCase()}
               </text>
               {/* Skill / assignee */}
               <text x={8} y={32} fontSize={7} fill="#6c7680" fontFamily="monospace" opacity={0.5}>
-                {s.skill || s.assignee || s.id.slice(0, 12)}
+                {s.skill || s.assignee || (s.id ?? '').slice(0, 12) || '?'}
               </text>
 
               {/* Action buttons on hover */}

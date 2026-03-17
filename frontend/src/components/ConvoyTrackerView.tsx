@@ -260,7 +260,7 @@ function BeadTree({ beads, expanded }: { beads: ConvoyBead[]; expanded: boolean 
             <div key={bead.id} className="flex items-center gap-0 py-0.5">
               <span style={{ color: AYU.muted }}>{prefix} </span>
               <span className="w-1.5 h-1.5 rounded-none inline-block mx-1 flex-shrink-0" style={{ backgroundColor: statusColor }} />
-              <span style={{ color: AYU.text }} className="truncate max-w-[200px]">{bead.title || bead.id.slice(0, 12)}</span>
+              <span style={{ color: AYU.text }} className="truncate max-w-[200px]">{bead.title || (bead.id ?? '').slice(0, 12) || '?'}</span>
               <span style={{ color: AYU.muted }} className="mx-1.5">{'\u2502'}</span>
               <span style={{ color: statusColor }} className="text-[10px] uppercase">{bead.status}</span>
               {bead.assignee && (
@@ -364,7 +364,7 @@ function ConvoyCard({
           <div className="flex items-center gap-3 text-[10px]" style={{ color: AYU.muted }}>
             <span>{totalBeads} bead{totalBeads !== 1 ? 's' : ''}</span>
             <span style={{ color: AYU.border }}>{'\u2502'}</span>
-            <span style={{ color: AYU.text }}>{convoy.id.slice(0, 10)}</span>
+            <span style={{ color: AYU.text }}>{(convoy.id ?? '').slice(0, 10)}</span>
             <span style={{ color: AYU.border }}>{'\u2502'}</span>
             <span>{relativeTime(convoy.updatedAt || convoy.createdAt)}</span>
           </div>
@@ -1474,7 +1474,7 @@ export default function ConvoyTrackerView() {
                               </span>
                             )}
                             <span className="text-[9px] font-mono flex-shrink-0" style={{ color: `${AYU.muted}60` }}>
-                              {bead.id.slice(0, 8)}
+                              {(bead.id ?? '').slice(0, 8)}
                             </span>
                           </button>
                         );
