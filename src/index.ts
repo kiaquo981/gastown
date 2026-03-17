@@ -39,6 +39,10 @@ import stage04Routes from './meow/stage04-routes';
 import stage05Routes from './meow/stage05-routes';
 import stage06Routes from './meow/stage06-routes';
 
+// ── Maestro + FrankFlow Integration ─────────────────────────────────────────
+import { maestroRouter } from './meow/maestro';
+import { frankflowRouter } from './meow/frankflow';
+
 // ── App Setup ───────────────────────────────────────────────────────────────
 
 const app = express();
@@ -108,6 +112,10 @@ app.use(stage04Routes);        // /api/meow/stage04/*
 app.use(stage05Routes);        // /api/meow/stage05/*
 app.use(stage06Routes);        // /api/meow/stage06/*
 app.use(finalRoutes);          // /api/meow/final/*
+
+// ── Maestro + FrankFlow ─────────────────────────────────────────────────────
+app.use(maestroRouter);        // /api/maestro/*
+app.use(frankflowRouter);      // /api/frankflow/*
 
 // ── 404 ──────────────────────────────────────────────────────────────────────
 
