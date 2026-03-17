@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 /**
  * Gas Town — Server Entry Point
  *
