@@ -7,6 +7,16 @@ import dynamic from 'next/dynamic';
 const views: Record<string, ReturnType<typeof dynamic>> = {
   'gastown-hq': dynamic(() => import('@/components/GasTownHQView'), { ssr: false }),
   'gastown-timeline': dynamic(() => import('@/components/GasTownTimelineView'), { ssr: false }),
+  // Engine (deep views)
+  'engine-guzzoline': dynamic(() => import('@/components/GuzzolineGaugeView'), { ssr: false }),
+  'engine-terminal': dynamic(() => import('@/components/GTTerminalView'), { ssr: false }),
+  'engine-gupp': dynamic(() => import('@/components/GUPPDashboardView'), { ssr: false }),
+  'engine-chemistry': dynamic(() => import('@/components/MEOWChemistryView'), { ssr: false }),
+  'engine-ndi': dynamic(() => import('@/components/NDIStatusView'), { ssr: false }),
+  'engine-seance': dynamic(() => import('@/components/SeanceLogView'), { ssr: false }),
+  'engine-tmux': dynamic(() => import('@/components/TmuxSessionView'), { ssr: false }),
+  'engine-maestro': dynamic(() => import('@/components/MaestroIntegrationView'), { ssr: false }),
+  // MEOW Stack
   'meow-molecules': dynamic(() => import('@/components/MoleculeView'), { ssr: false }),
   'meow-beads': dynamic(() => import('@/components/BeadsView'), { ssr: false }),
   'meow-convoys': dynamic(() => import('@/components/ConvoyTrackerView'), { ssr: false }),
@@ -18,6 +28,7 @@ const views: Record<string, ReturnType<typeof dynamic>> = {
   'meow-skills': dynamic(() => import('@/components/SkillsWorkshopView'), { ssr: false }),
   'meow-wisps': dynamic(() => import('@/components/WispMonitorView'), { ssr: false }),
   'meow-quality-gate': dynamic(() => import('@/components/QualityGateView'), { ssr: false }),
+  // Gas Town Workers
   'gastown-hooks': dynamic(() => import('@/components/HooksManagerView'), { ssr: false }),
   'gastown-mail': dynamic(() => import('@/components/MailCenterView'), { ssr: false }),
   'gastown-crew': dynamic(() => import('@/components/CrewRosterView'), { ssr: false }),
@@ -30,6 +41,15 @@ const NAV = [
   // Core
   { id: 'gastown-hq', label: 'HQ', icon: '🏙️', group: 'core' },
   { id: 'gastown-timeline', label: 'Timeline', icon: '📅', group: 'core' },
+  // Engine (deep views)
+  { id: 'engine-guzzoline', label: 'Guzzoline', icon: '⛽', group: 'engine' },
+  { id: 'engine-terminal', label: 'GT Terminal', icon: '>', group: 'engine' },
+  { id: 'engine-gupp', label: 'GUPP', icon: '⚡', group: 'engine' },
+  { id: 'engine-chemistry', label: 'Chemistry', icon: '⚗️', group: 'engine' },
+  { id: 'engine-ndi', label: 'NDI', icon: '∞', group: 'engine' },
+  { id: 'engine-seance', label: 'Seance', icon: '☠', group: 'engine' },
+  { id: 'engine-tmux', label: 'tmux', icon: '$', group: 'engine' },
+  { id: 'engine-maestro', label: 'Maestro', icon: '♦', group: 'engine' },
   // MEOW Stack
   { id: 'meow-molecules', label: 'Molecules', icon: '🧬', group: 'meow' },
   { id: 'meow-beads', label: 'Beads', icon: '📿', group: 'meow' },
@@ -62,6 +82,7 @@ const C = {
 
 const GROUP_COLORS: Record<string, string> = {
   core: C.cyan,
+  engine: C.purple,
   meow: C.green,
   workers: C.yellow,
 };
@@ -107,7 +128,7 @@ export default function GasTownPage() {
         style={{ background: C.bgDark + 'f0', borderBottom: `1px solid ${C.border}`, backdropFilter: 'blur(8px)' }}
       >
         <div className="flex items-center gap-1 min-w-max">
-          {(['core', 'meow', 'workers'] as const).map((group, gi) => (
+          {(['core', 'engine', 'meow', 'workers'] as const).map((group, gi) => (
             <div key={group} className="flex items-center gap-1">
               {gi > 0 && <span className="w-px h-5 mx-1" style={{ background: C.border }} />}
               {NAV.filter(v => v.group === group).map(v => {

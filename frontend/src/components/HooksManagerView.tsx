@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const API = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:8081'
+import { ORCHESTRATOR_URL as API } from '@/lib/config'
 
 interface Hook {
   id: string

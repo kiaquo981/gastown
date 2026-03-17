@@ -6,4 +6,4 @@
  */
 
 export const ORCHESTRATOR_URL =
-  process.env.NEXT_PUBLIC_GASTOWN_URL || 'http://localhost:3000';
+  process.env.NEXT_PUBLIC_GASTOWN_URL || 'https://gastown-production.up.railway.app';

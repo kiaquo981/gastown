@@ -6,8 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-
-const API = process.env.NEXT_PUBLIC_ORCHESTRATOR_URL || 'http://localhost:3001';
+import { ORCHESTRATOR_URL as API } from '@/lib/config';
 
 /* ---------- Types ---------- */
 
