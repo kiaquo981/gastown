@@ -113,13 +113,15 @@ function formatTime(ts: string): string {
   }
 }
 
-function formatDuration(ms: number): string {
+function formatDuration(ms: number | undefined | null): string {
+  if (ms == null || isNaN(ms)) return '--';
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
   return `${(ms / 60000).toFixed(1)}m`;
 }
 
-function formatCost(usd: number): string {
+function formatCost(usd: number | undefined | null): string {
+  if (usd == null || isNaN(usd)) return '$0';
   if (usd < 0.01) return `$${(usd * 100).toFixed(2)}c`;
   return `$${usd.toFixed(3)}`;
 }
