@@ -114,8 +114,8 @@ app.use(stage06Routes);        // /api/meow/stage06/*
 app.use(finalRoutes);          // /api/meow/final/*
 
 // ── Maestro + FrankFlow ─────────────────────────────────────────────────────
-app.use(maestroRouter);        // /api/maestro/*
-app.use(frankflowRouter);      // /api/frankflow/*
+app.use(maestroRouter);                      // /api/maestro/* (prefix built-in)
+app.use('/api/frankflow', frankflowRouter);  // /api/frankflow/*
 
 // ── 404 ──────────────────────────────────────────────────────────────────────
 
