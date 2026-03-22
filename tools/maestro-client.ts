@@ -164,6 +164,12 @@ async function executeHook(hook: HookEntry, title: string, description: string) 
       durationMs: Date.now() - startTime,
       outputLen: output.length,
     });
+    if (!success && error) {
+      log(`STDERR: ${error.slice(0, 500)}`);
+    }
+    if (output) {
+      log(`OUTPUT: ${output.slice(0, 300)}`);
+    }
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
     logError('Claude spawn failed', err);
@@ -213,11 +219,9 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
   return new Promise((resolve) => {
     const chunks: string[] = [];
     const errChunks: string[] = [];
-    let resultText = '';
 
     const child = spawn('claude', [
       '--print',
-      '--output-format', 'stream-json',
       '--dangerously-skip-permissions',
       '-p', prompt,
     ], {
@@ -226,20 +230,7 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
     });
 
     child.stdout.on('data', (data: Buffer) => {
-      const text = data.toString();
-      chunks.push(text);
-      for (const line of text.split('\n')) {
-        if (!line.trim()) continue;
-        try {
-          const event = JSON.parse(line);
-          if (event.type === 'assistant' && event.subtype === 'text') {
-            resultText += event.text || '';
-          }
-          if (event.type === 'result') {
-            if (event.result) resultText = event.result;
-          }
-        } catch { /* not all lines are JSON */ }
-      }
+      chunks.push(data.toString());
     });
 
     child.stderr.on('data', (data: Buffer) => {
@@ -248,7 +239,7 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
 
     child.on('close', (code) => {
       resolve({
-        output: resultText || chunks.join(''),
+        output: chunks.join(''),
         error: errChunks.join(''),
         exitCode: code ?? 1,
       });
