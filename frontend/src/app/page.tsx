@@ -66,6 +66,8 @@ const views: Record<string, ReturnType<typeof dynamic>> = {
   'gastown-crew': dynamic(() => import('@/components/CrewRosterView'), { ssr: false }),
   'gastown-deacon': dynamic(() => import('@/components/DeaconHealthView'), { ssr: false }),
   'gastown-polecats': dynamic(() => import('@/components/PolecatSwarmView'), { ssr: false }),
+  // FrankFlow
+  'meow-frankflow': dynamic(() => import('@/components/FrankFlowView'), { ssr: false }),
 };
 
 // ── View Registry ────────────────────────────────────────────────────────────
@@ -106,6 +108,7 @@ const NAV = [
   { id: 'meow-skills', label: 'Skills', icon: '🔧', group: 'meow' },
   { id: 'meow-wisps', label: 'Wisps', icon: '💨', group: 'meow' },
   { id: 'meow-quality-gate', label: 'Quality Gate', icon: '✅', group: 'meow' },
+  { id: 'meow-frankflow', label: 'FrankFlow', icon: '\u25C6', group: 'meow' },
   // Gas Town Workers
   { id: 'gastown-hooks', label: 'GUPP Hooks', icon: '🪝', group: 'workers' },
   { id: 'gastown-polecats', label: 'Polecats', icon: '😺', group: 'workers' },
