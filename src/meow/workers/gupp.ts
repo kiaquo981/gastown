@@ -468,10 +468,8 @@ export class GUPP {
 
         if (dispatchResult?.accepted) {
           // Maestro accepted — hook stays in 'running' until report comes back.
-          // The report endpoint will call completeHook/failHook.
-          // Watchdog: if Maestro never reports, the hook's expiresAt will trigger
-          // expiration in the scan loop, and NDI recover() resets on restart.
-          // Set a tighter timeout for Maestro-dispatched hooks (30 min).
+          // Store dispatchId so the report handler can match this hook.
+          hook.payload = { ...hook.payload, dispatchId: dispatchResult.dispatchId };
           hook.expiresAt = new Date(Date.now() + 30 * 60 * 1000);
           this.persistHook(hook);
           return;

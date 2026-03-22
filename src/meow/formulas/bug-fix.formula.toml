@@ -1,0 +1,92 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# bug-fix — Fix a bug end-to-end
+#
+# Workflow: reproduce → diagnose → fix → regression test → verify → PR
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[formula]
+name = "bug-fix"
+description = "Fix a bug: reproduce, diagnose root cause, apply fix, add regression test, verify, submit PR"
+version = 1
+type = "workflow"
+
+[vars]
+[vars.bug_description]
+description = "Description of the bug to fix"
+required = true
+
+[vars.repo_path]
+description = "Path to the repository"
+required = true
+
+[vars.reproduce_steps]
+description = "Steps to reproduce the bug"
+required = false
+default = ""
+
+[vars.affected_file]
+description = "Known affected file (if any)"
+required = false
+default = ""
+
+# ─── Step 1: Reproduce ────────────────────────────────────────────────────────
+[[steps]]
+id = "reproduce"
+title = "Reproduce the bug: {{bug_description}}"
+description = "Attempt to reproduce the bug. Identify the exact conditions, input, and expected vs actual behavior."
+skill = "code"
+needs = []
+type = "polecat"
+timeout = 300
+
+# ─── Step 2: Diagnose ─────────────────────────────────────────────────────────
+[[steps]]
+id = "diagnose"
+title = "Diagnose root cause"
+description = "Trace the code path to find the root cause. Don't just find WHERE it breaks — understand WHY."
+skill = "code"
+needs = ["reproduce"]
+type = "polecat"
+timeout = 600
+
+# ─── Step 3: Fix ──────────────────────────────────────────────────────────────
+[[steps]]
+id = "fix"
+title = "Apply minimal fix for {{bug_description}}"
+description = "Apply the smallest possible fix that addresses the root cause. Don't refactor surrounding code."
+skill = "code"
+needs = ["diagnose"]
+type = "polecat"
+timeout = 1200
+retries = 2
+
+# ─── Step 4: Regression Test ──────────────────────────────────────────────────
+[[steps]]
+id = "add-regression-test"
+title = "Add regression test"
+description = "Write a test that would have caught this bug. The test should fail without the fix and pass with it."
+skill = "code"
+needs = ["fix"]
+type = "polecat"
+timeout = 600
+
+# ─── Step 5: Verify ───────────────────────────────────────────────────────────
+[[steps]]
+id = "verify"
+title = "Verify fix — run full test suite"
+description = "Run all tests and linting to confirm the fix doesn't break anything else."
+skill = "code"
+needs = ["add-regression-test"]
+type = "polecat"
+timeout = 600
+retries = 1
+
+# ─── Step 6: Submit PR ────────────────────────────────────────────────────────
+[[steps]]
+id = "submit-pr"
+title = "Create PR for bug fix: {{bug_description}}"
+description = "Commit and create PR with: bug description, root cause analysis, fix explanation, and test coverage."
+skill = "code"
+needs = ["verify"]
+type = "polecat"
+timeout = 120

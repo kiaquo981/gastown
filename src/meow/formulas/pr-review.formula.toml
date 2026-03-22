@@ -1,0 +1,77 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# pr-review — Review a pull request
+#
+# Workflow: fetch PR → [analyze changes + check tests] → compose review → submit
+# Diamond DAG: steps 2 and 3 run in parallel after step 1
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[formula]
+name = "pr-review"
+description = "Review a PR: fetch diff, analyze changes and test coverage in parallel, compose and submit review"
+version = 1
+type = "workflow"
+
+[vars]
+[vars.pr_number]
+description = "PR number to review"
+required = true
+
+[vars.repo_path]
+description = "Path to the repository"
+required = true
+
+[vars.review_depth]
+description = "Review depth: quick, standard, or thorough"
+required = false
+default = "thorough"
+
+# ─── Step 1: Fetch PR ─────────────────────────────────────────────────────────
+[[steps]]
+id = "fetch-pr"
+title = "Fetch PR #{{pr_number}} diff and context"
+description = "Fetch the PR diff, description, linked issues, and commit history. Understand what this PR is trying to do."
+skill = "code"
+needs = []
+type = "polecat"
+timeout = 120
+
+# ─── Step 2: Analyze Changes (parallel with step 3) ──────────────────────────
+[[steps]]
+id = "analyze-changes"
+title = "Analyze code changes for correctness and quality"
+description = "Review each changed file for: correctness, patterns consistency, security issues, edge cases, error handling."
+skill = "code"
+needs = ["fetch-pr"]
+type = "polecat"
+timeout = 600
+
+# ─── Step 3: Check Tests (parallel with step 2) ──────────────────────────────
+[[steps]]
+id = "check-tests"
+title = "Verify test coverage of changed code"
+description = "Check if the PR includes tests for new/changed behavior. Identify untested code paths."
+skill = "code"
+needs = ["fetch-pr"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 4: Compose Review ───────────────────────────────────────────────────
+[[steps]]
+id = "compose-review"
+title = "Compose review with line-specific comments"
+description = "Write the review with specific file:line references, categorized as: must-fix, suggestion, nit, question."
+skill = "code"
+needs = ["analyze-changes", "check-tests"]
+type = "polecat"
+timeout = 600
+
+# ─── Step 5: Submit Review ────────────────────────────────────────────────────
+[[steps]]
+id = "submit-review"
+title = "Submit review for PR #{{pr_number}}"
+description = "Post the review to GitHub with overall verdict: approve, request-changes, or comment."
+skill = "code"
+needs = ["compose-review"]
+type = "polecat"
+timeout = 60
+gate = "human-approval"

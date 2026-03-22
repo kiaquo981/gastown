@@ -1,0 +1,99 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# feature-build — Build a new feature end-to-end
+#
+# Workflow: understand context → implement → test → quality check → review → PR
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[formula]
+name = "feature-build"
+description = "Build a new feature: load context, implement, write tests, run quality gates, self-review, submit PR"
+version = 1
+type = "workflow"
+
+[vars]
+[vars.feature_description]
+description = "What to build — the feature requirement"
+required = true
+
+[vars.repo_path]
+description = "Path to the repository"
+required = true
+
+[vars.branch_name]
+description = "Git branch name"
+required = false
+default = "feature/{{bead_id}}"
+
+[vars.test_command]
+description = "Command to run tests"
+required = false
+default = "npm test"
+
+[vars.lint_command]
+description = "Command to run linter and type checks"
+required = false
+default = "npm run lint && npm run typecheck"
+
+# ─── Step 1: Load Context ─────────────────────────────────────────────────────
+[[steps]]
+id = "load-context"
+title = "Read repo structure and understand existing patterns for {{feature_description}}"
+description = "Explore the codebase to understand architecture, naming conventions, existing utilities, and where the new feature fits"
+skill = "code"
+needs = []
+type = "polecat"
+timeout = 120
+
+# ─── Step 2: Implement ────────────────────────────────────────────────────────
+[[steps]]
+id = "implement"
+title = "Implement: {{feature_description}}"
+description = "Write the feature code following existing patterns. Prefer editing existing files over creating new ones. Keep it minimal."
+skill = "code"
+needs = ["load-context"]
+type = "polecat"
+timeout = 1800
+retries = 2
+
+# ─── Step 3: Write Tests ──────────────────────────────────────────────────────
+[[steps]]
+id = "write-tests"
+title = "Write tests for {{feature_description}}"
+description = "Write unit and/or integration tests covering the new code. Follow existing test patterns."
+skill = "code"
+needs = ["implement"]
+type = "polecat"
+timeout = 600
+retries = 1
+
+# ─── Step 4: Run Quality Gates ────────────────────────────────────────────────
+[[steps]]
+id = "run-quality"
+title = "Run lint, typecheck, and tests"
+description = "Execute {{lint_command}} and {{test_command}} to verify everything passes"
+skill = "code"
+needs = ["write-tests"]
+type = "polecat"
+timeout = 600
+retries = 1
+
+# ─── Step 5: Self-Review ──────────────────────────────────────────────────────
+[[steps]]
+id = "self-review"
+title = "Self-review the implementation"
+description = "Review own code for quality, edge cases, security issues, and adherence to existing patterns. Fix anything found."
+skill = "code"
+needs = ["run-quality"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 6: Submit PR ────────────────────────────────────────────────────────
+[[steps]]
+id = "submit-pr"
+title = "Create pull request for {{feature_description}}"
+description = "Commit changes and create a PR with a clear title and description summarizing what was built and why"
+skill = "code"
+needs = ["self-review"]
+type = "polecat"
+timeout = 120
+gate = "test-pass"

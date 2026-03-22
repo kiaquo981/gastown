@@ -23,6 +23,8 @@ import { wispSystem } from './wisp-system';
 import { getBeadsService } from './beads-service';
 import { skillCount, listSkills } from './skill-registry';
 import { maestroBridge } from './bridges/maestro-bridge';
+import { gupp } from './workers/gupp';
+import { notifyBeadCompleted, notifyBeadFailed } from './autonomous-loop';
 
 const router = Router();
 
@@ -599,13 +601,37 @@ router.post('/api/meow/town/maestro/dispatch', requireMaestroAuth, async (req: R
 });
 
 /** POST /api/meow/town/maestro/report — Receive execution report from Maestro */
-router.post('/api/meow/town/maestro/report', requireMaestroAuth, (req: Request, res: Response) => {
+router.post('/api/meow/town/maestro/report', requireMaestroAuth, async (req: Request, res: Response) => {
   try {
     const { dispatchId, maestroId, success, output, prUrl, branch, artifacts, durationMs, sessionCount, error } = req.body;
     if (!dispatchId || !maestroId) {
       return res.status(400).json({ error: 'dispatchId and maestroId are required' });
     }
     maestroBridge.report({ dispatchId, maestroId, success, output: output || '', prUrl, branch, artifacts, durationMs, sessionCount, error });
+
+    // Close the matching GUPP hook and notify the autonomous loop
+    const runningHooks = gupp.listHooks().filter(
+      (h: { status: string; payload?: Record<string, unknown> }) =>
+        h.status === 'running' && h.payload?.dispatchId === dispatchId
+    );
+    for (const hook of runningHooks) {
+      try {
+        if (success) {
+          gupp.completeHook(hook.id);
+          notifyBeadCompleted(hook.beadId);
+          // Update bead to done
+          const beadsService = getBeadsService();
+          await beadsService.update(hook.beadId, {
+            status: 'done' as const,
+            ...(prUrl ? { prUrl } : {}),
+          });
+        } else {
+          gupp.failHook(hook.id, error || 'Maestro execution failed');
+          notifyBeadFailed(hook.beadId);
+        }
+      } catch { /* best effort — hook/bead update is non-critical for the response */ }
+    }
+
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Report failed', details: String(err) });

@@ -1,0 +1,90 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# refactor — Refactor code with safety
+#
+# Workflow: analyze → plan → execute → verify behavior → cleanup → PR
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[formula]
+name = "refactor"
+description = "Refactor code safely: analyze, plan, execute, verify no behavioral changes, cleanup, submit PR"
+version = 1
+type = "workflow"
+
+[vars]
+[vars.refactor_target]
+description = "What to refactor (file, module, function, pattern)"
+required = true
+
+[vars.refactor_goal]
+description = "Why refactor (performance, readability, DRY, simplification)"
+required = true
+
+[vars.repo_path]
+description = "Path to the repository"
+required = true
+
+[vars.scope]
+description = "Scope of refactor: file, module, or system"
+required = false
+default = "module"
+
+# ─── Step 1: Analyze ──────────────────────────────────────────────────────────
+[[steps]]
+id = "analyze"
+title = "Analyze {{refactor_target}} for refactoring"
+description = "Read the target code, find all references and dependents, understand the current behavior and contracts."
+skill = "code"
+needs = []
+type = "polecat"
+timeout = 300
+
+# ─── Step 2: Plan ─────────────────────────────────────────────────────────────
+[[steps]]
+id = "plan"
+title = "Plan refactoring approach for {{refactor_goal}}"
+description = "Create a step-by-step refactoring plan. Identify which files change, what stays the same, and what tests to run."
+skill = "code"
+needs = ["analyze"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 3: Execute ──────────────────────────────────────────────────────────
+[[steps]]
+id = "execute"
+title = "Execute refactoring of {{refactor_target}}"
+description = "Apply the refactoring changes following the plan. Keep commits atomic."
+skill = "code"
+needs = ["plan"]
+type = "polecat"
+timeout = 1800
+retries = 2
+
+# ─── Step 4: Verify Behavior ──────────────────────────────────────────────────
+[[steps]]
+id = "verify-behavior"
+title = "Verify no behavioral changes"
+description = "Run the full test suite to confirm the refactoring didn't change any behavior. All tests must pass."
+skill = "code"
+needs = ["execute"]
+type = "polecat"
+timeout = 600
+
+# ─── Step 5: Cleanup ──────────────────────────────────────────────────────────
+[[steps]]
+id = "cleanup"
+title = "Cleanup dead code and update imports"
+description = "Remove any dead code, fix imports, update documentation if needed. Run lint."
+skill = "code"
+needs = ["verify-behavior"]
+type = "polecat"
+timeout = 300
+
+# ─── Step 6: Submit PR ────────────────────────────────────────────────────────
+[[steps]]
+id = "submit-pr"
+title = "Create PR for refactoring {{refactor_target}}"
+description = "Commit and create PR with before/after summary showing what changed and why."
+skill = "code"
+needs = ["cleanup"]
+type = "polecat"
+timeout = 120
