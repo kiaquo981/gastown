@@ -396,6 +396,14 @@ router.get('/api/meow/refinery/dashboard', (_req: Request, res: Response) => {
   res.json(refinery.getDashboard());
 });
 
+router.get('/api/meow/refinery/stats', (_req: Request, res: Response) => {
+  res.json(refinery.getDashboard());
+});
+
+router.get('/api/meow/refinery/config', (_req: Request, res: Response) => {
+  res.json(refinery.getConfig?.() ?? { gates: refinery.getQueue().length, mode: 'auto' });
+});
+
 router.get('/api/meow/refinery/queue', (_req: Request, res: Response) => {
   res.json(refinery.getQueue());
 });
