@@ -65,30 +65,6 @@ export async function initPool(): Promise<Pool | null> {
 }
 
 export function getPool(): Pool | null {
-  if (pool) return pool;
-
-  // Fallback sync init for code that calls getPool() before initPool()
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    log.warn('DATABASE_URL not set — persistence disabled');
-    return null;
-  }
-
-  const config: PoolConfig = {
-    connectionString: databaseUrl,
-    max: parseInt(process.env.DB_POOL_MAX ?? '2', 10),
-    idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT ?? '15000', 10),
-    connectionTimeoutMillis: parseInt(process.env.DB_CONN_TIMEOUT ?? '8000', 10),
-    ssl: { rejectUnauthorized: false },
-  };
-
-  pool = new Pool(config);
-
-  pool.on('error', (err) => {
-    log.error({ err }, 'Pool error');
-  });
-
-  log.info({ max: config.max }, 'Connection pool created (sync fallback)');
   return pool;
 }
 
