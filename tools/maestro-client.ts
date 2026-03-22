@@ -1,13 +1,11 @@
 #!/usr/bin/env npx tsx
 /**
- * Gas Town Maestro Client — Local Agent Bridge
+ * Gas Town Maestro Client — Pull-Based Local Agent
  *
- * Standalone script that runs on your machine. It:
- * 1. Detects Claude Code CLI
- * 2. Registers with Gas Town backend as a Maestro instance
- * 3. Receives dispatched work via HTTP callback
- * 4. Spawns Claude Code to execute the work
- * 5. Reports results back to Gas Town
+ * Runs on your machine. Polls Gas Town for pending GUPP hooks,
+ * claims them, spawns Claude Code to execute, reports results.
+ *
+ * Pull model (not push) — works behind NAT/firewalls, no tunnel needed.
  *
  * Usage:
  *   npx tsx tools/maestro-client.ts
@@ -15,11 +13,10 @@
  * Environment:
  *   GASTOWN_URL       — Backend URL (default: https://gastown-production.up.railway.app)
  *   GASTOWN_API_KEY   — API key for mutations
- *   MAESTRO_PORT      — Local callback port (default: 9090)
  *   MAESTRO_MAX       — Max concurrent sessions (default: 2)
+ *   POLL_INTERVAL     — Poll interval in ms (default: 10000)
  */
 
-import http from 'http';
 import { execSync, spawn } from 'child_process';
 import os from 'os';
 
@@ -27,14 +24,12 @@ import os from 'os';
 
 const GASTOWN_URL = process.env.GASTOWN_URL || 'https://gastown-production.up.railway.app';
 const API_KEY = process.env.GASTOWN_API_KEY || 'gt_a8f3c2e1d4b6789012345678901234567890abcd1234';
-const LOCAL_PORT = parseInt(process.env.MAESTRO_PORT || '9090', 10);
 const MAX_SESSIONS = parseInt(process.env.MAESTRO_MAX || '2', 10);
-const HEARTBEAT_MS = 30_000;
+const POLL_MS = parseInt(process.env.POLL_INTERVAL || '10000', 10);
 
-let maestroId = '';
 let activeSessions = 0;
-let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
-let server: http.Server | null = null;
+let pollTimer: ReturnType<typeof setInterval> | null = null;
+let claimedHookIds = new Set<string>();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -77,80 +72,82 @@ function detectClaude(): { path: string; version: string } {
     } catch { /* version detection optional */ }
     return { path: claudePath, version };
   } catch {
-    logError('Claude Code CLI not found in PATH. Install it first: https://docs.anthropic.com/en/docs/claude-code');
+    logError('Claude Code CLI not found in PATH.');
     process.exit(1);
   }
 }
 
-// ── Step 2: Register ──────────────────────────────────────────────────────────
+// ── Step 2: Poll for pending hooks ────────────────────────────────────────────
 
-async function register(): Promise<string> {
-  const claude = detectClaude();
-  log(`Claude detected: ${claude.path} (${claude.version})`);
-
-  const result = await api('POST', '/api/meow/town/maestro/register', {
-    callbackUrl: `http://localhost:${LOCAL_PORT}`,
-    name: `Maestro-${os.hostname().split('.')[0]}`,
-    capabilities: ['code', 'refactor', 'test', 'review', 'devops'],
-    maxSessions: MAX_SESSIONS,
-    hostname: os.hostname(),
-    os: process.platform,
-    version: claude.version,
-  }) as { instance?: { id: string } };
-
-  const id = result?.instance?.id;
-  if (!id) throw new Error('Registration failed — no instance ID returned');
-  return id;
+interface HookEntry {
+  id: string;
+  agentId: string;
+  beadId: string;
+  skill: string;
+  priority: string;
+  status: string;
+  payload?: Record<string, unknown>;
 }
 
-// ── Step 3: Heartbeat ─────────────────────────────────────────────────────────
+async function pollForWork() {
+  if (activeSessions >= MAX_SESSIONS) return;
 
-async function sendHeartbeat() {
   try {
-    await api('POST', '/api/meow/town/maestro/heartbeat', {
-      instanceId: maestroId,
-      activeSessions,
-      status: activeSessions >= MAX_SESSIONS ? 'busy' : 'online',
-    });
+    const data = await api('GET', '/api/meow/gupp/hooks/pending') as { hooks?: HookEntry[] };
+    const hooks = data?.hooks || [];
+    const pending = hooks.filter(h => h.status === 'pending' && !claimedHookIds.has(h.id));
+
+    if (pending.length === 0) return;
+
+    // Sort by priority: critical > high > normal > low
+    const priorityOrder: Record<string, number> = { critical: 0, high: 1, normal: 2, low: 3 };
+    pending.sort((a, b) => (priorityOrder[a.priority] ?? 99) - (priorityOrder[b.priority] ?? 99));
+
+    // Claim the highest priority hook
+    const hook = pending[0];
+    log(`Found pending hook: ${hook.id}`, { beadId: hook.beadId, skill: hook.skill, priority: hook.priority });
+
+    // Claim it
+    try {
+      await api('POST', `/api/meow/gupp/hooks/${hook.id}/claim`, { workerId: `maestro-${os.hostname().split('.')[0]}` });
+      claimedHookIds.add(hook.id);
+      log(`Claimed hook ${hook.id}`);
+    } catch (err) {
+      logError(`Failed to claim hook ${hook.id}`, err);
+      return;
+    }
+
+    // Get bead details for the prompt
+    let beadTitle = hook.beadId;
+    let beadDescription = '';
+    try {
+      const bead = await api('GET', `/api/beads/${hook.beadId}`) as { title?: string; description?: string };
+      beadTitle = bead?.title || hook.beadId;
+      beadDescription = bead?.description || '';
+    } catch { /* use hook info as fallback */ }
+
+    // Execute
+    executeHook(hook, beadTitle, beadDescription);
   } catch (err) {
-    logError('Heartbeat failed', err);
-    // If 404, re-register
-    if (String(err).includes('404')) {
-      log('Instance not found — re-registering...');
-      try {
-        maestroId = await register();
-        log(`Re-registered as ${maestroId}`);
-      } catch (e) { logError('Re-registration failed', e); }
+    // Silent on connection errors — just retry next cycle
+    if (!String(err).includes('ECONNREFUSED')) {
+      logError('Poll error', err);
     }
   }
 }
 
-// ── Step 4: Handle Dispatch ───────────────────────────────────────────────────
+// ── Step 3: Execute hook via Claude Code ───────────────────────────────────────
 
-interface DispatchPayload {
-  dispatchId: string;
-  beadId: string;
-  skill: string;
-  title: string;
-  description?: string;
-  priority?: string;
-  context?: string;
-  payload?: Record<string, unknown>;
-}
-
-async function handleDispatch(payload: DispatchPayload) {
-  const { dispatchId, beadId, title, description, context } = payload;
-  log(`Dispatch received: ${title}`, { dispatchId, beadId, skill: payload.skill });
-
+async function executeHook(hook: HookEntry, title: string, description: string) {
   activeSessions++;
   const startTime = Date.now();
+  log(`Executing: ${title}`, { hookId: hook.id, beadId: hook.beadId });
 
-  // Build the prompt
+  // Build prompt
   const parts = [`Task: ${title}`];
   if (description) parts.push(`\nDescription: ${description}`);
-  if (context) parts.push(`\nContext: ${context}`);
+  parts.push(`\nSkill: ${hook.skill}`);
   parts.push('\nComplete this task. Be thorough but concise.');
-
   const prompt = parts.join('');
 
   let output = '';
@@ -165,28 +162,48 @@ async function handleDispatch(payload: DispatchPayload) {
     log(`Claude finished: ${success ? 'SUCCESS' : 'FAILED'}`, {
       exitCode: result.exitCode,
       durationMs: Date.now() - startTime,
-      outputLength: output.length,
+      outputLen: output.length,
     });
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
     logError('Claude spawn failed', err);
   }
 
-  // Report back to Gas Town
+  // Report result — complete or fail the hook
   try {
-    await api('POST', '/api/meow/town/maestro/report', {
-      dispatchId,
-      maestroId,
-      success,
-      output: output.slice(0, 50_000),
-      durationMs: Date.now() - startTime,
-      error: success ? undefined : error.slice(0, 5_000),
-    });
-    log('Report sent to Gas Town');
+    if (success) {
+      await api('POST', `/api/meow/gupp/hooks/${hook.id}/complete`, {
+        output: output.slice(0, 50_000),
+        durationMs: Date.now() - startTime,
+      });
+      log(`Hook ${hook.id} completed`);
+    } else {
+      await api('POST', `/api/meow/gupp/hooks/${hook.id}/fail`, {
+        error: (error || 'Unknown error').slice(0, 5_000),
+        durationMs: Date.now() - startTime,
+      });
+      log(`Hook ${hook.id} failed`);
+    }
   } catch (err) {
-    logError('Failed to report to Gas Town', err);
+    logError('Failed to report hook result', err);
   }
 
+  // Also report via Maestro bridge if dispatchId exists
+  const dispatchId = hook.payload?.dispatchId as string | undefined;
+  if (dispatchId) {
+    try {
+      await api('POST', '/api/meow/town/maestro/report', {
+        dispatchId,
+        maestroId: `maestro-${os.hostname().split('.')[0]}`,
+        success,
+        output: output.slice(0, 50_000),
+        durationMs: Date.now() - startTime,
+        error: success ? undefined : error.slice(0, 5_000),
+      });
+    } catch { /* best effort */ }
+  }
+
+  claimedHookIds.delete(hook.id);
   activeSessions--;
 }
 
@@ -204,23 +221,19 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
       '-p', prompt,
     ], {
       stdio: ['ignore', 'pipe', 'pipe'],
-      timeout: 10 * 60 * 1000, // 10 minute timeout
+      timeout: 10 * 60 * 1000,
     });
 
     child.stdout.on('data', (data: Buffer) => {
       const text = data.toString();
       chunks.push(text);
-
-      // Parse stream-json lines for the result
       for (const line of text.split('\n')) {
         if (!line.trim()) continue;
         try {
           const event = JSON.parse(line);
-          // Capture result text from assistant messages
           if (event.type === 'assistant' && event.subtype === 'text') {
             resultText += event.text || '';
           }
-          // Also capture the final result
           if (event.type === 'result') {
             if (event.result) resultText = event.result;
           }
@@ -233,9 +246,11 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
     });
 
     child.on('close', (code) => {
-      const output = resultText || chunks.join('');
-      const error = errChunks.join('');
-      resolve({ output, error, exitCode: code ?? 1 });
+      resolve({
+        output: resultText || chunks.join(''),
+        error: errChunks.join(''),
+        exitCode: code ?? 1,
+      });
     });
 
     child.on('error', (err) => {
@@ -244,71 +259,11 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
   });
 }
 
-// ── HTTP Server ───────────────────────────────────────────────────────────────
-
-function startServer(): http.Server {
-  const srv = http.createServer((req, res) => {
-    if (req.method === 'POST' && req.url === '/dispatch') {
-      let body = '';
-      req.on('data', (chunk) => { body += chunk; });
-      req.on('end', () => {
-        try {
-          const payload = JSON.parse(body) as DispatchPayload;
-
-          if (activeSessions >= MAX_SESSIONS) {
-            res.writeHead(429, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ accepted: false, reason: 'at capacity' }));
-            return;
-          }
-
-          // Accept immediately, process async
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ accepted: true }));
-
-          // Fire and forget — handleDispatch runs async
-          handleDispatch(payload).catch(err => logError('Dispatch handler error', err));
-        } catch (err) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Invalid JSON' }));
-        }
-      });
-    } else if (req.method === 'GET' && req.url === '/health') {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        status: 'ok',
-        maestroId,
-        activeSessions,
-        maxSessions: MAX_SESSIONS,
-      }));
-    } else {
-      res.writeHead(404);
-      res.end('Not found');
-    }
-  });
-
-  srv.listen(LOCAL_PORT, () => {
-    log(`Callback server listening on http://localhost:${LOCAL_PORT}`);
-  });
-
-  return srv;
-}
-
 // ── Graceful Shutdown ─────────────────────────────────────────────────────────
 
-async function shutdown() {
+function shutdown() {
   log('Shutting down...');
-
-  if (heartbeatTimer) clearInterval(heartbeatTimer);
-
-  // Unregister from Gas Town
-  if (maestroId) {
-    try {
-      await api('DELETE', `/api/meow/town/maestro/${maestroId}`);
-      log('Unregistered from Gas Town');
-    } catch { /* best effort */ }
-  }
-
-  if (server) server.close();
+  if (pollTimer) clearInterval(pollTimer);
   process.exit(0);
 }
 
@@ -321,33 +276,29 @@ async function main() {
   console.log(`
 ╔══════════════════════════════════════════════════════╗
 ║           GAS TOWN MAESTRO CLIENT                    ║
+║           (Pull Mode — no tunnel needed)             ║
 ╠══════════════════════════════════════════════════════╣
 ║  Backend:    ${GASTOWN_URL.padEnd(38)}║
-║  Port:       ${String(LOCAL_PORT).padEnd(38)}║
 ║  Max:        ${String(MAX_SESSIONS).padEnd(38)}║
+║  Poll:       ${(POLL_MS / 1000 + 's').padEnd(38)}║
 ╚══════════════════════════════════════════════════════╝
 `);
 
-  // Detect Claude Code
   detectClaude();
 
-  // Start callback server
-  server = startServer();
-
-  // Register with Gas Town
+  // Test connection
   try {
-    maestroId = await register();
-    log(`Registered with Gas Town as ${maestroId}`);
+    const health = await api('GET', '/health') as { status: string };
+    log(`Gas Town connected: ${health.status}`);
   } catch (err) {
-    logError('Failed to register with Gas Town', err);
-    logError(`Is the backend running at ${GASTOWN_URL}?`);
+    logError('Cannot reach Gas Town backend', err);
     process.exit(1);
   }
 
-  // Start heartbeat
-  heartbeatTimer = setInterval(sendHeartbeat, HEARTBEAT_MS);
-  log('Heartbeat started (30s interval)');
-  log('Waiting for dispatch...');
+  // Start polling
+  log('Polling for pending hooks...');
+  pollTimer = setInterval(pollForWork, POLL_MS);
+  pollForWork(); // immediate first poll
 }
 
 main().catch((err) => {
