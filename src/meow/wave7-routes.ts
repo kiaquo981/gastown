@@ -401,7 +401,7 @@ router.get('/api/meow/refinery/stats', (_req: Request, res: Response) => {
 });
 
 router.get('/api/meow/refinery/config', (_req: Request, res: Response) => {
-  res.json(refinery.getConfig?.() ?? { gates: refinery.getQueue().length, mode: 'auto' });
+  res.json({ gates: refinery.getQueue().length, mode: 'auto' });
 });
 
 router.get('/api/meow/refinery/queue', (_req: Request, res: Response) => {
