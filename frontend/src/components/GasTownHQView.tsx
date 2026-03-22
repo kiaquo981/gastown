@@ -789,7 +789,7 @@ export default function GasTownHQView() {
                       <TD>
                         <span className="font-semibold" style={{ color: C.blue }}>{c.id}</span>
                         {c.title && <div className="text-[11px]" style={{ color: C.textSecondary }}>{c.title}</div>}
-                        {c.assignees.length > 0 && (
+                        {c.assignees?.length > 0 && (
                           <div className="flex gap-1 mt-0.5">{c.assignees.map(a => <span key={a} className="text-[10px] px-1 rounded" style={{ background: C.blue + '15', color: C.blue }}>{a}</span>)}</div>
                         )}
                       </TD>
