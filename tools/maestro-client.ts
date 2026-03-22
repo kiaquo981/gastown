@@ -218,6 +218,7 @@ function spawnClaude(prompt: string): Promise<{ output: string; error: string; e
     const child = spawn('claude', [
       '--print',
       '--output-format', 'stream-json',
+      '--dangerously-skip-permissions',
       '-p', prompt,
     ], {
       stdio: ['ignore', 'pipe', 'pipe'],
